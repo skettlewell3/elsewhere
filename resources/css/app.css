@@ -1,4 +1,7 @@
 @import 'tailwindcss';
+@import './foundation.css';
+@import './themes/default.css';
+@import './themes/grass.css';
 
 @source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
 @source '../../storage/framework/views/*.php';
@@ -7,3 +10,212 @@
     --font-sans: 'Instrument Sans', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
         'Segoe UI Symbol', 'Noto Color Emoji';
 }
+
+/* THEME ENGINE */
+
+.theme-background {
+    position:fixed;
+    inset:-10%;
+
+    z-index:-2;
+
+    background-image:var(--background-image);
+    background-size:var(--background-size);
+    background-position:center;
+
+    filter:blur(var(--background-blur));
+
+    animation:var(--background-animation);
+}
+
+@keyframes background-pan {
+    from {
+        background-position: var(--background-pan-start);
+    }
+
+    to {
+        background-position:var(--background-pan-end);
+    }
+}
+
+.theme-overlay {
+    position:fixed;
+    inset:0;
+
+    background:var(--background-overlay);
+
+    z-index:-1;
+}
+
+.theme-selector {
+    position: fixed;
+    bottom: 1rem;
+    right: 1rem;
+
+    display:flex;
+    flex-direction: column;
+    align-items: center;
+    gap:1rem;
+    background-color: black;
+    border-radius: 8px;
+    color: white;
+    padding: 1rem;
+}
+
+.mode-toggle {
+    display: flex;
+    gap: 1rem;
+}
+
+.theme-option {
+    width: 120px;
+    height: 80px;
+    background-size: cover;
+    background-position: center;
+    border-radius: 8px;    
+}
+
+/* -- END of Theme Engine */
+
+/* MAIN CONTENT */
+
+.app-shell {
+    width: min(1200px, 100%);
+    min-height: 100dvh;
+    margin: 0 auto;
+    background: var(--content-background);  
+    backdrop-filter: blur(20px); 
+}
+
+/* NAVBAR */
+.navbar {
+    background:var(--nav-background);
+    border-bottom:1px solid var(--nav-border);
+    min-height: 4rem;
+    display: flex;
+    align-items: center;
+    text-align: center;
+}
+
+.navbar-container {
+    height: 100%;
+    width:min(1200px,100%);
+    margin:0 auto;
+    padding:0 1rem;
+
+    display:grid;
+    grid-template-columns: 20% auto 20%;
+    align-items: center;
+}
+
+@media(max-width:768px) {
+    .navbar-container {
+        grid-template-columns:auto auto;
+        grid-template-areas:
+            "brand action"
+            "links links";
+        height:auto;
+        gap:.5rem;
+        padding:.75rem 1rem;
+    }
+
+    .navbar-brand {
+        grid-area:brand;
+    }
+
+    .navbar-action {
+        grid-area:action;
+        justify-self:end;
+    }
+
+    .navbar-links {
+        grid-area:links;
+        justify-self:center;
+    }
+}
+
+.navbar-brand {
+    color:var(--nav-text);
+
+    font-size:2rem;
+    font-weight:700;
+    letter-spacing:.02em;
+
+    transition:.2s ease;
+}
+
+.navbar-brand:hover {
+    color:var(--nav-hover);
+}
+
+.navbar-links {
+    position: relative;
+    display:flex;
+    justify-self: center;
+    /* justify-content: center; */
+    align-items: center;
+    gap:.25rem;
+    padding:.25rem;
+
+    background:var(--nav-links-background);
+    border:1px solid var(--nav-border);
+    border-radius:999px;    
+}
+
+.navlink {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 7rem;
+    height: 2.5rem;
+    color:var(--nav-text);
+    padding:.5rem .75rem;
+    border-radius:999px;   
+
+    transition:.2s ease;
+}
+
+.navlink:hover {
+    color:var(--nav-hover);
+}
+
+.navlink.active {
+    /* background:var(--accent); */
+    color:var(--nav-active-text);
+    font-weight: bold;
+}
+
+.nav-active-indicator {
+    position:absolute;
+    height:2.5rem;
+    width:7rem;
+
+    background:var(--nav-active-indicator);
+    border-radius:999px;
+    box-shadow:
+        inset 0 0 0 1px rgba(255,255,255,.15),
+        0 3px 10px rgba(0,0,0,.25)
+    ;
+
+    transition:
+        transform .25s ease,
+        width .25s ease
+    ;
+    z-index:0;
+
+    pointer-events:none;
+}
+
+@media(max-width:480px) {
+    .navlink {
+        width:5.5rem;
+    }
+    .nav-active-indicator {
+        width: 5.5rem;
+    }
+}
+/* -- END of Navbar */
+
+/* -- END of Main Content */

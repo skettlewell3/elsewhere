@@ -1,0 +1,21 @@
+body.theme-default {
+
+    --background-overlay:transparent;
+
+    --background-size:100%;
+    --background-blur:0px;
+
+    --background-animation:none;
+
+    --surface: #35495c;
+    --surface-alt: #465d73;
+
+    --text: #ffffff;
+    --text-muted: #c7d1da;
+
+    --accent: #8fd86f;
+    --accent-hover: #a4e57f;
+
+    --border: rgba(255,255,255,.1);
+
+}

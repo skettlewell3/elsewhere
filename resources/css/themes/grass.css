@@ -1,0 +1,137 @@
+body.theme-grass {
+    --palette-50:#F3F7EF;
+    --palette-100:#E1EBD7;
+    --palette-200:#C4D8B5;
+    --palette-300:#A1BF8A;
+    --palette-400:#789E5A;
+    --palette-500:#37581F;
+    --palette-600:#304D1B;
+    --palette-700:#263E15;
+    --palette-800:#1C2E10;
+    --palette-900:#13220A;
+    --palette-950:#081005;
+
+    --background-size:500%;
+    --background-blur: 20px;
+
+    --background-animation:
+        background-pan 200s ease-in-out infinite alternate
+    ;
+
+    --background-pan-start:0% 50%;
+    --background-pan-end:100% 50%;
+}
+
+body.theme-grass.mode-dark {    
+    --background-overlay:rgba(0,0,0,.25);      
+    --content-background:
+        color-mix(
+            in srgb,
+            var(--palette-950) 80%,
+            transparent
+        )
+    ;
+    --surface:
+        color-mix(
+            in srgb,
+            var(--palette-900) 85%,
+            transparent
+        )
+    ;
+    --surface-alt:
+        color-mix(
+            in srgb,
+            var(--palette-800) 85%,
+            transparent
+        )
+    ;
+    --text: var(--palette-50);
+    --text-muted: var(--palette-200);
+    --accent: var(--palette-400);
+    --accent-hover: var(--palette-300);
+
+    /* nav colors */
+    
+    /* --nav-background:
+        color-mix(
+            in srgb,
+            var(--palette-950) 100%,
+            var(--neutral-950)
+        )
+    ; */
+    --nav-background:var(--palette-500);
+    --nav-border:rgba(255,255,255,.1);
+    --nav-text:var(--palette-200);
+    --nav-text-muted:var(--palette-200);
+    --nav-hover:var(--palette-300);
+    --nav-active:var(--palette-400);
+    --nav-button:var(--palette-700);
+    --nav-button-hover:var(--palette-600);
+    --nav-active:var(--palette-400);
+    --nav-active-text:var(--palette-950);
+    --nav-links-background:
+        color-mix(
+            in srgb,
+            var(--palette-900) 50%,
+            transparent
+        )
+    ;
+    --nav-active-indicator:var(--accent);
+    /* -- end of nav colors */
+}
+
+body.theme-grass.mode-light {    
+    --background-overlay:rgba(255,255,255,.25);
+    --content-background:
+        color-mix(
+            in srgb,
+            var(--palette-200) 50%,
+            transparent
+        )
+    ;
+    --surface:
+        color-mix(
+            in srgb,
+            var(--palette-100) 85%,
+            transparent
+        )
+    ;
+    --surface-alt:
+        color-mix(
+            in srgb,
+            var(--palette-200) 85%,
+            transparent
+        )
+    ;
+    --text: var(--palette-950);
+    --text-muted: var(--palette-700);
+    --accent: var(--palette-500);
+    --accent-hover: var(--palette-600);    
+
+    /* nav colors */
+    --nav-background:
+        color-mix(
+            in srgb,
+            var(--neutral-50) 90%,
+            transparent
+        )
+    ;
+    --nav-border:rgba(0,0,0,.1);
+    --nav-text:var(--palette-800);
+    --nav-text-muted:var(--palette-700);
+    --nav-hover:var(--palette-500);
+    --nav-active:var(--palette-600);
+    --nav-button:var(--palette-100);
+    --nav-button-hover:var(--palette-200);
+    --nav-active:var(--palette-600);
+    --nav-active-text:var(--neutral-50);
+    --nav-links-background:
+        color-mix(
+            in srgb,
+            var(--palette-900) 50%,
+            transparent
+        )
+    ;
+    /* -- end of nav colors */
+    
+}
