@@ -6,8 +6,8 @@ Route::view('/', 'pages.home')
     ->name('home')
 ;
 
-Route::view('/games', 'pages.games')
-    ->name('games')
+Route::view('/apps', 'pages.apps')
+    ->name('apps')
 ;
 
 Route::view('/directory', 'pages.directory')

@@ -1,3 +1,3 @@
-import { setupNavIndicator } from "../views/components/nav/nav-indicator";
+// import { setupNavIndicator } from "../views/components/nav/nav-indicator";
 
-setupNavIndicator();
+// setupNavIndicator();

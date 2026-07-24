@@ -1,21 +1,79 @@
 body.theme-default {
 
+    --palette-50:#F3F7EF;
+    --palette-100:#E1EBD7;
+    --palette-200:#C4D8B5;
+    --palette-300:#A1BF8A;
+    --palette-400:#789E5A;
+    --palette-500:#37581F;
+    --palette-600:#304D1B;
+    --palette-700:#263E15;
+    --palette-800:#1C2E10;
+    --palette-900:#13220A;
+    --palette-950:#081005;
+
     --background-overlay:transparent;
 
     --background-size:100%;
     --background-blur:0px;
 
     --background-animation:none;
+}
 
-    --surface: #35495c;
-    --surface-alt: #465d73;
+body.theme-default.mode-dark {    
+    --background-overlay:rgba(0,0,0,.25);      
+    --content-background:
+        color-mix(
+            in srgb,
+            var(--palette-950) 80%,
+            transparent
+        )
+    ;
+    --surface:
+        color-mix(
+            in srgb,
+            var(--palette-900) 85%,
+            transparent
+        )
+    ;
+    --surface-alt:
+        color-mix(
+            in srgb,
+            var(--palette-800) 85%,
+            transparent
+        )
+    ;
+    --text: var(--palette-50);
+    --text-muted: var(--palette-200);
+    --accent: var(--palette-400);
+    --accent-hover: var(--palette-300);
 
-    --text: #ffffff;
-    --text-muted: #c7d1da;
-
-    --accent: #8fd86f;
-    --accent-hover: #a4e57f;
-
-    --border: rgba(255,255,255,.1);
-
+    /* nav colors */
+    
+    /* --nav-background:
+        color-mix(
+            in srgb,
+            var(--palette-950) 100%,
+            var(--neutral-950)
+        )
+    ; */
+    --nav-background:var(--palette-500);
+    --nav-border:rgba(255,255,255,.1);
+    --nav-text:var(--palette-200);
+    --nav-text-muted:var(--palette-200);
+    --nav-hover:var(--palette-300);
+    --nav-active:var(--palette-400);
+    --nav-button:var(--palette-700);
+    --nav-button-hover:var(--palette-600);
+    --nav-active:var(--palette-400);
+    --nav-active-text:var(--palette-950);
+    --nav-links-background:
+        color-mix(
+            in srgb,
+            var(--palette-900) 50%,
+            transparent
+        )
+    ;
+    --nav-active-indicator:var(--accent);
+    /* -- end of nav colors */
 }
