@@ -11,3 +11,7 @@
     --neutral-900:#171717;
     --neutral-950:#000000;
 }
+
+* {
+    box-sizing:border-box;
+}
