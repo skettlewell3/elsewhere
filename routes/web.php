@@ -1,21 +1,18 @@
 <?php
 
+use App\Http\Controllers\DirectoryController;
 use Illuminate\Support\Facades\Route;
 
-Route::view('/', 'pages.home')
-    ->name('home')
-;
-
-Route::view('/apps', 'pages.apps')
-    ->name('apps')
-;
-
-Route::view('/directory', 'pages.directory')
+Route::get('/', [DirectoryController::class, 'index'])
     ->name('directory')
 ;
 
-Route::view('/profile', 'pages.profile')
-    ->name('profile')
+Route::view('/dashboard', 'pages.dashboard')
+    ->name('dashboard')
+;
+
+Route::view('/discover', 'pages.discover')
+    ->name('discover')
 ;
 
 Route::post('/theme', function () {
@@ -27,7 +24,6 @@ Route::post('/theme', function () {
     return back();
 
 });
-
 
 Route::post('/mode', function () {
 
