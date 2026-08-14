@@ -29,41 +29,181 @@
 
 @section('content')
 
-<div class="max-w-6xl mx-auto px-4 py-10">
+<div class="directory">
 
-    <h1 class="text-4xl font-bold">
-        Directory
-    </h1>
+    <div class="directoryMap">
 
-    <div class="mt-8 space-y-4">
+        <div id="directory-map"></div>
 
-        <div
-            id="directory-map"
-            class="w-full h-[500px] rounded-lg"
-        ></div>
+    </div>
 
-        @foreach ($businesses as $business)
 
-            <div class="p-4 border rounded-lg">
+    <aside class="directoryPanel">
 
-                <h2 class="text-xl font-semibold">
-                    {{ $business['name'] }}
-                </h2>
+        <div class="directoryPanelHeader">
 
-                <p class="mt-2 text-gray-600">
-                    {{ $business['description'] }}
-                </p>
+            <div class="directorySearch">
 
-                <p class="mt-2 text-sm text-gray-500">
-                    {{ $business['latitude'] }},
-                    {{ $business['longitude'] }}
-                </p>
+                <input
+                    type="search"
+                    placeholder="Search businesses..."
+                    aria-label="Search businesses"
+                >
 
             </div>
 
-        @endforeach
+            <button
+                type="button"
+                class="directoryPanelToggle"
+                aria-label="Collapse directory"
+            >
+                ×
+            </button>
 
-    </div>
+        </div>
+
+
+        <div class="directoryFilters">
+
+            <div class="directoryCategories">
+
+                <button
+                    type="button"
+                    class="directoryCategory active"
+                >
+                    All
+                </button>
+
+                <button
+                    type="button"
+                    class="directoryCategory"
+                >
+                    Food & Drink
+                </button>
+
+                <button
+                    type="button"
+                    class="directoryCategory"
+                >
+                    Shopping
+                </button>
+
+                <button
+                    type="button"
+                    class="directoryCategory"
+                >
+                    Services
+                </button>
+
+            </div>
+
+        </div>
+
+
+        <div class="directorySummary">
+
+            <strong>Directory</strong>
+
+            <span>
+                {{ $businesses->count() }} businesses
+            </span>
+
+        </div>
+
+
+        <div class="directoryList">
+
+            <div class="directoryDeck">
+
+                @foreach ($businesses as $business)
+
+                    <article
+                        class="directoryCard"
+                        data-business-id="{{ $business['id'] }}"
+                    >
+
+                        <div class="directoryCardHeader">
+
+                            <div class="directoryCardTitle">
+                                <div class="directoryCardName">
+                                    <h2>
+                                        {{ $business['name'] }}
+                                    </h2>
+
+                                    <span class="directoryCardDivider"></span>
+                                </div>
+
+                                <span class="directoryCardCategory">
+                                    Business
+                                </span>
+                            </div>
+
+                            <button
+                                type="button"
+                                class="directoryCardExpand"
+                                aria-label="Expand {{ $business['name'] }}"
+                            >
+                                +
+                            </button>
+
+                        </div>
+
+
+                        <div class="directoryCardBody">
+
+                            <p class="directoryCardDescription">
+                                {{ $business['description'] }}
+                            </p>
+
+                            @if ($business['location'])
+
+                                <div class="directoryCardLocation">
+
+                                    {{ $business['location']->name }}
+
+                                </div>
+
+                            @endif
+
+
+                            <div class="directoryCardDetails">
+
+                                <p>
+                                    {{ $business['description'] }}
+                                </p>
+
+                                @if ($business['website_url'])
+
+                                    <a
+                                        href="{{ $business['website_url'] }}"
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                    >
+                                        Visit website
+                                    </a>
+
+                                @endif
+
+                                <button
+                                    type="button"
+                                    class="directoryCardFocus"
+                                >
+                                    Focus on map
+                                </button>
+
+                            </div>
+
+                        </div>
+
+                    </article>
+
+                @endforeach
+
+            </div>
+
+        </div>
+
+    </aside>
 
 </div>
 

@@ -1,0 +1,382 @@
+.directory {
+    position: relative;
+    width: 100%;
+    height: calc(100vh - 64px);
+    overflow: hidden;
+}
+
+.directoryMap {
+    position: absolute;
+    inset: 0;
+}
+
+#directory-map {
+    width: 100%;
+    height: 100%;
+}
+
+
+/* PANEL */
+
+.directoryPanel {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    bottom: 20px;
+    z-index: 20;
+
+    width: 380px;
+
+    display: flex;
+    flex-direction: column;
+
+    background: white;
+    border-radius: 12px;
+
+    box-shadow: 0 4px 24px rgba(0, 0, 0, 0.16);
+
+    overflow: hidden;
+}
+
+
+/* HEADER / SEARCH */
+
+.directoryPanelHeader {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+
+    padding: 12px;
+
+    border-bottom: 1px solid #eee;
+}
+
+.directorySearch {
+    flex: 1;
+}
+
+.directorySearch input {
+    display: block;
+
+    width: 100%;
+
+    box-sizing: border-box;
+
+    padding: 11px 14px;
+
+    border: 1px solid #ddd;
+    border-radius: 8px;
+
+    background: #f8f8f8;
+
+    font-size: 14px;
+}
+
+.directorySearch input:focus {
+    outline: none;
+    border-color: #aaa;
+    background: white;
+}
+
+.directoryPanelToggle {
+    width: 34px;
+    height: 34px;
+
+    flex: 0 0 auto;
+
+    border: 0;
+    border-radius: 8px;
+
+    background: #f3f3f3;
+
+    font-size: 20px;
+
+    cursor: pointer;
+}
+
+
+/* FILTERS */
+
+.directoryFilters {
+    padding: 10px 12px;
+
+    border-bottom: 1px solid #eee;
+}
+
+.directoryCategories {
+    display: flex;
+    gap: 6px;
+
+    overflow-x: auto;
+
+    scrollbar-width: none;
+}
+
+.directoryCategories::-webkit-scrollbar {
+    display: none;
+}
+
+.directoryCategory {
+    flex: 0 0 auto;
+
+    padding: 7px 11px;
+
+    border: 1px solid #ddd;
+    border-radius: 7px;
+
+    background: white;
+
+    font-size: 12px;
+
+    cursor: pointer;
+}
+
+.directoryCategory.active {
+    background: #222;
+    color: white;
+    border-color: #222;
+}
+
+
+/* SUMMARY */
+
+.directorySummary {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+
+    padding: 12px 14px;
+
+    border-bottom: 1px solid #eee;
+}
+
+.directorySummary strong {
+    font-size: 15px;
+}
+
+.directorySummary span {
+    color: #777;
+    font-size: 12px;
+}
+
+
+/* CARD VIEWPORT */
+
+.directoryList {
+    position: relative;
+    flex: 1;
+    overflow: hidden;
+    padding: 16px;
+}
+
+
+/*
+ * The deck itself will be positioned and animated
+ * by JavaScript.
+ */
+
+.directoryDeck {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+}
+
+
+/* CARD */
+
+.directoryCard {
+    --card-height: 140px;
+    --card-h2-height: 30px;
+
+    height: var(--card-height);
+
+    position: absolute;
+    left: 0;
+    right: 0;
+
+    box-sizing: border-box;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 10px;
+
+    background: white;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+
+    cursor: pointer;
+
+    transition:
+        transform 120ms ease-out,
+        box-shadow 120ms ease-out;
+}
+
+
+/* CARD HEADER */
+
+.directoryCardHeader {
+    height:48px;
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+
+    gap: 10px;
+}
+
+.directoryCardTitle {
+    min-width: 0;
+}
+
+.directoryCardName {
+    height: var(--card-h2-height);
+
+    display: flex;
+    align-items: flex-start;
+    flex-direction: column;
+}
+
+.directoryCardName h2 {
+    margin: 0;
+
+    font-size: 15px;
+    line-height: 1.3;
+}
+
+.directoryCardDivider {
+    display: block;
+
+    width: 100%;
+    height: 1px;
+
+    margin-top: 3px;
+
+    background: #ddd;
+}
+
+.directoryCardCategory {
+    display: inline-block;
+    padding: 3px 6px;
+    border-radius: 4px;
+    background: #eee;
+
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+}
+
+.directoryCardHeader h2 {
+    margin:0;
+    font-size: 15px;
+    line-height: 1.3;
+}
+
+.directoryCardExpand {
+    width: 28px;
+    height: 28px;
+
+    flex: 0 0 auto;
+
+    border: 0;
+    border-radius: 6px;
+
+    background: #f3f3f3;
+
+    font-size: 18px;
+
+    cursor: pointer;
+}
+
+
+/* CARD BODY */
+
+.directoryCardBody {
+    margin-top: 4px;
+}
+
+.directoryCardDescription {
+    margin: 0;
+    height:50px;
+
+    color: #666;
+
+    font-size: 13px;
+    line-height: 1.4;
+}
+
+.directoryCardLocation {
+    margin-top: 4px;
+
+    color: #888;
+
+    font-size: 12px;
+}
+
+
+/* EXPANDED CONTENT */
+
+.directoryCardDetails {
+    display: none;
+
+    margin-top: 12px;
+    padding-top: 12px;
+
+    border-top: 1px solid #eee;
+
+    font-size: 13px;
+}
+
+.directoryCard.expanded {
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.14);
+}
+
+.directoryCard.expanded .directoryCardDetails {
+    display: block;
+}
+
+.directoryCardDetails p {
+    margin: 0 0 10px;
+}
+
+.directoryCardDetails a {
+    display: inline-block;
+    margin-right: 10px;
+}
+
+.directoryCardFocus {
+    padding: 7px 10px;
+
+    border: 1px solid #ddd;
+    border-radius: 6px;
+
+    background: white;
+
+    font-size: 12px;
+
+    cursor: pointer;
+}
+
+
+/* MOBILE */
+
+@media (max-width: 768px) {
+
+    .directory {
+        height: calc(100vh - 64px);
+    }
+
+    .directoryPanel {
+        top: auto;
+        left: 0;
+        right: 0;
+        bottom: 0;
+
+        width: auto;
+        height: 45%;
+
+        border-radius: 14px 14px 0 0;
+    }
+
+    .directoryList {
+        padding: 12px;
+    }
+
+}
