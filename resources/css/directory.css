@@ -206,7 +206,6 @@
     cursor: pointer;
 
     transition:
-        transform 120ms ease-out,
         box-shadow 120ms ease-out;
 }
 

@@ -47,31 +47,27 @@ businesses.forEach((business) => {
 
 });
 
-//  just in case 
-// const TOP_VISIBLE_HEIGHTS = [
-//     112,
-//     80,
-//     50,
-//     38,
-//     38,
-//     28,
-//     0
-// ];
-
-// DIRECTORY DECK POSITIONING
+// DIRECTORY DECK
 
 const deck = document.querySelector('.directoryDeck');
 const cards = [...document.querySelectorAll('.directoryCard')];
+
+// Constants
 
 const CARD_HEIGHT = 140;
 const CARD_NAME_HEIGHT = 38;
 const CARD_MAX_COVERAGE = CARD_HEIGHT - CARD_NAME_HEIGHT;
 
-const FOCUS_POSITION = 0.50;
+const FOCUS_POSITION = 0.6;
 
 const FULL_CARD_GAP = 12;
 const COMPRESSION_DISTANCE = 200;
 const COMPRESSION_CURVE = 0.2;
+
+// END of Constants.
+
+
+// Geometry
 
 function getFocusTop(deckHeight) {
     return (deckHeight * FOCUS_POSITION) - (CARD_HEIGHT / 2);
@@ -87,11 +83,16 @@ function getVisibleHeight(distance) {
     );
 }
 
-function positionCards() {
-    if (!deck || !cards.length) return;
+// END of Geometry.
+
+
+// Positioning
+
+function getStaticPositions() {
+    if (!deck || !cards.length) return [];
 
     const deckHeight = deck.clientHeight;
-    if (!deckHeight) return;
+    if (!deckHeight) return [];
 
     const focusIndex = Math.floor(cards.length / 2);
     const focusTop = getFocusTop(deckHeight);
@@ -139,7 +140,11 @@ function positionCards() {
         bottom += visibleHeight;
     }
 
-    // APPLY
+    return positions;
+}
+
+function positionCards() {
+    const positions = getStaticPositions();
 
     positions.forEach(item => {
         item.card.style.top = `${item.top}px`;
@@ -147,8 +152,15 @@ function positionCards() {
     });
 }
 
+// END of Positioning.
+
+
+// Initialisation
+
 positionCards();
 
 window.addEventListener('resize', positionCards);
 
-// END OF DIRECTORY DECK POSITIONING
+// END of Initialisation.
+
+// END OF DIRECTORY DECK
