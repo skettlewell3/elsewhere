@@ -173,15 +173,13 @@
                                 </p>
 
                                 @if ($business['website_url'])
-
                                     <a
                                         href="{{ $business['website_url'] }}"
                                         target="_blank"
                                         rel="noopener noreferrer"
                                     >
                                         Visit website
-                                    </a>
-
+                                    </a> 
                                 @endif
 
                                 <button
