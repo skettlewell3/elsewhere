@@ -188,21 +188,15 @@
                                 >
                                     Focus on map
                                 </button>
-
                             </div>
-
                         </div>
-
                     </article>
 
                 @endforeach
 
             </div>
-
         </div>
-
     </aside>
-
 </div>
 
 @endsection
