@@ -4,16 +4,17 @@
 
 @section('content')
 
-<div class="max-w-6xl mx-auto px-4 py-10">
+<div class="dashboard">
+    <div class="dashboard-primary">
 
-    <h1 class="text-4xl font-bold">
-        Dashboard
-    </h1>
+        <div class="dashboard-side">
+            <x-dashboard.wallet />
+            <x-dashboard.verification />
+        </div>
 
-    <p class="mt-4 text-gray-600">
-        Your Elsewhere dashboard.
-    </p>
+        <x-dashboard.calendar />
 
+    </div>
 </div>
 
 @endsection

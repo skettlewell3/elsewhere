@@ -5,9 +5,12 @@ namespace App\Models\Economy;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Concerns\HasUuids;
 
 class LedgerTransaction extends Model
 {
+    use HasUuids;
+
     protected $table = 'ledger_transactions';
 
     protected $primaryKey = 'transaction_id';

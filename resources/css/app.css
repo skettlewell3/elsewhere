@@ -450,4 +450,488 @@
 
 /* END of Card Gallery */
 
+/* DASHBOARD PAGE */
+
+/* DASHBOARD */
+
+.dashboard {
+    padding: 2rem;
+}
+
+.dashboard-primary {
+    display: grid;
+    grid-template-columns: 360px minmax(0, 1fr);
+    gap: 1rem;
+    align-items: start;
+}
+
+.dashboard-side {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 1rem;
+
+    min-width: 0;
+}
+
+/* CALENDAR */
+
+/* DASHBOARD CALENDAR */
+
+.dashboard-calendar {
+    position: relative;
+
+    height: 310px;
+    padding: 1rem 2.25rem;
+
+    border-radius: 1rem;
+
+    background: var(--surface);
+    color: var(--text);
+
+    backdrop-filter: blur(20px);
+    box-shadow: 0 10px 30px rgba(0,0,0,.15);
+
+    overflow: hidden;
+}
+
+.calendar-days {
+    display: grid;
+    grid-template-columns: repeat(7, minmax(0, 1fr));
+
+    width: 100%;
+    height: 100%;
+
+    overflow: hidden;
+    border-radius: .75rem;
+}
+
+.calendar-days {
+    display: grid;
+    grid-template-columns: repeat(7, minmax(0, 1fr));
+    border-right: 1px solid var(--nav-border);
+
+
+    width: 100%;
+    height: 100%;
+}
+
+.calendar-day {
+    min-width: 0;
+    height: 100%;
+
+    display: flex;
+    flex-direction: column;
+
+    padding: 0;
+
+    border: 0;
+    border-right: 1px solid var(--nav-border);
+
+    background: transparent;
+    color: inherit;
+
+    text-align: left;
+    cursor: pointer;
+
+    overflow: hidden;
+}
+
+.calendar-day:last-child {
+    border-right: 0;
+}
+
+.calendar-day-header {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+
+    gap: .05rem;
+
+    padding: .4rem .2rem .35rem;
+
+    border-bottom: 1px solid var(--nav-border);
+}
+
+.calendar-day-name {
+    color: var(--text-muted);
+
+    font-size: .68rem;
+    font-weight: 600;
+    text-transform: uppercase;
+}
+
+.calendar-day-number {
+    font-size: 1.2rem;
+    font-weight: 700;
+    line-height: 1;
+}
+
+.calendar-day-month {
+    color: var(--text-muted);
+
+    font-size: .62rem;
+    text-transform: uppercase;
+}
+
+.calendar-day.is-today {
+    background:
+        color-mix(
+            in srgb,
+            var(--accent) 10%,
+            transparent
+        )
+    ;
+}
+
+.calendar-day.is-today .calendar-day-header {
+    background:
+        color-mix(
+            in srgb,
+            var(--accent) 16%,
+            transparent
+        )
+    ;
+}
+
+.calendar-day-content {
+    display: flex;
+    flex-direction: column;
+    gap: .4rem;
+
+    padding: .35rem .25rem;
+
+    min-height: 0;
+    overflow: hidden;
+}
+
+.calendar-item {
+    display: flex;
+    flex-direction: column;
+    gap: .1rem;
+
+    padding: .35rem;
+
+    border-radius: .4rem;
+
+    background: var(--surface-alt);
+
+    font-size: .68rem;
+
+    overflow: hidden;
+}
+
+.calendar-item-time {
+    color: var(--text-muted);
+    font-size: .6rem;
+}
+
+.calendar-item-title {
+    overflow: hidden;
+
+    font-weight: 600;
+    line-height: 1.1;
+
+    text-overflow: ellipsis;
+}
+
+.calendar-item-meta {
+    overflow: hidden;
+
+    color: var(--text-muted);
+
+    font-size: .6rem;
+
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.calendar-nav {
+    position: absolute;
+    top: 50%;
+    z-index: 5;
+
+    width: 1.75rem;
+    height: 3.5rem;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    padding: 0;
+    border: 0;
+
+    background: transparent;
+    color: var(--text-muted);
+
+    font-size: 1.5rem;
+
+    cursor: pointer;
+    transform: translateY(-50%);
+}
+
+.calendar-nav-previous {
+    left: .25rem;
+}
+
+.calendar-nav-next {
+    right: .25rem;
+}
+
+/* WALLET */
+
+.wallet {
+    width: 100%;
+    max-width: 360px;
+
+    margin: 0;
+
+    border-radius: 1rem;
+    overflow: hidden;
+
+    background: var(--surface);
+    color: var(--text);
+
+    backdrop-filter: blur(20px);
+
+    box-shadow:
+        0 10px 30px rgba(0,0,0,.15)
+    ;
+}
+
+/* collapsed wallet */
+
+.wallet-summary {
+    position: relative;
+
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: center;
+    gap: 1rem;
+
+    width: 100%;
+    aspect-ratio: 4 / 1;
+
+    padding: 1.25rem 1.5rem;
+
+    cursor: pointer;
+    user-select: none;
+
+    list-style: none;
+}
+
+/* remove native details marker */
+
+.wallet-summary::-webkit-details-marker {
+    display: none;
+}
+
+.wallet-summary::marker {
+    display: none;
+    content: "";
+}
+
+/* balance */
+
+.wallet-balance {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: .25rem;
+
+    min-width: 0;
+}
+
+.wallet-label {
+    color: var(--text-muted);
+
+    font-size: .8rem;
+    font-weight: 600;
+    letter-spacing: .06em;
+    text-transform: uppercase;
+}
+
+.wallet-balance-value {
+    display: flex;
+    align-items: baseline;
+    gap: .4rem;
+
+    line-height: 1;
+}
+
+.wallet-amount {
+    font-size: 2.5rem;
+    font-weight: 700;
+    letter-spacing: -.04em;
+}
+
+.wallet-unit {
+    color: var(--text-muted);
+
+    font-size: 1rem;
+    font-weight: 700;
+}
+
+/* expand control */
+
+.wallet-expand {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: .35rem;
+
+    color: var(--text-muted);
+}
+
+.wallet-expand-label {
+    font-size: .7rem;
+}
+
+.wallet-chevron {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    width: 2rem;
+    height: 2rem;
+
+    border-radius: 50%;
+
+    background: var(--surface-alt);
+
+    transition:
+        transform .2s ease,
+        background .2s ease
+    ;
+}
+
+.wallet[open] .wallet-chevron {
+    transform: rotate(180deg);
+}
+
+/* transaction history */
+
+.wallet-history {
+    padding: 0 1.5rem 1.5rem;
+}
+
+.wallet-history-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    padding: 1rem 0 .75rem;
+
+    border-top: 1px solid var(--nav-border);
+}
+
+.wallet-history-header h2 {
+    margin: 0;
+
+    font-size: .9rem;
+    font-weight: 700;
+}
+
+/* transaction rows */
+
+.wallet-transactions {
+    display: flex;
+    flex-direction: column;
+}
+
+.wallet-transaction {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: center;
+    gap: 1rem;
+
+    min-height: 4rem;
+
+    padding: .75rem 0;
+
+    border-bottom: 1px solid var(--nav-border);
+}
+
+.wallet-transaction:last-child {
+    border-bottom: none;
+}
+
+.wallet-transaction-details {
+    display: flex;
+    flex-direction: column;
+    gap: .2rem;
+
+    min-width: 0;
+}
+
+.wallet-transaction-title {
+    overflow: hidden;
+
+    font-size: .9rem;
+    font-weight: 600;
+
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.wallet-transaction-meta {
+    overflow: hidden;
+
+    color: var(--text-muted);
+
+    font-size: .75rem;
+
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.wallet-transaction-value {
+    font-size: .9rem;
+    font-weight: 700;
+    white-space: nowrap;
+}
+
+/*
+    Colour intentionally handled by semantic
+    theme variables rather than hardcoded here.
+*/
+
+.wallet-transaction-credit .wallet-transaction-value {
+    color: var(--positive);
+}
+
+.wallet-transaction-debit .wallet-transaction-value {
+    color: var(--negative);
+}
+
+/* MOBILE */
+
+@media (max-width: 480px) {
+
+    .dashboard {
+        padding: 1rem;
+    }
+
+    .wallet-summary {
+        padding: 1rem;
+    }
+
+    .wallet-amount {
+        font-size: 2rem;
+    }
+
+    .wallet-expand-label {
+        display: none;
+    }
+
+    .wallet-history {
+        padding: 0 1rem 1rem;
+    }
+}
+
+/* -- END of DASHBOARD */
+
+/* -- END OF DASHBOARD PAGE */
+
 /* -- END of MAIN CONTENT */

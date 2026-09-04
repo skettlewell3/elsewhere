@@ -20,6 +20,9 @@ body.theme-grass {
 
     --background-pan-start:0% 50%;
     --background-pan-end:100% 50%;
+
+    --positive:rgba(86, 238, 225, 0.774);
+    --negative:rgb(187, 114, 72);
 }
 
 body.theme-grass.mode-dark {    
