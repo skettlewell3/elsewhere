@@ -4,9 +4,12 @@ namespace App\Models\Economy;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Concerns\HasUuids;
 
 class EconomicEntity extends Model
 {
+    use HasUuids;
+    
     protected $table = 'economic_entities';
 
     protected $primaryKey = 'economic_entity_id';
