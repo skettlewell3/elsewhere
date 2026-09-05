@@ -1149,3 +1149,192 @@ function initialiseDashboardCalendar() {
 }
 
 initialiseDashboardCalendar();
+
+// Initialise Side Panel
+
+function initialiseDashboardSidePanels() {
+
+    const side =
+        document.querySelector(
+            ".dashboard-side"
+        );
+
+    if (!side) return;
+
+    const panels = [
+        side.querySelector(".wallet"),
+        side.querySelector(".verification")
+    ].filter(Boolean);
+
+    if (panels.length < 2) {
+        return;
+    }
+
+    const rowLayout =
+        window.matchMedia(
+            "(max-width: 1000px)"
+        );
+
+    let syncing = false;
+
+    function handleToggle(event) {
+
+        if (syncing) return;
+
+        const changedPanel =
+            event.currentTarget;
+
+        syncing = true;
+
+        /*
+         * Side-by-side:
+         * all panels share the same open state.
+         */
+        if (rowLayout.matches) {
+
+            panels.forEach((panel) => {
+                panel.open =
+                    changedPanel.open;
+            });
+
+        /*
+         * Stacked:
+         * only one panel may be open.
+         */
+        } else if (changedPanel.open) {
+
+            panels.forEach((panel) => {
+
+                if (panel !== changedPanel) {
+                    panel.open = false;
+                }
+            });
+        }
+
+        syncing = false;
+    }
+
+    panels.forEach((panel) => {
+        panel.addEventListener(
+            "toggle",
+            handleToggle
+        );
+    });
+
+    /*
+     * Resolve state when crossing the breakpoint.
+     */
+    rowLayout.addEventListener(
+        "change",
+        (event) => {
+
+            syncing = true;
+
+            if (event.matches) {
+
+                const shouldOpen =
+                    panels.some(
+                        (panel) =>
+                            panel.open
+                    );
+
+                panels.forEach((panel) => {
+                    panel.open =
+                        shouldOpen;
+                });
+
+            } else {
+
+                /*
+                 * If both were open in row mode,
+                 * retain the first one only.
+                 */
+                const openPanels =
+                    panels.filter(
+                        (panel) =>
+                            panel.open
+                    );
+
+                openPanels
+                    .slice(1)
+                    .forEach((panel) => {
+                        panel.open = false;
+                    });
+            }
+
+            syncing = false;
+        }
+    );
+}
+
+initialiseDashboardSidePanels();
+
+// Initialise Verification Accitivty 
+
+function initialiseVerificationActivity() {
+
+    const components =
+        document.querySelectorAll(
+            ".verification"
+        );
+
+    components.forEach((component) => {
+
+        const pages =
+            component.querySelectorAll(
+                "[data-verification-page]"
+            );
+
+        const buttons =
+            component.querySelectorAll(
+                "[data-verification-page-button]"
+            );
+
+        if (!pages.length || !buttons.length) {
+            return;
+        }
+
+        function showPage(index) {
+
+            pages.forEach((page) => {
+
+                page.classList.toggle(
+                    "is-active",
+                    Number(
+                        page.dataset
+                            .verificationPage
+                    ) === index
+                );
+            });
+
+            buttons.forEach((button) => {
+
+                button.classList.toggle(
+                    "is-active",
+                    Number(
+                        button.dataset
+                            .verificationPageButton
+                    ) === index
+                );
+            });
+        }
+
+        buttons.forEach((button) => {
+
+            button.addEventListener(
+                "click",
+                () => {
+
+                    showPage(
+                        Number(
+                            button.dataset
+                                .verificationPageButton
+                        )
+                    );
+                }
+            );
+        });
+    });
+}
+
+initialiseVerificationActivity();

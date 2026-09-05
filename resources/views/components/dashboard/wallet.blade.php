@@ -1,6 +1,4 @@
-{{-- resources/views/components/dashboard/wallet.blade.php --}}
-
-<details class="wallet" name="dashboard-side">
+<details class="wallet">
     <summary class="wallet-summary">
 
         <div class="wallet-balance">
