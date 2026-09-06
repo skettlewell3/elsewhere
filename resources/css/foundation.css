@@ -10,6 +10,10 @@
     --neutral-800:#404040;
     --neutral-900:#171717;
     --neutral-950:#000000;
+
+    --verification-bronze: #b77945;
+    --verification-silver: #b8bec6;
+    --verification-gold: #d6ad45;
 }
 
 * {
