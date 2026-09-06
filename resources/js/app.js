@@ -1338,3 +1338,139 @@ function initialiseVerificationActivity() {
 }
 
 initialiseVerificationActivity();
+
+
+// FAVOURITES GALLERY
+
+function initialiseFavouritesGalleries() {
+
+    const galleries =
+        document.querySelectorAll(
+            "[data-favourites-gallery]"
+        );
+
+    galleries.forEach((gallery) => {
+
+        const viewport =
+            gallery.querySelector(
+                ".favourites-viewport"
+            );
+
+        const track =
+            gallery.querySelector(
+                "[data-favourites-track]"
+            );
+
+        const previousButton =
+            gallery.querySelector(
+                "[data-favourites-previous]"
+            );
+
+        const nextButton =
+            gallery.querySelector(
+                "[data-favourites-next]"
+            );
+
+        if (
+            !viewport ||
+            !track ||
+            !previousButton ||
+            !nextButton
+        ) {
+            return;
+        }
+
+        function getScrollAmount() {
+
+            const item =
+                track.querySelector(
+                    ".favourites-item"
+                );
+
+            if (!item) {
+                return 0;
+            }
+
+            const trackStyles =
+                getComputedStyle(track);
+
+            const gap =
+                parseFloat(
+                    trackStyles.columnGap ||
+                    trackStyles.gap ||
+                    0
+                );
+
+            return (
+                item.getBoundingClientRect().width +
+                gap
+            );
+        }
+
+        function updateNavigation() {
+
+            const maxScroll =
+                viewport.scrollWidth -
+                viewport.clientWidth;
+
+            previousButton.disabled =
+                viewport.scrollLeft <= 1;
+
+            nextButton.disabled =
+                viewport.scrollLeft >=
+                maxScroll - 1;
+
+            /*
+             * If everything fits, keep the controls
+             * visually present but disabled.
+             */
+            if (maxScroll <= 1) {
+                previousButton.disabled = true;
+                nextButton.disabled = true;
+            }
+        }
+
+        previousButton.addEventListener(
+            "click",
+            () => {
+
+                viewport.scrollBy({
+                    left:
+                        -getScrollAmount(),
+                    behavior:
+                        "smooth"
+                });
+            }
+        );
+
+        nextButton.addEventListener(
+            "click",
+            () => {
+
+                viewport.scrollBy({
+                    left:
+                        getScrollAmount(),
+                    behavior:
+                        "smooth"
+                });
+            }
+        );
+
+        viewport.addEventListener(
+            "scroll",
+            updateNavigation,
+            {
+                passive: true
+            }
+        );
+
+        window.addEventListener(
+            "resize",
+            updateNavigation
+        );
+
+        updateNavigation();
+    });
+}
+
+initialiseFavouritesGalleries();

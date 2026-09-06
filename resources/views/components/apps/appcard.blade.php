@@ -2,7 +2,9 @@
 
 <div class="app-card">
     <div class="app-card-header">
-        <span class="app-category">Sports</span>
+        <span class="app-category">
+            {{ $app['category'] }}
+        </span>
 
         <div class="app-favourite-bg">
             <button class="app-favourite">

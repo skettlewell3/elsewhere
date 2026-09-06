@@ -18,6 +18,9 @@ body.theme-default {
     --background-blur:0px;
 
     --background-animation:none;
+
+    --positive:rgba(86, 238, 225, 0.774);
+    --negative:rgb(187, 114, 72);
 }
 
 body.theme-default.mode-dark {    
@@ -48,6 +51,8 @@ body.theme-default.mode-dark {
     --accent: var(--palette-400);
     --accent-hover: var(--palette-300);
 
+    --app-media-background:var(--palette-600);
+
     /* nav colors */
     
     /* --nav-background:
@@ -76,4 +81,8 @@ body.theme-default.mode-dark {
     ;
     --nav-active-indicator:var(--accent);
     /* -- end of nav colors */
+
+    --promo-background: var(--palette-100);
+    --promo-text: var(--palette-900);
+    --promo-text-muted: var(--palette-700);
 }

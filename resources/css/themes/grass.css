@@ -53,6 +53,8 @@ body.theme-grass.mode-dark {
     --accent: var(--palette-400);
     --accent-hover: var(--palette-300);
 
+    --app-media-background:var(--palette-600);
+
     /* nav colors */
     
     /* --nav-background:
@@ -81,6 +83,22 @@ body.theme-grass.mode-dark {
     ;
     --nav-active-indicator:var(--accent);
     /* -- end of nav colors */
+
+    --favourite-app-background:var(--palette-100);
+    --favourite-app-text:var(--palette-900);
+    --favourite-app-muted:var(--palette-600);
+
+    --favourite-business-background:var(--palette-300);
+    --favourite-business-text:var(--palette-900);
+    --favourite-business-muted:var(--palette-600);
+
+    --promo-background: var(--palette-100);
+    --promo-text: var(--palette-900);
+    --promo-text-muted: var(--palette-700);
+
+    --control-background:;
+    --control-hover:;
+    --control-text:;
 }
 
 body.theme-grass.mode-light {    
@@ -109,7 +127,10 @@ body.theme-grass.mode-light {
     --text: var(--palette-950);
     --text-muted: var(--palette-700);
     --accent: var(--palette-500);
-    --accent-hover: var(--palette-600);    
+    --accent-hover: var(--palette-600);  
+    
+    --app-media-background:var(--palette-400);
+    
 
     /* nav colors */
     --nav-background:
@@ -137,4 +158,7 @@ body.theme-grass.mode-light {
     ;
     /* -- end of nav colors */
     
+    --promo-background: var(--palette-100);
+    --promo-text: var(--palette-900);
+    --promo-text-muted: var(--palette-700);
 }

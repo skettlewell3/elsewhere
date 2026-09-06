@@ -384,7 +384,7 @@
     aspect-ratio: 3 / 2;
     overflow:hidden;
     padding: 0.5rem;
-    background-color: var(--palette-600);
+    background-color: var(--app-media-background);
 }
 
 .app-card-media img {
@@ -711,13 +711,13 @@
 }
 
 .calendar-item-promotion {
-    background: var(--palette-100);
-    color: var(--palette-900);
+    background: var(--promo-background);
+    color: var(--promo-text);
 }
 
 .calendar-item-promotion .calendar-item-time,
 .calendar-item-promotion .calendar-item-meta {
-    color: var(--palette-700);
+    color: var(--promo-text-muted);
 }
 
 .calendar-nav {
@@ -1137,8 +1137,8 @@
 
     padding: 0 .4rem;
 
-    background: var(--palette-100);
-    color: var(--palette-900);
+    background: var(--promo-background);
+    color: var(--promo-text);
 
     white-space: nowrap;
 }
@@ -1604,8 +1604,7 @@
 /* mock tier */
 
 .verification-icon-bronze {
-    color: #b77945;
-
+    color: var(--verification-bronze);
     border: 2px solid currentColor;
 }
 
@@ -1804,8 +1803,223 @@
     white-space: nowrap;
 }
 
-/* -- END of DASHBOARD */
+/* FAVOURITES */
+
+/* FAVOURITES GALLERY */
+
+.dashboard-favourites {
+    position: relative;
+
+    width: 100%;
+
+    margin-top: 1rem;
+    padding: 1rem 2.5rem;
+
+    border-radius: 1rem;
+
+    background: var(--surface);
+    color: var(--text);
+
+    backdrop-filter: blur(20px);
+    box-shadow: 0 10px 30px rgba(0,0,0,.15);
+
+    overflow: hidden;
+}
+
+/* VIEWPORT */
+
+.favourites-viewport {
+    width: 100%;
+
+    overflow-x: auto;
+    overflow-y: hidden;
+
+    scrollbar-width: none;
+
+    scroll-behavior: smooth;
+}
+
+.favourites-viewport::-webkit-scrollbar {
+    display: none;
+}
+
+/* TRACK */
+
+.favourites-track {
+    display: flex;
+    align-items: stretch;
+    gap: 1rem;
+    padding: 5px 0;
+
+    width: max-content;
+    min-width: 100%;
+}
+
+/* ITEM */
+
+.favourites-item {
+    flex: 0 0 200px;
+}
+
+/*
+ * App card normally has its own 280px max width.
+ * Inside the favourites gallery it should fill
+ * the gallery slot instead.
+ */
+
+.favourites-item .app-card {
+    width: 100%;
+    max-width: none;
+
+    height: 100%;
+}
+
+.favourites-nav {
+    position: absolute;
+    top: 50%;
+    z-index: 5;
+
+    width: 1.75rem;
+    height: 3.5rem;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    padding: 0;
+    border: 0;
+
+    background: transparent;
+    color: var(--text-muted);
+
+    font-size: 1.5rem;
+
+    cursor: pointer;
+
+    transform: translateY(-50%);
+}
+
+.favourites-nav-previous {
+    left: .25rem;
+}
+
+.favourites-nav-next {
+    right: .25rem;
+}
+
+.favourites-nav:disabled {
+    opacity: .2;
+    cursor: default;
+}
+
+/* FAVOURITE CARD */
+
+.favourite-card-app {
+    background: var(--favourite-app-background);
+    color: var(--favourite-app-text);
+}
+
+.favourite-card-app .favourite-card-meta {
+    color: var(--favourite-app-muted);
+}
+
+.favourite-card-business {
+    background: var(--favourite-business-background);
+    color: var(--favourite-business-text);
+}
+
+.favourite-card-business .favourite-card-meta {
+    color: var(--favourite-business-muted);
+}
+
+.favourite-card {
+    display: flex;
+    flex-direction: column;
+
+    width: 100%;
+    height: 190px;
+
+    border-radius: .75rem;
+
+    overflow: hidden;
+
+    text-decoration: none;
+    color: inherit;
+
+    transition:
+        transform .2s ease,
+        box-shadow .2s ease
+    ;
+}
+
+.favourite-card:hover {
+    transform: translateY(-2px);
+}
+
+.favourite-card-media {
+    flex: 1;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    min-height: 0;
+
+    padding: .75rem;
+}
+
+.favourite-card-media img {
+    width: 100%;
+    height: 100%;
+
+    object-fit: contain;
+}
+
+.favourite-card-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: .5rem;
+
+    padding: .5rem .65rem;
+}
+
+.favourite-card-info {
+    display: flex;
+    flex-direction: column;
+
+    min-width: 0;
+}
+
+.favourite-card-name {
+    overflow: hidden;
+
+    font-size: .85rem;
+    font-weight: 700;
+
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.favourite-card-meta {
+    color: var(--text-muted);
+
+    font-size: .6rem;
+}
+
+.favourite-card-favourite {
+    flex: 0 0 auto;
+
+    font-size: .8rem;
+}
+
+
+
+/* -- END OF FAVOURITES  */
+
+/* -- END OF DASHBOARD */
+
 
 /* -- END OF DASHBOARD PAGE */
 
-/* -- END of MAIN CONTENT */
+/* -- END OF MAIN CONTENT */
