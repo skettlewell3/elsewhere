@@ -4,8 +4,6 @@
 
 <div class="theme-selector">
 
-    <x-theme.mode-toggle />
-
     @foreach($themes as $key => $theme)
 
         <form method="POST" action="/theme">
