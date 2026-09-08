@@ -26,7 +26,5 @@
             </main>
 
         </div>
-
-        <x-theme.selector />
     </body>
 </html>
