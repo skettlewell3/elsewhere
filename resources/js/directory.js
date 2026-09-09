@@ -30,7 +30,130 @@ const map = new Map({
 });
 
 
-const businessMarkers = new globalThis.Map();
+function createBusinessPopupHTML(business) {
+
+    const categoryTags =
+        business.categories
+            ?.map((category) => `
+                <span
+                    class="directoryPopupTag directoryPopupCategory"
+                    data-category="${category.slug}"
+                >
+                    ${category.name}
+                </span>
+            `)
+            .join('')
+        ?? '';
+
+
+    const rewardTag =
+        business.offers_ep_redemption
+            ? `
+                <span
+                    class="directoryPopupTag directoryPopupReward"
+                >
+                    Rewards available
+                </span>
+            `
+            : '';
+
+
+    const description =
+        business.description
+            ? `
+                <p class="directoryPopupDescription">
+                    ${business.description}
+                </p>
+            `
+            : '';
+
+
+    const location =
+        business.location
+            ? `
+                <div class="directoryPopupLocation">
+                    ${business.location.name}
+                </div>
+            `
+            : '';
+
+
+    return `
+        <article class="directoryPopup">
+
+            <header class="directoryPopupHeader">
+                <h3 class="directoryPopupName">
+                    ${business.name}
+                </h3>
+            </header>
+
+            <div class="directoryPopupTags">
+                ${categoryTags}
+                ${rewardTag}
+            </div>
+
+            ${description}
+
+            ${location}
+
+        </article>
+    `;
+}
+
+
+function focusMarkerOnMap(marker) {
+
+    /*
+     * If the Directory panel is fully expanded,
+     * reduce it to the filters view so the popup
+     * cannot remain hidden behind the panel.
+     */
+
+    const panelWasExpanded =
+        getPanelState() === 'expanded';
+
+
+    if (panelWasExpanded) {
+        setPanelState('filters');
+    }
+
+
+    /*
+     * If the panel changed size, wait for that
+     * transition before centring the marker.
+     */
+
+    const delay =
+        panelWasExpanded
+            ? 280
+            : 0;
+
+
+    window.setTimeout(() => {
+
+        map.resize();
+
+
+        const lngLat =
+            marker.getLngLat();
+
+
+        map.easeTo({
+            center: [
+                lngLat.lng,
+                lngLat.lat,
+            ],
+            duration: 350,
+            essential: true,
+        });
+
+    }, delay);
+
+}
+
+
+const businessMarkers =
+    new globalThis.Map();
 
 
 businesses.forEach((business) => {
@@ -42,20 +165,48 @@ businesses.forEach((business) => {
         return;
     }
 
-    const marker = new Marker()
-        .setLngLat([
-            Number(business.longitude),
-            Number(business.latitude),
-        ])
-        .setPopup(
-            new Popup({
-                offset: 25,
-            }).setHTML(`
-                <strong>${business.name}</strong>
-                <p>${business.description ?? ''}</p>
-            `)
-        )
-        .addTo(map);
+
+    const marker =
+        new Marker()
+            .setLngLat([
+                Number(business.longitude),
+                Number(business.latitude),
+            ])
+            .setPopup(
+                new Popup({
+                    offset: 25,
+                    className: 'directoryMapPopup',
+                }).setHTML(
+                    createBusinessPopupHTML(
+                        business
+                    )
+                )
+            )
+            .addTo(map);
+
+
+    /*
+     * Clicking a map marker:
+     *
+     * - MapLibre opens its popup normally.
+     * - Expanded Directory panel reduces to filters.
+     * - Marker is centred in the newly available
+     *   map viewport.
+     */
+
+    marker
+        .getElement()
+        .addEventListener(
+            'click',
+            () => {
+
+                focusMarkerOnMap(
+                    marker
+                );
+
+            }
+        );
+
 
     businessMarkers.set(
         String(business.id),
@@ -65,7 +216,6 @@ businesses.forEach((business) => {
 });
 
 // END OF MAP
-
 
 // DIRECTORY PANEL
 
@@ -338,13 +488,19 @@ document
 // DIRECTORY DECK
 
 const deckMedia =
-    window.matchMedia('(min-width: 769px)');
+    window.matchMedia('(min-width: 769px)')
+;
 
 const deck =
-    document.querySelector('.directoryDeck');
+    document.querySelector('.directoryDeck')
+;
 
-const cards = [
+const allCards = [
     ...document.querySelectorAll('.directoryCard')
+];
+
+let cards = [
+    ...allCards
 ];
 
 
@@ -1020,6 +1176,405 @@ window.addEventListener(
 
     }
 );
+
+// DIRECTORY SEARCH + FILTERING
+
+const searchInput = document.querySelector(
+    '[data-directory-search]'
+);
+
+const categoryButtons = [
+    ...document.querySelectorAll(
+        '[data-directory-category]'
+    )
+];
+
+const directoryCount = document.querySelector(
+    '[data-directory-count]'
+);
+
+
+let searchQuery = '';
+let selectedCategory = 'all';
+
+
+function businessMatchesFilters(business) {
+
+    /*
+     * SEARCH
+     *
+     * Basic v1 search:
+     * - business name
+     * - business description
+     */
+
+    const searchableText = [
+        business.name,
+        business.description,
+    ]
+        .filter(Boolean)
+        .join(' ')
+        .toLowerCase();
+
+
+    const matchesSearch =
+        !searchQuery ||
+        searchableText.includes(searchQuery);
+
+
+    /*
+     * CATEGORY
+     */
+
+    const matchesCategory =
+        selectedCategory === 'all' ||
+        business.categories?.some(
+            (category) =>
+                category.slug === selectedCategory
+        );
+
+
+    return (
+        matchesSearch &&
+        matchesCategory
+    );
+
+}
+
+
+function updateResultCount(count) {
+
+    if (!directoryCount) {
+        return;
+    }
+
+    directoryCount.textContent =
+        `${count} ${
+            count === 1
+                ? 'business'
+                : 'businesses'
+        }`;
+
+}
+
+
+function updateVisibleMarkers(
+    visibleBusinessIds
+) {
+
+    businessMarkers.forEach(
+        (marker, businessId) => {
+
+            const markerElement =
+                marker.getElement();
+
+            markerElement.style.display =
+                visibleBusinessIds.has(
+                    String(businessId)
+                )
+                    ? ''
+                    : 'none';
+
+        }
+    );
+
+}
+
+
+function updateMapForResults(
+    visibleBusinesses
+) {
+
+    const mappedBusinesses =
+        visibleBusinesses.filter(
+            (business) =>
+                business.latitude !== null &&
+                business.longitude !== null
+        );
+
+
+    /*
+     * No mapped results:
+     * leave map where it is.
+     */
+
+    if (!mappedBusinesses.length) {
+        return;
+    }
+
+
+    /*
+     * One result:
+     * focus directly on it.
+     */
+
+    if (mappedBusinesses.length === 1) {
+
+        const business =
+            mappedBusinesses[0];
+
+        map.flyTo({
+            center: [
+                Number(business.longitude),
+                Number(business.latitude),
+            ],
+            zoom: 15,
+            essential: true,
+        });
+
+        return;
+    }
+
+
+    /*
+     * Multiple results:
+     * calculate bounds.
+     */
+
+    const longitudes =
+        mappedBusinesses.map(
+            (business) =>
+                Number(business.longitude)
+        );
+
+    const latitudes =
+        mappedBusinesses.map(
+            (business) =>
+                Number(business.latitude)
+        );
+
+
+    const west =
+        Math.min(...longitudes);
+
+    const east =
+        Math.max(...longitudes);
+
+    const south =
+        Math.min(...latitudes);
+
+    const north =
+        Math.max(...latitudes);
+
+
+    /*
+     * Leave additional space on desktop
+     * because the Directory panel overlays
+     * the left side of the map.
+     */
+
+    const padding =
+        window.innerWidth > 768
+            ? {
+                top: 60,
+                right: 60,
+                bottom: 60,
+                left: 420,
+            }
+            : {
+                top: 40,
+                right: 40,
+                bottom: 100,
+                left: 40,
+            };
+
+
+    map.fitBounds(
+        [
+            [west, south],
+            [east, north],
+        ],
+        {
+            padding,
+            maxZoom: 14,
+            duration: 500,
+        }
+    );
+
+}
+
+
+function resetDirectoryDeck() {
+
+    /*
+     * Mobile/tablet use ordinary card flow,
+     * so no deck positioning is required.
+     */
+
+    if (!deckMedia.matches) {
+        return;
+    }
+
+
+    if (!cards.length) {
+        return;
+    }
+
+
+    focusIndex = Math.max(
+        getMinFocusIndex(),
+        Math.min(
+            Math.floor(cards.length / 2),
+            getMaxFocusIndex()
+        )
+    );
+
+
+    scrollPosition =
+        focusIndex;
+
+
+    positionCards(
+        focusIndex
+    );
+
+}
+
+
+function applyDirectoryFilters() {
+
+    const visibleBusinesses =
+        businesses.filter(
+            businessMatchesFilters
+        );
+
+
+    const visibleBusinessIds =
+        new Set(
+            visibleBusinesses.map(
+                (business) =>
+                    String(business.id)
+            )
+        );
+
+
+    /*
+     * CARDS
+     */
+
+    allCards.forEach((card) => {
+
+        const isVisible =
+            visibleBusinessIds.has(
+                String(
+                    card.dataset.businessId
+                )
+            );
+
+        card.hidden =
+            !isVisible;
+
+    });
+
+
+    /*
+     * Rebuild active card collection so the
+     * custom desktop deck only positions
+     * filtered cards.
+     */
+
+    cards =
+        allCards.filter(
+            (card) =>
+                !card.hidden
+        );
+
+
+    /*
+     * MARKERS
+     */
+
+    updateVisibleMarkers(
+        visibleBusinessIds
+    );
+
+
+    /*
+     * SUMMARY
+     */
+
+    updateResultCount(
+        visibleBusinesses.length
+    );
+
+
+    /*
+     * DESKTOP DECK
+     */
+
+    resetDirectoryDeck();
+
+
+    /*
+     * MAP
+     */
+
+    updateMapForResults(
+        visibleBusinesses
+    );
+
+}
+
+
+/*
+ * SEARCH
+ */
+
+searchInput?.addEventListener(
+    'input',
+    (event) => {
+
+        searchQuery =
+            event.target.value
+                .trim()
+                .toLowerCase();
+
+        applyDirectoryFilters();
+
+    }
+);
+
+
+/*
+ * CATEGORY FILTERS
+ */
+
+categoryButtons.forEach(
+    (button) => {
+
+        button.addEventListener(
+            'click',
+            () => {
+
+                selectedCategory =
+                    button.dataset
+                        .directoryCategory;
+
+
+                categoryButtons.forEach(
+                    (categoryButton) => {
+
+                        categoryButton
+                            .classList
+                            .toggle(
+                                'active',
+                                categoryButton ===
+                                    button
+                            );
+
+                    }
+                );
+
+
+                applyDirectoryFilters();
+
+            }
+        );
+
+    }
+);
+
+// END OF DIRECTORY SEARCH + FILTERING
 
 
 // INITIAL STATE

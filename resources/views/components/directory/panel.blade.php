@@ -1,5 +1,6 @@
 @props([
-    'businesses'
+    'businesses',
+    'categories'
 ])
 
 <aside
@@ -10,7 +11,7 @@
 
     <x-directory.controls />
 
-    <x-directory.filters />
+    <x-directory.filters :categories="$categories" />
 
     <div class="directorySummary">
         <strong>Directory</strong>

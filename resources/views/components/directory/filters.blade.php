@@ -1,5 +1,8 @@
-<div class="directoryFilters">
+@props([
+    'categories'
+])
 
+<div class="directoryFilters">
     <div class="directoryCategories">
 
         <button
@@ -10,30 +13,17 @@
             All
         </button>
 
-        <button
-            type="button"
-            class="directoryCategory"
-            data-directory-category="food-drink"
-        >
-            Food & Drink
-        </button>
+        @foreach ($categories as $category)
 
-        <button
-            type="button"
-            class="directoryCategory"
-            data-directory-category="shopping"
-        >
-            Shopping
-        </button>
+            <button
+                type="button"
+                class="directoryCategory"
+                data-directory-category="{{ $category->slug }}"
+            >
+                {{ $category->name }}
+            </button>
 
-        <button
-            type="button"
-            class="directoryCategory"
-            data-directory-category="services"
-        >
-            Services
-        </button>
+        @endforeach
 
     </div>
-
 </div>

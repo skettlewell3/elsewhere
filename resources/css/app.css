@@ -329,7 +329,7 @@
     position: absolute;
 
     top: calc(100% + .75rem);
-    right: 0;
+    left: 0;
 
     width: min(11rem, calc(100vw - 2rem));
 

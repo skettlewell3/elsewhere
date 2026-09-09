@@ -48,6 +48,7 @@ body.theme-grass.mode-dark {
             transparent
         )
     ;
+    --surface-solid: var(--palette-900);
     --text: var(--palette-50);
     --text-muted: var(--palette-200);
     --accent: var(--palette-400);
@@ -124,6 +125,7 @@ body.theme-grass.mode-light {
             transparent
         )
     ;
+    --surface-solid: var(--palette-400);
     --text: var(--palette-950);
     --text-muted: var(--palette-700);
     --accent: var(--palette-500);

@@ -46,6 +46,7 @@ body.theme-default.mode-dark {
             transparent
         )
     ;
+    --surface-solid: var(--palette-900);
     --text: var(--palette-50);
     --text-muted: var(--palette-200);
     --accent: var(--palette-400);

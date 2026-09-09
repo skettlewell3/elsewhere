@@ -15,6 +15,128 @@
     height: 100%;
 }
 
+/* MAP POPUP */
+
+.directoryMapPopup .maplibregl-popup-content {
+    width: 260px;
+    padding: 0;
+
+    overflow: hidden;
+
+    background: var(--surface-solid);
+    color: var(--text);
+
+    border: 1px solid var(--nav-border);
+    border-radius: 12px;
+
+    box-shadow: 0 8px 24px rgba(0, 0, 0, .22);
+}
+
+.directoryMapPopup .maplibregl-popup-tip {
+    border-top-color: var(--surface);
+    border-bottom-color: var(--surface);
+}
+
+.directoryMapPopup .maplibregl-popup-close-button {
+    top: 6px;
+    right: 8px;
+
+    width: 28px;
+    height: 28px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    color: var(--text);
+
+    border-radius: 6px;
+
+    font-size: 18px;
+
+    z-index: 2;
+}
+
+.directoryMapPopup .maplibregl-popup-close-button:hover {
+    background: var(--nav-links-background);
+}
+
+
+.directoryPopup {
+    padding: 14px;
+}
+
+.directoryPopupHeader {
+    padding-right: 26px;
+}
+
+.directoryPopupName {
+    margin: 0;
+
+    font-size: 16px;
+    line-height: 1.3;
+}
+
+.directoryPopupTags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+
+    margin-top: 8px;
+}
+
+.directoryPopupTag {
+    display: inline-flex;
+    align-items: center;
+
+    padding: 3px 6px;
+
+    border-radius: 4px;
+
+    font-size: 9px;
+    font-weight: 600;
+
+    text-transform: uppercase;
+    letter-spacing: .04em;
+}
+
+.directoryPopupCategory[data-category="food-drink"] {
+    background: #f3dfbf;
+    color: #5c3c0c;
+}
+
+.directoryPopupCategory[data-category="shopping"] {
+    background: #e5d9f3;
+    color: #493069;
+}
+
+.directoryPopupCategory[data-category="services"] {
+    background: #d8eadc;
+    color: #285436;
+}
+
+.directoryPopupReward {
+    background: #123c73;
+    color: white;
+}
+
+.directoryPopupDescription {
+    margin: 10px 0 0;
+
+    color: var(--text);
+    opacity: .8;
+
+    font-size: 12px;
+    line-height: 1.45;
+}
+
+.directoryPopupLocation {
+    margin-top: 8px;
+
+    font-size: 11px;
+    opacity: .65;
+}
+
 
 /* PANEL */
 
@@ -335,15 +457,45 @@
     background: #ddd;
 }
 
-.directoryCardCategory {
-    display: inline-block;
+.directoryCardTags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+}
+
+.directoryCardTag {
+    display: inline-flex;
+    align-items: center;
+
     padding: 3px 6px;
+
     border-radius: 4px;
-    background: #eee;
 
     font-size: 10px;
     text-transform: uppercase;
-    letter-spacing: 0.04em;
+    letter-spacing: .04em;
+
+    white-space: nowrap;
+}
+
+.directoryCardCategory[data-category="food-drink"] {
+    background: #f3dfbf;
+    color: #5c3c0c;
+}
+
+.directoryCardCategory[data-category="shopping"] {
+    background: #e5d9f3;
+    color: #493069;
+}
+
+.directoryCardCategory[data-category="services"] {
+    background: #d8eadc;
+    color: #285436;
+}
+
+.directoryCardReward {
+    background: #123c73;
+    color: white;
 }
 
 .directoryCardHeader h2 {
@@ -391,6 +543,10 @@
     color: #888;
 
     font-size: 12px;
+}
+
+.directoryCard[hidden] {
+    display: none !important;
 }
 
 

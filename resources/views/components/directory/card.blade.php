@@ -17,9 +17,25 @@
                 <span class="directoryCardDivider"></span>
             </div>
 
-            <span class="directoryCardCategory">
-                Business
-            </span>
+            <div class="directoryCardTags">
+                @foreach ($business['categories'] as $category)
+                    <span
+                        class="directoryCardTag directoryCardCategory"
+                        data-category="{{ $category['slug'] }}"
+                    >
+                        {{ $category['name'] }}
+                    </span>
+                @endforeach
+
+                @if ($business['offers_ep_redemption'])
+                    <span
+                        class="directoryCardTag directoryCardReward"
+                    >
+                        Rewards available
+                    </span>
+                @endif
+
+            </div>
         </div>
 
         <div class="directoryCardActions">

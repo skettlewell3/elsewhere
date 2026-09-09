@@ -1,32 +1,11 @@
 @extends('layouts.app')
 
 @vite([
-    'resources/css/directory.css',
     'resources/js/directory.js'
 ])
 
 @php
-    $mapBusinesses = $businesses->map(function ($business) {
-        return [
-            'id' => $business['id'],
-            'name' => $business['name'],
-            'description' => $business['description'],
-            'website_url' => $business['website_url'],
-            'latitude' => $business['latitude'],
-            'longitude' => $business['longitude'],
-            'coordinate_source' => $business['coordinate_source'],
-
-            'location' => $business['location']
-                ? [
-                    'id' => $business['location']->id,
-                    'name' => $business['location']->name,
-                    'type' => $business['location']->type,
-                ]
-                : null,
-
-            'categories' => $business['categories'] ?? [],
-        ];
-    });
+    $mapBusinesses = $businesses;
 @endphp
 
 <script>
@@ -36,15 +15,18 @@
 @section('content')
 
 <div 
-class="directory"
-data-directory
-data-panel-state="expanded"
+    class="directory"
+    data-directory
+    data-panel-state="expanded"
 >
     <div class="directoryMap">
         <div id="directory-map"></div>
     </div>
 
-    <x-directory.panel :businesses="$businesses" />
+    <x-directory.panel 
+        :businesses="$businesses" 
+        :categories="$categories"
+    />
 </div>
 
 @endsection
