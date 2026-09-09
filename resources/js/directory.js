@@ -235,6 +235,18 @@ const panelDown = document.querySelector(
     '[data-directory-panel-down]'
 );
 
+const advancedFiltersButton =
+    document.querySelector(
+        '[data-directory-advanced-filters]'
+    )
+;
+
+const showResultsButton =
+    document.querySelector(
+        '[data-directory-show-results]'
+    )
+;
+
 const mobileDirectoryMedia =
     window.matchMedia('(max-width: 480px)');
 
@@ -253,6 +265,31 @@ function getPanelState() {
 
 }
 
+function getPanelView() {
+
+    return directoryPanel?.dataset.panelView
+        ?? 'results';
+
+}
+
+
+function setPanelView(view) {
+
+    if (
+        !directoryPanel ||
+        ![
+            'results',
+            'advanced-filters',
+        ].includes(view)
+    ) {
+        return;
+    }
+
+    directoryPanel.dataset.panelView =
+        view;
+
+}
+
 
 function setPanelState(state) {
 
@@ -267,6 +304,18 @@ function setPanelState(state) {
     directory.dataset.panelState = state;
     directoryPanel.dataset.panelState = state;
 
+    /*
+        * Advanced filters only exist in the fully
+        * expanded panel.
+        *
+        * Reducing the panel always returns its
+        * expanded content mode to results.
+    */
+
+    if (state !== 'expanded') {
+        setPanelView('results');
+    }
+
 
     const stateIndex =
         PANEL_STATES.indexOf(state);
@@ -274,7 +323,7 @@ function setPanelState(state) {
 
     /*
      * Hide the down arrow at the minimum state.
-     */
+    */
 
     if (panelDown) {
         panelDown.hidden =
@@ -350,6 +399,39 @@ panelDown?.addEventListener('click', () => {
     movePanel(-1);
 
 });
+
+advancedFiltersButton?.addEventListener(
+    'click',
+    () => {
+
+        /*
+         * Behaves like moving from filters
+         * to expanded, but opens the advanced
+         * filter view instead of the deck.
+         */
+
+        setPanelView(
+            'advanced-filters'
+        );
+
+        setPanelState(
+            'expanded'
+        );
+
+    }
+);
+
+
+showResultsButton?.addEventListener(
+    'click',
+    () => {
+
+        setPanelView(
+            'results'
+        );
+
+    }
+);
 
 
 // END OF DIRECTORY PANEL
@@ -1195,7 +1277,14 @@ const directoryCount = document.querySelector(
 
 
 let searchQuery = '';
-let selectedCategory = 'all';
+
+const selectedCategories =
+    new Set()
+;
+
+let rewardsOnly =
+    false
+;
 
 
 function businessMatchesFilters(business) {
@@ -1224,19 +1313,29 @@ function businessMatchesFilters(business) {
 
     /*
      * CATEGORY
-     */
+    */
 
     const matchesCategory =
-        selectedCategory === 'all' ||
+        selectedCategories.size === 0 ||
         business.categories?.some(
             (category) =>
-                category.slug === selectedCategory
-        );
+                selectedCategories.has(
+                    category.slug
+                )
+        )
+    ;
+
+
+    const matchesRewards =
+        !rewardsOnly ||
+        business.offers_ep_redemption
+    ;
 
 
     return (
         matchesSearch &&
-        matchesCategory
+        matchesCategory &&
+        matchesRewards
     );
 
 }
@@ -1536,8 +1635,89 @@ searchInput?.addEventListener(
 
 
 /*
- * CATEGORY FILTERS
- */
+ * FILTER CONTROLS
+*/
+
+const advancedCategoryInputs = [
+    ...document.querySelectorAll(
+        '[data-directory-advanced-category]'
+    )
+];
+
+const rewardsFilter =
+    document.querySelector(
+        '[data-directory-rewards-filter]'
+    )
+;
+
+const clearFiltersButton =
+    document.querySelector(
+        '[data-directory-clear-filters]'
+    )
+;
+
+
+function syncQuickCategoryButtons() {
+
+    categoryButtons.forEach(
+        (button) => {
+
+            const category =
+                button.dataset
+                    .directoryCategory;
+
+
+            /*
+             * All is active when no category
+             * restrictions exist.
+             */
+
+            if (category === 'all') {
+
+                button.classList.toggle(
+                    'active',
+                    selectedCategories.size === 0
+                );
+
+                return;
+            }
+
+
+            /*
+             * Quick category buttons only show
+             * active when that is the sole
+             * selected category.
+             */
+
+            button.classList.toggle(
+                'active',
+                selectedCategories.size === 1 &&
+                selectedCategories.has(
+                    category
+                )
+            );
+
+        }
+    );
+
+}
+
+
+function syncAdvancedCategoryInputs() {
+
+    advancedCategoryInputs.forEach(
+        (input) => {
+
+            input.checked =
+                selectedCategories.has(
+                    input.value
+                );
+
+        }
+    );
+
+}
+
 
 categoryButtons.forEach(
     (button) => {
@@ -1546,25 +1726,25 @@ categoryButtons.forEach(
             'click',
             () => {
 
-                selectedCategory =
+                const category =
                     button.dataset
                         .directoryCategory;
 
 
-                categoryButtons.forEach(
-                    (categoryButton) => {
+                selectedCategories.clear();
 
-                        categoryButton
-                            .classList
-                            .toggle(
-                                'active',
-                                categoryButton ===
-                                    button
-                            );
 
-                    }
-                );
+                if (category !== 'all') {
 
+                    selectedCategories.add(
+                        category
+                    );
+
+                }
+
+
+                syncQuickCategoryButtons();
+                syncAdvancedCategoryInputs();
 
                 applyDirectoryFilters();
 
@@ -1574,23 +1754,78 @@ categoryButtons.forEach(
     }
 );
 
-// END OF DIRECTORY SEARCH + FILTERING
 
+advancedCategoryInputs.forEach(
+    (input) => {
+
+        input.addEventListener(
+            'change',
+            () => {
+
+                if (input.checked) {
+
+                    selectedCategories.add(
+                        input.value
+                    );
+
+                } else {
+
+                    selectedCategories.delete(
+                        input.value
+                    );
+                }
+
+                syncQuickCategoryButtons();
+
+                applyDirectoryFilters();
+            }
+        );
+    }
+);
+
+rewardsFilter?.addEventListener(
+    'change',
+    () => {
+
+        rewardsOnly =
+            rewardsFilter.checked;
+
+        applyDirectoryFilters();
+
+    }
+);
+
+clearFiltersButton?.addEventListener(
+    'click',
+    () => {
+        selectedCategories.clear();
+
+        rewardsOnly = false;
+
+        if (rewardsFilter) {
+            rewardsFilter.checked = false;
+        }
+
+        syncQuickCategoryButtons();
+        syncAdvancedCategoryInputs();
+
+        applyDirectoryFilters();
+    }
+);
+
+// END OF FILTER CONTROLS
+
+// END OF DIRECTORY SEARCH + FILTERING
 
 // INITIAL STATE
 
 if (
     mobileDirectoryMedia.matches
 ) {
-
     setPanelState('compact');
-
 } else {
-
     setPanelState('expanded');
-
 }
-
 
 initialiseDirectoryDeck();
 
