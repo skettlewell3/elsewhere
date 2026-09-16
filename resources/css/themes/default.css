@@ -85,6 +85,14 @@ body.theme-default.mode-dark {
     --nav-active-indicator:var(--accent);
     /* -- end of nav colors */
 
+    --favourite-app-background:var(--palette-200);
+    --favourite-app-text:var(--palette-900);
+    --favourite-app-muted:var(--palette-600);
+
+    --favourite-business-background:var(--palette-300);
+    --favourite-business-text:var(--palette-900);
+    --favourite-business-muted:var(--palette-600);
+
     --promo-background: var(--palette-100);
     --promo-text: var(--palette-900);
     --promo-text-muted: var(--palette-700);

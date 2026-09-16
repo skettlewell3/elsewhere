@@ -87,7 +87,7 @@ body.theme-grass.mode-dark {
     --nav-active-indicator:var(--accent);
     /* -- end of nav colors */
 
-    --favourite-app-background:var(--palette-100);
+    --favourite-app-background:var(--palette-300);
     --favourite-app-text:var(--palette-900);
     --favourite-app-muted:var(--palette-600);
 
@@ -99,9 +99,9 @@ body.theme-grass.mode-dark {
     --promo-text: var(--palette-900);
     --promo-text-muted: var(--palette-700);
 
-    --control-background:;
+    /* --control-background:;
     --control-hover:;
-    --control-text:;
+    --control-text:; */
 }
 
 body.theme-grass.mode-light {    
@@ -163,6 +163,14 @@ body.theme-grass.mode-light {
         )
     ;
     /* -- end of nav colors */
+
+    --favourite-app-background:var(--palette-500);
+    --favourite-app-text:var(--palette-900);
+    --favourite-app-muted:var(--palette-300);
+
+    --favourite-business-background:var(--palette-300);
+    --favourite-business-text:var(--palette-900);
+    --favourite-business-muted:var(--palette-600);
     
     --promo-background: var(--palette-100);
     --promo-text: var(--palette-900);

@@ -3,11 +3,27 @@
 ])
 
 @php
+    $isActive = function ($link) {
+
+        if (request()->routeIs($link['route'])) {
+            return true;
+        }
+
+        if (
+            $link['route'] === 'dashboard'
+            && request()->routeIs('cards.*')
+        ) {
+            return true;
+        }
+
+        return false;
+    };
+
     $current = collect($links)
-        ->first(fn ($link) => request()->routeIs($link['route']));
+        ->first(fn ($link) => $isActive($link));
 
     $others = collect($links)
-        ->reject(fn ($link) => request()->routeIs($link['route']));
+        ->reject(fn ($link) => $isActive($link));
 @endphp
 
 <div class="navbar-navigation">
@@ -17,7 +33,7 @@
             <a
                 href="{{ route($link['route']) }}"
                 data-name="{{ strtolower($link['label']) }}"
-                class="navlink {{ request()->routeIs($link['route']) ? 'active' : '' }}"
+                class="navlink {{ $isActive($link) ? 'active' : '' }}"
             >
                 {{ $link['label'] }}
             </a>
@@ -32,7 +48,7 @@
                 type="button"
             >
                 <span>
-                    {{ $current['label'] }}
+                    {{ $current['label'] ?? '' }}
                 </span>
     
                 <span class="nav-mobile-arrow">

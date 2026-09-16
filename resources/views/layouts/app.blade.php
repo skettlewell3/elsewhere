@@ -19,7 +19,11 @@
         <x-theme.bglayer />
 
         <div class="app-shell">
-            <x-nav.navbar />
+
+            @hasSection('hide-navbar')
+            @else
+                <x-nav.navbar />
+            @endif
 
             <main>
                 @yield('content')

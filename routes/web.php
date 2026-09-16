@@ -34,3 +34,19 @@ Route::post('/mode', function () {
     return back();
 
 });
+
+Route::get('/cards', function () {
+    return view('cards.index');
+})->name('cards.index');
+
+Route::get('/cards/{card}', function (string $card) {
+    return view('cards.show', [
+        'cardSlug' => $card,
+    ]);
+})->name('cards.show');
+
+Route::get('/cards/{card}/info', function (string $card) {
+    return view('cards.info', [
+        'cardSlug' => $card,
+    ]);
+})->name('cards.info');
