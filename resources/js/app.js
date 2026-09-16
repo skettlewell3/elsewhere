@@ -1170,12 +1170,41 @@ function initialiseDashboardSidePanels() {
         return;
     }
 
-    const rowLayout =
+    const tabletLayout =
         window.matchMedia(
-            "(max-width: 1000px)"
+            "(min-width: 641px) and (max-width: 1000px)"
         );
 
     let syncing = false;
+
+
+    function getOpenPanels() {
+        return panels.filter(
+            (panel) => panel.open
+        );
+    }
+
+
+    function ensureTabletPanelOpen(
+        preferredPanel = null
+    ) {
+        if (!tabletLayout.matches) {
+            return;
+        }
+
+        const openPanels =
+            getOpenPanels();
+
+        if (openPanels.length > 0) {
+            return;
+        }
+
+        const panelToOpen =
+            preferredPanel ?? panels[0];
+
+        panelToOpen.open = true;
+    }
+
 
     function handleToggle(event) {
 
@@ -1187,21 +1216,10 @@ function initialiseDashboardSidePanels() {
         syncing = true;
 
         /*
-         * Side-by-side:
-         * all panels share the same open state.
+         * Opening any panel always closes
+         * every other panel.
          */
-        if (rowLayout.matches) {
-
-            panels.forEach((panel) => {
-                panel.open =
-                    changedPanel.open;
-            });
-
-        /*
-         * Stacked:
-         * only one panel may be open.
-         */
-        } else if (changedPanel.open) {
+        if (changedPanel.open) {
 
             panels.forEach((panel) => {
 
@@ -1209,10 +1227,28 @@ function initialiseDashboardSidePanels() {
                     panel.open = false;
                 }
             });
+
+        /*
+         * Tablet always keeps one panel open.
+         * If the currently open panel is closed,
+         * open the other panel instead.
+         */
+        } else if (tabletLayout.matches) {
+
+            const otherPanel =
+                panels.find(
+                    (panel) =>
+                        panel !== changedPanel
+                );
+
+            if (otherPanel) {
+                otherPanel.open = true;
+            }
         }
 
         syncing = false;
     }
+
 
     panels.forEach((panel) => {
         panel.addEventListener(
@@ -1221,10 +1257,40 @@ function initialiseDashboardSidePanels() {
         );
     });
 
+
     /*
-     * Resolve state when crossing the breakpoint.
+     * Initial state:
+     * tablet should always use the available
+     * vertical space beside the card holder.
      */
-    rowLayout.addEventListener(
+    if (tabletLayout.matches) {
+
+        syncing = true;
+
+        const openPanels =
+            getOpenPanels();
+
+        /*
+         * If both somehow start open,
+         * retain only the first.
+         */
+        openPanels
+            .slice(1)
+            .forEach((panel) => {
+                panel.open = false;
+            });
+
+        ensureTabletPanelOpen();
+
+        syncing = false;
+    }
+
+
+    /*
+     * Resolve state when entering or leaving
+     * tablet layout.
+     */
+    tabletLayout.addEventListener(
         "change",
         (event) => {
 
@@ -1232,28 +1298,37 @@ function initialiseDashboardSidePanels() {
 
             if (event.matches) {
 
-                const shouldOpen =
-                    panels.some(
+                const openPanels =
+                    getOpenPanels();
+
+                /*
+                 * Tablet permits exactly
+                 * one open panel.
+                 */
+                openPanels
+                    .slice(1)
+                    .forEach((panel) => {
+                        panel.open = false;
+                    });
+
+                if (
+                    !panels.some(
                         (panel) =>
                             panel.open
-                    );
-
-                panels.forEach((panel) => {
-                    panel.open =
-                        shouldOpen;
-                });
+                    )
+                ) {
+                    panels[0].open = true;
+                }
 
             } else {
 
                 /*
-                 * If both were open in row mode,
-                 * retain the first one only.
+                 * Outside tablet mode,
+                 * still enforce a maximum
+                 * of one open panel.
                  */
                 const openPanels =
-                    panels.filter(
-                        (panel) =>
-                            panel.open
-                    );
+                    getOpenPanels();
 
                 openPanels
                     .slice(1)
@@ -1474,3 +1549,700 @@ function initialiseFavouritesGalleries() {
 }
 
 initialiseFavouritesGalleries();
+
+// CARD & CARD HOLDER 
+// Expand and search Behaviour
+
+document
+    .querySelectorAll('[data-card-holder]')
+    .forEach((holder) => {
+        const toggle = holder.querySelector(
+            '[data-card-holder-toggle]'
+        );
+
+        const toggleLabel = holder.querySelector(
+            '[data-card-holder-toggle-label]'
+        );
+
+        const tools = holder.querySelector(
+            '[data-card-holder-tools]'
+        );
+
+        const search = holder.querySelector(
+            '[data-card-holder-search]'
+        );
+
+        const filters = [
+            ...holder.querySelectorAll('[data-card-filter]')
+        ];
+
+        const source = holder.querySelector(
+            '[data-card-holder-source]'
+        );
+
+        const pagesContainer = holder.querySelector(
+            '[data-card-holder-pages]'
+        );
+
+        const pagination = holder.querySelector(
+            '[data-card-holder-pagination]'
+        );
+
+        const viewport = holder.querySelector(
+            '[data-card-holder-viewport]'
+        );
+
+        const empty = holder.querySelector(
+            '[data-card-holder-empty]'
+        );
+
+        if (
+            !toggle ||
+            !source ||
+            !pagesContainer ||
+            !pagination ||
+            !viewport
+        ) {
+            return;
+        }
+
+        /*
+         * Clone cards from the hidden Blade-rendered source.
+         *
+         * These remain our master copies so the visible pages
+         * can be rebuilt whenever the mode/filter/search changes.
+         */
+        const allCards = [
+            ...source.querySelectorAll('[data-card]')
+        ].map((card) => card.cloneNode(true));
+
+        let expanded = false;
+        let activeFilter = 'all';
+        let currentPage = 0;
+
+        let touchStartX = 0;
+        let touchEndX = 0;
+
+
+        function getPageSize() {
+            return expanded ? 6 : 4;
+        }
+
+
+        function getFilteredCards() {
+            const query =
+                search?.value
+                    .trim()
+                    .toLowerCase() ?? '';
+
+            return allCards.filter((card) => {
+                const name =
+                    card.dataset.cardName ?? '';
+
+                const type =
+                    card.dataset.cardType ?? '';
+
+                const matchesSearch =
+                    !query ||
+                    name.includes(query);
+
+                const matchesFilter =
+                    activeFilter === 'all' ||
+                    type === activeFilter;
+
+                return (
+                    matchesSearch &&
+                    matchesFilter
+                );
+            });
+        }
+
+
+        function chunkCards(cards, size) {
+            const chunks = [];
+
+            for (
+                let index = 0;
+                index < cards.length;
+                index += size
+            ) {
+                chunks.push(
+                    cards.slice(
+                        index,
+                        index + size
+                    )
+                );
+            }
+
+            return chunks;
+        }
+
+
+        function showPage(index) {
+            const pages = [
+                ...pagesContainer.querySelectorAll(
+                    '[data-card-holder-page]'
+                )
+            ];
+
+            const dots = [
+                ...pagination.querySelectorAll(
+                    '[data-card-holder-dot]'
+                )
+            ];
+
+            if (!pages.length) {
+                currentPage = 0;
+                return;
+            }
+
+            if (index < 0) {
+                index = pages.length - 1;
+            }
+
+            if (index >= pages.length) {
+                index = 0;
+            }
+
+            currentPage = index;
+
+            pages.forEach((page, pageIndex) => {
+                page.classList.toggle(
+                    'is-active',
+                    pageIndex === currentPage
+                );
+            });
+
+            dots.forEach((dot, dotIndex) => {
+                dot.classList.toggle(
+                    'is-active',
+                    dotIndex === currentPage
+                );
+
+                dot.setAttribute(
+                    'aria-current',
+                    dotIndex === currentPage
+                        ? 'true'
+                        : 'false'
+                );
+            });
+        }
+
+
+        function renderPagination(pageCount) {
+            pagination.innerHTML = '';
+
+            if (pageCount <= 1) {
+                return;
+            }
+
+            for (
+                let index = 0;
+                index < pageCount;
+                index++
+            ) {
+                const dot =
+                    document.createElement('button');
+
+                dot.type = 'button';
+
+                dot.className =
+                    'dashboard-card-holder__dot';
+
+                dot.dataset.cardHolderDot = '';
+
+                dot.setAttribute(
+                    'aria-label',
+                    `Show card page ${index + 1}`
+                );
+
+                dot.addEventListener(
+                    'click',
+                    () => {
+                        showPage(index);
+                    }
+                );
+
+                pagination.appendChild(dot);
+            }
+        }
+
+
+        function renderPages() {
+            const cards =
+                getFilteredCards();
+
+            const pageSize =
+                getPageSize();
+
+            const chunks =
+                chunkCards(
+                    cards,
+                    pageSize
+                );
+
+            pagesContainer.innerHTML = '';
+
+            empty.hidden =
+                cards.length !== 0;
+
+            if (!cards.length) {
+                pagination.innerHTML = '';
+                currentPage = 0;
+                return;
+            }
+
+            chunks.forEach(
+                (chunk, pageIndex) => {
+                    const page =
+                        document.createElement('div');
+
+                    page.className =
+                        'dashboard-card-holder__page';
+
+                    page.dataset.cardHolderPage = '';
+
+                    const stack =
+                        document.createElement('div');
+
+                    stack.className =
+                        'dashboard-card-holder__stack';
+
+                    chunk.forEach(
+                        (masterCard, cardIndex) => {
+                            const card =
+                                masterCard.cloneNode(true);
+
+                            card.style.setProperty(
+                                '--card-index',
+                                cardIndex
+                            );
+
+                            card.style.zIndex =
+                                String(cardIndex + 1);
+
+                            stack.appendChild(card);
+                        }
+                    );
+
+                    page.appendChild(stack);
+
+                    pagesContainer.appendChild(page);
+                }
+            );
+
+            renderPagination(
+                chunks.length
+            );
+
+            /*
+             * Search/filter changes can reduce the total
+             * number of pages.
+             */
+            if (
+                currentPage >=
+                chunks.length
+            ) {
+                currentPage = 0;
+            }
+
+            showPage(currentPage);
+        }
+
+
+        function setExpanded(nextExpanded) {
+            expanded = nextExpanded;
+
+            holder.classList.toggle(
+                'is-expanded',
+                expanded
+            );
+
+            toggle.setAttribute(
+                'aria-expanded',
+                expanded
+            );
+
+            toggleLabel.textContent =
+                expanded
+                    ? 'Collapse'
+                    : 'Show all';
+
+            tools.hidden =
+                !expanded;
+
+            /*
+             * Returning to compact mode also returns to
+             * the default unfiltered holder.
+             */
+            if (!expanded) {
+                activeFilter = 'all';
+
+                if (search) {
+                    search.value = '';
+                }
+
+                filters.forEach((button) => {
+                    button.classList.toggle(
+                        'is-active',
+                        button.dataset.cardFilter === 'all'
+                    );
+                });
+            }
+
+            currentPage = 0;
+
+            renderPages();
+        }
+
+
+        toggle.addEventListener(
+            'click',
+            () => {
+                setExpanded(!expanded);
+            }
+        );
+
+
+        search?.addEventListener(
+            'input',
+            () => {
+                currentPage = 0;
+                renderPages();
+            }
+        );
+
+
+        filters.forEach((button) => {
+            button.addEventListener(
+                'click',
+                () => {
+                    activeFilter =
+                        button.dataset.cardFilter;
+
+                    filters.forEach(
+                        (filterButton) => {
+                            filterButton.classList.toggle(
+                                'is-active',
+                                filterButton === button
+                            );
+                        }
+                    );
+
+                    currentPage = 0;
+
+                    renderPages();
+                }
+            );
+        });
+
+
+        /*
+         * Swipe left/right between stacks.
+         */
+
+        viewport.addEventListener(
+            'touchstart',
+            (event) => {
+                touchStartX =
+                    event.changedTouches[0].screenX;
+            },
+            {
+                passive: true,
+            }
+        );
+
+
+        viewport.addEventListener(
+            'touchend',
+            (event) => {
+                touchEndX =
+                    event.changedTouches[0].screenX;
+
+                const distance =
+                    touchEndX - touchStartX;
+
+                const threshold = 45;
+
+                if (
+                    Math.abs(distance) <
+                    threshold
+                ) {
+                    return;
+                }
+
+                if (distance < 0) {
+                    showPage(
+                        currentPage + 1
+                    );
+                } else {
+                    showPage(
+                        currentPage - 1
+                    );
+                }
+            },
+            {
+                passive: true,
+            }
+        );
+
+
+        /*
+         * Initial compact render:
+         * 4 cards per stack.
+         */
+
+        renderPages();
+    })
+;
+
+// FULL CARD HOLDER
+// Rewards / Membership Toggle
+
+document
+    .querySelectorAll('[data-full-card-holder]')
+    .forEach((holder) => {
+        const filters = [
+            ...holder.querySelectorAll(
+                '[data-full-card-filter]'
+            )
+        ];
+
+        const cards = [
+            ...holder.querySelectorAll(
+                '[data-full-card]'
+            )
+        ];
+
+        function showCardType(type) {
+            let visibleIndex = 0;
+
+            cards.forEach((card) => {
+                const visible =
+                    card.dataset.cardType === type;
+
+                card.hidden = !visible;
+
+                if (!visible) {
+                    card.style.marginTop = '0';
+                    return;
+                }
+
+                card.style.setProperty(
+                    '--card-index',
+                    visibleIndex
+                );
+
+                card.style.marginTop =
+                    visibleIndex === 0
+                        ? '0'
+                        : '-6rem';
+
+                visibleIndex++;
+            });
+        }
+
+        filters.forEach((button) => {
+            button.addEventListener(
+                'click',
+                () => {
+                    const type =
+                        button.dataset.fullCardFilter;
+
+                    filters.forEach(
+                        (filterButton) => {
+                            filterButton.classList.toggle(
+                                'is-active',
+                                filterButton === button
+                            );
+                        }
+                    );
+
+                    showCardType(type);
+                }
+            );
+        });
+
+        const initialFilter =
+            filters.find(
+                (button) =>
+                    button.classList.contains(
+                        'is-active'
+                    )
+            );
+
+        if (initialFilter) {
+            showCardType(
+                initialFilter.dataset.fullCardFilter
+            );
+        }
+    })
+;
+
+// CARD CREDENTIAL OVERLAY
+// Open / Close QR Presentation
+
+document
+    .querySelectorAll('.card-page')
+    .forEach((cardPage) => {
+        const openButton = cardPage.querySelector(
+            '[data-card-qr]'
+        );
+
+        const overlay = cardPage.querySelector(
+            '[data-card-credential-overlay]'
+        );
+
+        if (!openButton || !overlay) {
+            return;
+        }
+
+        const closeButton = overlay.querySelector(
+            '[data-card-credential-close]'
+        );
+
+        if (!closeButton) {
+            return;
+        }
+
+
+        function syncCredentialViewport() {
+            const viewport =
+                window.visualViewport;
+
+            if (!viewport) {
+                overlay.style.removeProperty(
+                    '--credential-viewport-top'
+                );
+
+                overlay.style.removeProperty(
+                    '--credential-viewport-left'
+                );
+
+                overlay.style.removeProperty(
+                    '--credential-viewport-width'
+                );
+
+                overlay.style.removeProperty(
+                    '--credential-viewport-height'
+                );
+
+                return;
+            }
+
+            overlay.style.setProperty(
+                '--credential-viewport-top',
+                `${viewport.offsetTop}px`
+            );
+
+            overlay.style.setProperty(
+                '--credential-viewport-left',
+                `${viewport.offsetLeft}px`
+            );
+
+            overlay.style.setProperty(
+                '--credential-viewport-width',
+                `${viewport.width}px`
+            );
+
+            overlay.style.setProperty(
+                '--credential-viewport-height',
+                `${viewport.height}px`
+            );
+        }
+
+
+        function openCredential() {
+            syncCredentialViewport();
+
+            overlay.hidden = false;
+
+            document.body.style.overflow =
+                'hidden';
+
+            closeButton.focus();
+        }
+
+
+        function closeCredential() {
+            overlay.hidden = true;
+
+            document.body.style.overflow =
+                '';
+
+            openButton.focus();
+        }
+
+
+        openButton.addEventListener(
+            'click',
+            openCredential
+        );
+
+
+        closeButton.addEventListener(
+            'click',
+            closeCredential
+        );
+
+
+        overlay.addEventListener(
+            'click',
+            (event) => {
+                if (event.target !== overlay) {
+                    return;
+                }
+
+                closeCredential();
+            }
+        );
+
+
+        document.addEventListener(
+            'keydown',
+            (event) => {
+                if (
+                    event.key === 'Escape' &&
+                    !overlay.hidden
+                ) {
+                    closeCredential();
+                }
+            }
+        );
+
+
+        if (window.visualViewport) {
+            window.visualViewport.addEventListener(
+                'resize',
+                () => {
+                    if (!overlay.hidden) {
+                        syncCredentialViewport();
+                    }
+                }
+            );
+
+            window.visualViewport.addEventListener(
+                'scroll',
+                () => {
+                    if (!overlay.hidden) {
+                        syncCredentialViewport();
+                    }
+                }
+            );
+        }
+
+
+        window.addEventListener(
+            'orientationchange',
+            () => {
+                if (overlay.hidden) {
+                    return;
+                }
+
+                requestAnimationFrame(
+                    syncCredentialViewport
+                );
+            }
+        );
+    })
+;

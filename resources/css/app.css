@@ -681,17 +681,52 @@
 .dashboard-primary {
     display: grid;
     grid-template-columns: 360px minmax(0, 1fr);
+
     gap: 1rem;
+
     align-items: start;
 }
+
+
+/* Dashboard Side */
 
 .dashboard-side {
     display: flex;
     flex-direction: column;
+
     gap: 1rem;
 
     min-width: 0;
 }
+
+.dashboard-side > * {
+    width: 100%;
+    min-width: 0;
+}
+
+.dashboard-side > .dashboard-card-holder {
+    margin-top: 0;
+}
+
+
+/* Dashboard Main */
+
+.dashboard-main {
+    display: flex;
+    flex-direction: column;
+
+    gap: 1rem;
+
+    min-width: 0;
+}
+
+.dashboard-main > * {
+    width: 100%;
+    min-width: 0;
+}
+
+
+/* Tablet */
 
 @media (max-width: 1000px) {
 
@@ -700,22 +735,80 @@
     }
 
     .dashboard-side {
-        flex-direction: row;
-        align-items: stretch;
-        justify-content: stretch;
+        display: grid;
+
+        grid-template-columns:
+            minmax(0, 360px)
+            minmax(0, 360px);
+
+        grid-template-areas:
+            "cards wallet"
+            "cards verification";
+
+        gap: 1rem;
+
+        align-items: start;
+        justify-content: center;
+
+        width: 100%;
+    }
+
+    .dashboard-side > .wallet {
+        grid-area: wallet;
+
+        width: 100%;
+        max-width: 360px;
+    }
+
+    .dashboard-side > .verification {
+        grid-area: verification;
+
+        width: 100%;
+        max-width: 360px;
+    }
+
+    .dashboard-side > .dashboard-card-holder {
+        grid-area: cards;
+
+        width: 100%;
+        max-width: 360px;
+
+        margin-top: 0;
+    }
+
+    .dashboard-main {
+        width: 100%;
+    }
+
+    .dashboard-calendar {
+        width: 100%;
+    }
+}
+
+
+/* Mobile */
+
+@media (max-width: 640px) {
+
+    .dashboard {
+        padding: 1rem;
+    }
+
+    .dashboard-side {
+        display: flex;
+        flex-direction: column;
 
         width: 100%;
     }
 
     .dashboard-side > .wallet,
-    .dashboard-side > .verification {
-        flex: 1 1 0;
-
-        width: auto;
+    .dashboard-side > .verification,
+    .dashboard-side > .dashboard-card-holder {
+        width: 100%;
         max-width: none;
     }
 
-    .dashboard-calendar {
+    .dashboard-main {
         width: 100%;
     }
 }
@@ -2136,7 +2229,7 @@
 
 .favourite-card-app {
     background: var(--favourite-app-background);
-    color: var(--favourite-app-text);
+    color: var(--favourite-app-text) !important;
 }
 
 .favourite-card-app .favourite-card-meta {
@@ -2145,11 +2238,11 @@
 
 .favourite-card-business {
     background: var(--favourite-business-background);
-    color: var(--favourite-business-text);
+    color: var(--favourite-business-text) !important;
 }
 
 .favourite-card-business .favourite-card-meta {
-    color: var(--favourite-business-muted);
+    color: var(--favourite-business-muted) !important;
 }
 
 .favourite-card {
@@ -2237,9 +2330,1089 @@
 
 /* -- END OF FAVOURITES  */
 
+/* CARD HOLDER & CARDS */
+/* CARDS */
+
+.platform-card {
+    position: relative;
+
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+
+    width: 100%;
+    max-width: 26rem;
+    aspect-ratio: 1.586 / 1;
+
+    padding: 1rem;
+
+    box-sizing: border-box;
+    overflow: hidden;
+
+    color: var(--card-foreground, #ffffff);
+    background: var(--card-background, #444444);
+
+    border: 2px solid rgba(255, 255, 255, 0.48);
+    border-radius: 1rem;
+
+    text-decoration: none;
+
+    box-shadow:
+        0 4px 12px rgba(0, 0, 0, 0.18);
+
+    transition:
+        transform 180ms ease,
+        box-shadow 180ms ease;
+}
+
+.platform-card:hover {
+    transform: translateY(-2px);
+
+    box-shadow:
+        0 6px 16px rgba(0, 0, 0, 0.24);
+}
+
+.platform-card:has(.platform-card__main-link:focus-visible) {
+    outline: 2px solid currentColor;
+    outline-offset: 2px;
+}
+
+.platform-card__main-link {
+    position: absolute;
+    inset: 0;
+
+    z-index: 1;
+
+    border-radius: inherit;
+}
+
+.platform-card__header {
+    position: relative;
+    z-index: 2;
+
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+
+    gap: 1rem;
+
+    pointer-events: none;
+}
+
+.platform-card__identity {
+    display: flex;
+    align-items: center;
+
+    gap: 0.65rem;
+
+    min-width: 0;
+}
+
+.platform-card__info {
+    position: relative;
+    z-index: 3;
+
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    flex-shrink: 0;
+
+    width: 1.4rem;
+    height: 1.4rem;
+
+    color: var(--card-foreground);
+
+    border: 1px solid currentColor;
+    border-radius: 50%;
+
+    font-size: 0.75rem;
+    font-weight: 700;
+    font-style: normal;
+
+    text-decoration: none;
+
+    opacity: 0.8;
+
+    pointer-events: auto;
+}
+
+.platform-card__info:hover,
+.platform-card__info:focus-visible {
+    opacity: 1;
+}
+
+.platform-card__logo {
+    width: 2rem;
+    height: 2rem;
+
+    object-fit: contain;
+}
+
+.platform-card__name {
+    overflow: hidden;
+
+    font-size: 0.95rem;
+    font-weight: 700;
+
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.platform-card__type {
+    flex-shrink: 0;
+
+    font-size: 0.7rem;
+    font-weight: 600;
+
+    opacity: 0.75;
+}
+
+.platform-card__body {
+    flex: 1;
+}
+
+.platform-card__footer {
+    position: relative;
+    z-index: 2;
+
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+
+    gap: 1rem;
+
+    font-size: 0.8rem;
+    font-weight: 500;
+
+    opacity: 0.82;
+
+    pointer-events: none;
+}
+
+.platform-card__subtitle {
+    min-width: 0;
+}
+
+.platform-card__qr {
+    position: relative;
+    z-index: 3;
+
+    flex-shrink: 0;
+
+    padding: 0.35rem 0.6rem;
+
+    color: var(--card-foreground);
+    background: rgba(0, 0, 0, 0.18);
+
+    border: 1px solid rgba(255, 255, 255, 0.4);
+    border-radius: 0.5rem;
+
+    font: inherit;
+    font-size: 0.75rem;
+    font-weight: 600;
+
+    cursor: pointer;
+
+    pointer-events: auto;
+}
+
+
+/* DASHBOARD CARD HOLDER */
+
+.dashboard-card-holder {
+    container-type: inline-size;
+    width: 100%;
+    box-sizing: border-box;
+
+    padding: 1rem;
+    margin-top: 1rem;
+
+    background: var(--surface);
+
+    border: 1px solid var(--surface-border);
+    border-radius: 1rem;
+
+    box-shadow: var(--component-shadow);
+}
+
+
+/* Header */
+
+.dashboard-card-holder__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    gap: 1rem;
+
+    margin-bottom: 1rem;
+}
+
+.dashboard-card-holder__title {
+    margin: 0;
+    color: var(--text);
+
+    font-size: 1rem;
+    font-weight: 700;
+}
+
+.dashboard-card-holder__meta {
+    margin: 0.15rem 0 0;
+
+    font-size: 0.75rem;
+    color: var(--text-muted);
+
+    opacity: 0.6;
+}
+
+.dashboard-card-holder__expand {
+    display: inline-flex;
+    align-items: center;
+
+    gap: 0.4rem;
+
+    padding: 0.35rem 0.5rem;
+
+    color: var(--text-muted);
+    background: transparent;
+
+    border: 0;
+
+    font: inherit;
+    font-size: 0.8rem;
+
+    cursor: pointer;
+}
+
+.dashboard-card-holder__expand-icon {
+    display: inline-block;
+
+    transition: transform 180ms ease;
+}
+
+.dashboard-card-holder.is-expanded
+.dashboard-card-holder__expand-icon {
+    transform: rotate(180deg);
+}
+
+
+/* Expanded Tools */
+
+.dashboard-card-holder__tools {
+    margin-bottom: 0.5rem;
+}
+
+.dashboard-card-holder__tools[hidden] {
+    display: none;
+}
+
+.dashboard-card-holder__search {
+    display: block;
+
+    margin-bottom: 0.65rem;
+}
+
+.dashboard-card-holder__search input {
+    width: 100%;
+    box-sizing: border-box;
+
+    padding: 0.65rem 0.8rem;
+
+    color: var(--text-muted);
+    background: var(--surface-alt);
+
+    border: 1px solid var(--surface-border);
+    border-radius: 0.65rem;
+
+    font: inherit;
+    font-size: 0.85rem;
+}
+
+.dashboard-card-holder__search input:focus {
+    outline: 2px solid currentColor;
+    outline-offset: 2px;
+}
+
+
+/* Filters */
+
+.dashboard-card-holder__filters {
+    display: flex;
+    justify-content: space-around;
+    gap: 0.4rem;
+
+    overflow-x: auto;
+    scrollbar-width: none;
+}
+
+.dashboard-card-holder__filters::-webkit-scrollbar {
+    display: none;
+}
+
+.dashboard-card-holder__filters button {
+    flex-shrink: 0;
+    width: 30%;
+
+    padding: 0.2rem 0.1rem;
+
+    color: var(--text-muted);
+    background: var(--surface-alt);
+
+    border: 1px solid var(--surface-border);
+    border-radius: 999px;
+
+    font: inherit;
+    font-size: 1rem;
+
+    cursor: pointer;
+}
+
+.dashboard-card-holder__filters button.is-active {
+    background: var(--surface-light);
+    color: var(--text-light-contrast);
+    font-weight: bold;
+}
+
+
+/* Paginated card stacks  */
+
+.dashboard-card-holder__viewport {
+    width: 100%;
+
+    overflow: hidden;
+
+    touch-action: pan-y;
+}
+
+.dashboard-card-holder__pages {
+    width: 100%;
+}
+
+.dashboard-card-holder__page {
+    display: none;
+
+    width: 100%;
+}
+
+.dashboard-card-holder__page.is-active {
+    display: block;
+}
+
+.dashboard-card-holder__stack {
+    position: relative;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 0.2rem;
+    width: 100%;
+}
+
+
+/*
+ * Later cards sit above earlier cards,
+ * giving the physical wallet stack effect.
+ */
+
+.dashboard-card-holder__stack .platform-card {
+    position: relative;
+}
+
+
+/*
+ * Collapsed mode:
+ * four cards with relatively small exposed headers.
+ */
+
+.dashboard-card-holder__stack .platform-card + .platform-card {
+    margin-top: -8.3rem;
+}
+
+
+/*
+ * Expanded mode:
+ * six cards, but expose more of each one so they can
+ * be identified and tapped more easily.
+ */
+
+.dashboard-card-holder.is-expanded
+.dashboard-card-holder__stack
+.platform-card + .platform-card {
+    margin-top: -6.4rem;
+}
+
+
+/*
+ * Last card needs to remain fully visible.
+ */
+
+.dashboard-card-holder__stack .platform-card:last-child {
+    margin-bottom: 0;
+}
+
+
+/* Pagination dots */
+   
+.dashboard-card-holder__pagination {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    gap: 0.45rem;
+
+    min-height: 1rem;
+
+    margin-top: 0.8rem;
+}
+
+.dashboard-card-holder__pagination:empty {
+    display: none;
+}
+
+.dashboard-card-holder__dot {
+    width: 0.45rem;
+    height: 0.45rem;
+
+    padding: 0;
+
+    background: currentColor;
+
+    border: 0;
+    border-radius: 50%;
+
+    opacity: 0.25;
+
+    cursor: pointer;
+
+    transition:
+        opacity 160ms ease,
+        transform 160ms ease;
+}
+
+.dashboard-card-holder__dot.is-active {
+    opacity: 0.85;
+
+    transform: scale(1.15);
+}
+
+
+/* Empty state */
+
+.dashboard-card-holder__empty {
+    margin: 1rem 0;
+
+    font-size: 0.85rem;
+    text-align: center;
+
+    opacity: 0.6;
+}
+
+.dashboard-card-holder__empty[hidden] {
+    display: none;
+}
+
+
+/* Hidden source */
+
+.dashboard-card-holder__source {
+    display: none;
+}
+
+
+/* Footer */
+
+.dashboard-card-holder__footer {
+    margin-top: 0.35rem;
+    text-align: center;
+}
+
+.dashboard-card-holder__footer a {
+    color: var(--text-muted);
+
+    font-size: 1rem;
+    font-weight: 600;
+
+    text-decoration: none;
+}
+
+.dashboard-card-holder__footer a:hover {
+    text-decoration: underline;
+    color: var(--text);
+}
+/* -- END OF CARD HOLDER & CARDS*/
+
+
+/* FULL CARD HOLDER PAGE */
+
+.card-holder-page {
+    width: 100%;
+    max-width: 34rem;
+
+    margin: 0 auto;
+    padding: 1rem;
+
+    box-sizing: border-box;
+}
+
+.card-holder-page__header {
+    display: grid;
+    grid-template-columns: 4rem 1fr 4rem;
+    align-items: center;
+
+    margin-bottom: 1rem;
+}
+
+.card-holder-page__header h1 {
+    margin: 0;
+
+    color: var(--text);
+
+    font-size: 1.25rem;
+    font-weight: 700;
+    text-align: center;
+}
+
+.card-holder-page__header a {
+    color: var(--text-muted);
+
+    font-size: 0.85rem;
+    text-decoration: none;
+}
+
+
+/* Filters */
+
+.card-holder-page__filters {
+    display: flex;
+
+    gap: 0.5rem;
+
+    margin-bottom: 1rem;
+}
+
+.card-holder-page__filters button {
+    flex: 1;
+
+    padding: 0.5rem;
+
+    color: var(--text-muted);
+    background: var(--surface-alt);
+
+    border: 1px solid var(--surface-border);
+    border-radius: 999px;
+
+    font: inherit;
+    font-size: 0.9rem;
+
+    cursor: pointer;
+}
+
+.card-holder-page__filters button.is-active {
+    color: var(--text-light-contrast);
+    background: var(--surface-light);
+
+    font-weight: 700;
+}
+
+
+/* Card Stack */
+
+.card-holder-page__stack {
+    position: relative;
+
+    display: flex;
+    flex-direction: column;
+
+    width: 100%;
+    padding: 1rem;
+
+    box-sizing: border-box;
+    background: var(--surface);
+    border: 1px solid var(--surface-border);
+    border-radius: 1rem;
+
+    box-shadow: var(--component-shadow);
+}
+
+.card-holder-page__item {
+    position: relative;
+    display: flex;
+    justify-content: center;
+
+    margin-top: 0;
+    z-index: calc(var(--card-index) + 1);
+}
+
+.card-holder-page__item[hidden] {
+    display: none;
+}
+
+/* -- END OF FULL CARD HOLDER PAGE*/
+
+/* INDIVIDUAL CARD PAGE */
+
+.card-page {
+    width: 100%;
+    max-width: 34rem;
+    min-height: 100dvh;
+
+    margin: 0 auto;
+    padding: 1rem;
+
+    box-sizing: border-box;
+}
+
+
+/* Header */
+
+.card-page__header {
+    display: grid;
+    grid-template-columns: 4rem minmax(0, 1fr) 4rem;
+    align-items: center;
+
+    gap: 0.5rem;
+
+    margin-bottom: 1.5rem;
+}
+
+.card-page__header h1 {
+    margin: 0;
+
+    overflow: hidden;
+
+    color: var(--text);
+
+    font-size: 1.1rem;
+    font-weight: 700;
+    text-align: center;
+
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.card-page__header a {
+    color: var(--text-muted);
+
+    font-size: 0.85rem;
+    text-decoration: none;
+}
+
+
+/* Card */
+
+.card-page__card {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    margin-bottom: 1rem;
+}
+
+.card-page__card .platform-card {
+    width: 100%;
+}
+
+
+/* Content */
+
+.card-page__content {
+    display: grid;
+
+    gap: 1rem;
+}
+
+.card-page__section {
+    padding: 1rem;
+
+    color: var(--text);
+    background: var(--surface);
+
+    border: 1px solid var(--surface-border);
+    border-radius: 1rem;
+
+    box-shadow: var(--component-shadow);
+}
+
+.card-page__section h2 {
+    margin: 0 0 0.75rem;
+
+    font-size: 1rem;
+}
+
+.card-page__section p {
+    margin: 0;
+
+    color: var(--text-muted);
+
+    font-size: 0.85rem;
+}
+
+/* -- END OF INDIVIDUAL CARD PAGE*/
+
+/* CARD CREDENTIAL OVERLAY */
+
+.card-credential-overlay {
+    position: fixed;
+    z-index: 1000;
+
+    top: var(--credential-viewport-top, 0);
+    left: var(--credential-viewport-left, 0);
+
+    width: var(--credential-viewport-width, 100vw);
+    height: var(--credential-viewport-height, 100dvh);
+
+    display: grid;
+    place-items: center;
+
+    padding: 0.75rem;
+
+    box-sizing: border-box;
+
+    background: rgba(0, 0, 0, 0.88);
+
+    overflow: hidden;
+}
+
+.card-credential-overlay[hidden] {
+    display: none;
+}
+
+
+/* Close */
+
+.card-credential-overlay__close {
+    position: absolute;
+    z-index: 2;
+
+    top: 0.75rem;
+    right: 0.75rem;
+
+    width: 2.5rem;
+    height: 2.5rem;
+
+    padding: 0;
+
+    color: #ffffff;
+    background: rgba(255, 255, 255, 0.12);
+
+    border: 1px solid rgba(255, 255, 255, 0.25);
+    border-radius: 50%;
+
+    font-size: 0;
+
+    cursor: pointer;
+}
+
+.card-credential-overlay__close::before,
+.card-credential-overlay__close::after {
+    content: "";
+
+    position: absolute;
+
+    top: 50%;
+    left: 50%;
+
+    width: 1rem;
+    height: 2px;
+
+    background: currentColor;
+    border-radius: 999px;
+
+    transform-origin: center;
+}
+
+.card-credential-overlay__close::before {
+    transform:
+        translate(-50%, -50%)
+        rotate(45deg);
+}
+
+.card-credential-overlay__close::after {
+    transform:
+        translate(-50%, -50%)
+        rotate(-45deg);
+}
+
+
+/* Credential Card */
+
+.card-credential {
+    display: grid;
+
+    grid-template-rows:
+        auto
+        minmax(0, 1fr);
+
+    width: min(
+        calc(var(--credential-viewport-width, 100vw) * 0.82),
+        calc(
+            (
+                var(--credential-viewport-height, 100dvh)
+                - 1.5rem
+            ) / 1.586
+        ),
+        22rem
+    );
+
+    aspect-ratio: 1 / 1.586;
+
+    padding: 1rem;
+
+    box-sizing: border-box;
+    overflow: hidden;
+
+    color: var(--card-foreground, #ffffff);
+    background: var(--card-background, #444444);
+
+    border: 2px solid rgba(255, 255, 255, 0.48);
+    border-radius: 1rem;
+
+    box-shadow:
+        0 12px 30px rgba(0, 0, 0, 0.35);
+}
+
+
+/* Header */
+
+.card-credential__business {
+    display: flex;
+    align-items: center;
+
+    width: 100%;
+
+    padding-bottom: 0.75rem;
+
+    box-sizing: border-box;
+
+    font-size: 1.05rem;
+    font-weight: 700;
+}
+
+
+/* Credential Content */
+
+.card-credential__content {
+    display: grid;
+
+    grid-template-rows:
+        minmax(0, 1fr)
+        minmax(0, 1fr);
+
+    min-width: 0;
+    min-height: 0;
+}
+
+
+/* Details */
+
+.card-credential__details {
+    display: flex;
+    flex-direction: column;
+
+    align-items: center;
+    justify-content: center;
+
+    min-width: 0;
+    min-height: 0;
+
+    text-align: center;
+}
+
+.card-credential__name {
+    font-size: 1rem;
+    font-weight: 700;
+}
+
+.card-credential__tier,
+.card-credential__number {
+    margin-top: 0.25rem;
+
+    font-size: 0.8rem;
+
+    opacity: 0.8;
+}
+
+
+/* QR */
+
+.card-credential__qr {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    min-width: 0;
+    min-height: 0;
+
+    padding: 0.75rem;
+
+    box-sizing: border-box;
+}
+
+.card-credential__qr-placeholder {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    width: min(100%, 13rem);
+    max-height: 100%;
+
+    aspect-ratio: 1;
+
+    color: #111111;
+    background: #ffffff;
+
+    font-size: 1.5rem;
+    font-weight: 800;
+}
+
+
+/* Landscape Orientation */
+
+@media (orientation: landscape) {
+
+    .card-credential {
+        width: min(
+            calc(var(--credential-viewport-width, 100vw) * 0.82),
+            calc(
+                (
+                    var(--credential-viewport-height, 100dvh)
+                    - 1.5rem
+                ) * 1.586
+            ),
+            34rem
+        );
+
+        aspect-ratio: 1.586 / 1;
+    }
+
+    .card-credential__content {
+        grid-template-columns:
+            minmax(0, 1fr)
+            minmax(0, 1fr);
+
+        grid-template-rows:
+            minmax(0, 1fr);
+    }
+
+    .card-credential__details {
+        padding: 0.5rem;
+
+        box-sizing: border-box;
+    }
+
+    .card-credential__qr {
+        padding: 0.5rem;
+    }
+
+    .card-credential__qr-placeholder {
+        width: auto;
+        height: 100%;
+        max-width: 100%;
+        max-height: 100%;
+
+        aspect-ratio: 1;
+    }
+}
+
+
+/* -- END OF CARD CREDENTIAL OVERLAY*/
+
+
+/* CARD INFO PAGE */
+
+.card-info-page {
+    width: 100%;
+    max-width: 34rem;
+    min-height: 100dvh;
+
+    margin: 0 auto;
+    padding: 1rem;
+
+    box-sizing: border-box;
+}
+
+
+/* Header */
+
+.card-info-page__header {
+    display: grid;
+    grid-template-columns: 4rem minmax(0, 1fr) 4rem;
+    align-items: center;
+
+    gap: 0.5rem;
+
+    margin-bottom: 1.5rem;
+}
+
+.card-info-page__header h1 {
+    margin: 0;
+
+    overflow: hidden;
+
+    color: var(--text);
+
+    font-size: 1.1rem;
+    font-weight: 700;
+    text-align: center;
+
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.card-info-page__header a {
+    color: var(--text-muted);
+
+    font-size: 0.85rem;
+    text-decoration: none;
+}
+
+
+/* Card */
+
+.card-info-page__card {
+    width: 100%;
+
+    margin-bottom: 1rem;
+}
+
+
+/* Information */
+
+.card-info-page__section {
+    padding: 1rem;
+
+    color: var(--text);
+    background: var(--surface);
+
+    border: 1px solid var(--surface-border);
+    border-radius: 1rem;
+
+    box-shadow: var(--component-shadow);
+}
+
+.card-info-page__section h2 {
+    margin: 0 0 1rem;
+
+    font-size: 1.1rem;
+}
+
+.card-info-page__section h3 {
+    margin: 1.25rem 0 0.5rem;
+
+    font-size: 0.95rem;
+}
+
+.card-info-page__section p {
+    margin: 0;
+
+    color: var(--text-muted);
+
+    font-size: 0.85rem;
+    line-height: 1.5;
+}
+
+/* -- END OF CARD INFO PAGE*/
+
 /* -- END OF DASHBOARD */
-
-
-/* -- END OF DASHBOARD PAGE */
 
 /* -- END OF MAIN CONTENT */
