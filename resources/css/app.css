@@ -3370,6 +3370,8 @@
 /* Card */
 
 .card-info-page__card {
+    display: flex;
+    justify-content: center;
     width: 100%;
 
     margin-bottom: 1rem;
