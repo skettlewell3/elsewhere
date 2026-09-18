@@ -39,6 +39,19 @@ class DirectoryController extends Controller
             $locationScope
         );
 
+        $activeLocationScope =
+            $selectedLocality
+            ?? $selectedArea
+            ?? $selectedCountry;
+            
+        $mapScope = [
+            'name' => $activeLocationScope->name,
+            'slug' => $activeLocationScope->slug,
+            'latitude' => $activeLocationScope->latitude,
+            'longitude' => $activeLocationScope->longitude,
+            'zoom' => $activeLocationScope->map_zoom,
+        ];
+
         $businessQuery = Business::query()
             ->where('is_active', true)
             ->with([
@@ -163,7 +176,8 @@ class DirectoryController extends Controller
                 'localityOptions',
                 'selectedCountry',
                 'selectedArea',
-                'selectedLocality'
+                'selectedLocality',
+                'mapScope'
             )
         );
     }

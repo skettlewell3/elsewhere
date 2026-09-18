@@ -15,7 +15,11 @@ setWorkerUrl(workerUrl);
 
 const businesses = window.directoryBusinesses ?? [];
 
+const mapScope = window.directoryMapScope ?? null;
+
 console.log('Directory businesses:', businesses);
+
+console.log('Directory map scope:', mapScope);
 
 
 // MAP
@@ -23,9 +27,25 @@ console.log('Directory businesses:', businesses);
 const map = new Map({
     container: 'directory-map',
     style: 'https://tiles.openfreemap.org/styles/liberty',
-    center: [-1.4044, 50.8985],
-    zoom: 12,
-    minZoom: 7,
+
+    center: (
+        mapScope?.longitude !== null &&
+        mapScope?.longitude !== undefined &&
+        mapScope?.latitude !== null &&
+        mapScope?.latitude !== undefined
+    )
+        ? [
+            Number(mapScope.longitude),
+            Number(mapScope.latitude),
+        ]
+        : [-1.4044, 50.8985],
+
+    zoom: mapScope?.zoom !== null &&
+        mapScope?.zoom !== undefined
+            ? Number(mapScope.zoom)
+            : 12,
+
+    minZoom: 3,
     maxZoom: 18,
 });
 
@@ -1376,6 +1396,61 @@ function updateVisibleMarkers(
 
         }
     );
+}
+
+function getMapLocationOffset() {
+
+    if (window.innerWidth <= 768) {
+        return [0, 0];
+    }
+
+    switch (getPanelState()) {
+        case 'expanded':
+            return [400, 0];
+
+        case 'filters':
+            return [90, 0];
+
+        default:
+            return [0, 0];
+    }
+
+}
+
+function moveMapToLocationScope() {
+
+    if (
+        !mapScope ||
+        mapScope.latitude === null ||
+        mapScope.longitude === null
+    ) {
+        return;
+    }
+
+    map.flyTo({
+        center: [
+            Number(mapScope.longitude),
+            Number(mapScope.latitude),
+        ],
+        zoom:
+            mapScope.zoom !== null &&
+            mapScope.zoom !== undefined
+                ? Number(mapScope.zoom)
+                : 10,
+        offset: getMapLocationOffset(),
+        duration: 500,
+        essential: true,
+    });
+
+}
+
+function hasActiveResultFilters() {
+
+    return (
+        Boolean(searchQuery) ||
+        selectedCategories.size > 0 ||
+        rewardsOnly
+    );
 
 }
 
@@ -1383,6 +1458,20 @@ function updateVisibleMarkers(
 function updateMapForResults(
     visibleBusinesses
 ) {
+
+    /*
+     * If no search/category/reward filtering is
+     * active, the geographic scope should remain
+     * the primary map view.
+     */
+
+    if (!hasActiveResultFilters()) {
+
+        moveMapToLocationScope();
+
+        return;
+    }
+
 
     const mappedBusinesses =
         visibleBusinesses.filter(
@@ -1393,17 +1482,20 @@ function updateMapForResults(
 
 
     /*
-     * No mapped results:
-     * leave map where it is.
+     * Filters produced no mapped businesses:
+     * return to the active geographic scope.
      */
 
     if (!mappedBusinesses.length) {
+
+        moveMapToLocationScope();
+
         return;
     }
 
 
     /*
-     * One result:
+     * One mapped result:
      * focus directly on it.
      */
 
@@ -1426,8 +1518,8 @@ function updateMapForResults(
 
 
     /*
-     * Multiple results:
-     * calculate bounds.
+     * Multiple mapped results:
+     * fit all result markers.
      */
 
     const longitudes =
@@ -1443,23 +1535,14 @@ function updateMapForResults(
         );
 
 
-    const west =
-        Math.min(...longitudes);
-
-    const east =
-        Math.max(...longitudes);
-
-    const south =
-        Math.min(...latitudes);
-
-    const north =
-        Math.max(...latitudes);
-
+    const west = Math.min(...longitudes);
+    const east = Math.max(...longitudes);
+    const south = Math.min(...latitudes);
+    const north = Math.max(...latitudes);
 
     /*
-     * Leave additional space on desktop
-     * because the Directory panel overlays
-     * the left side of the map.
+     * Leave additional space on desktop because
+     * the Directory panel overlays the map.
      */
 
     const padding =
@@ -1475,7 +1558,8 @@ function updateMapForResults(
                 right: 40,
                 bottom: 100,
                 left: 40,
-            };
+            }
+    ;
 
 
     map.fitBounds(
@@ -1491,7 +1575,6 @@ function updateMapForResults(
     );
 
 }
-
 
 function resetDirectoryDeck() {
 

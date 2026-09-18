@@ -10,6 +10,7 @@
 
 <script>
     window.directoryBusinesses = @json($mapBusinesses);
+    window.directoryMapScope = @json($mapScope);
 </script>
 
 @section('content')
