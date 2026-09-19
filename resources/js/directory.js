@@ -17,9 +17,7 @@ const businesses = window.directoryBusinesses ?? [];
 
 const mapScope = window.directoryMapScope ?? null;
 
-console.log('Directory businesses:', businesses);
-
-console.log('Directory map scope:', mapScope);
+const PANEL_VIEW_STORAGE_KEY = 'directoryPanelView';
 
 
 // MAP
@@ -292,6 +290,33 @@ function getPanelView() {
 
 }
 
+function syncAdvancedFilterButton() {
+
+    if (!advancedFiltersButton) {
+        return;
+    }
+
+    const isAdvancedFilters =
+        getPanelView() ===
+        'advanced-filters';
+
+    const label =
+        isAdvancedFilters
+            ? 'Show results'
+            : 'Open advanced filters';
+
+    advancedFiltersButton.setAttribute(
+        'aria-label',
+        label
+    );
+
+    advancedFiltersButton.setAttribute(
+        'title',
+        label
+    );
+
+}
+
 
 function setPanelView(view) {
 
@@ -308,6 +333,26 @@ function setPanelView(view) {
     directoryPanel.dataset.panelView =
         view;
 
+    sessionStorage.setItem(
+        PANEL_VIEW_STORAGE_KEY,
+        view
+    );
+
+    syncAdvancedFilterButton();
+
+    if (view === 'results') {
+
+        requestAnimationFrame(() => {
+
+            if (deckMedia.matches) {
+                resetDirectoryDeck();
+            }
+
+            map.resize();
+
+        });
+
+    }
 }
 
 
@@ -332,8 +377,12 @@ function setPanelState(state) {
         * expanded content mode to results.
     */
 
-    if (state !== 'expanded') {
-        setPanelView('results');
+    if (
+        state !== 'expanded' &&
+        directoryPanel
+    ) {
+        directoryPanel.dataset.panelView =
+            'results';
     }
 
 
@@ -424,11 +473,19 @@ advancedFiltersButton?.addEventListener(
     'click',
     () => {
 
-        /*
-         * Behaves like moving from filters
-         * to expanded, but opens the advanced
-         * filter view instead of the deck.
-         */
+        const isAdvancedFilters =
+            getPanelView() ===
+            'advanced-filters';
+
+        if (isAdvancedFilters) {
+
+            setPanelView(
+                'results'
+            );
+
+            return;
+
+        }
 
         setPanelView(
             'advanced-filters'
@@ -1291,10 +1348,11 @@ const categoryButtons = [
     )
 ];
 
-const directoryCount = document.querySelector(
-    '[data-directory-count]'
-);
-
+const directoryCount = [
+    ...document.querySelectorAll(
+        '[data-directory-count]'
+    )
+];
 
 let searchQuery = '';
 
@@ -1323,12 +1381,14 @@ function businessMatchesFilters(business) {
     ]
         .filter(Boolean)
         .join(' ')
-        .toLowerCase();
+        .toLowerCase()
+    ;
 
 
     const matchesSearch =
         !searchQuery ||
-        searchableText.includes(searchQuery);
+        searchableText.includes(searchQuery)
+    ;
 
 
     /*
@@ -1363,17 +1423,22 @@ function businessMatchesFilters(business) {
 
 function updateResultCount(count) {
 
-    if (!directoryCount) {
-        return;
-    }
-
-    directoryCount.textContent =
+    const text =
         `${count} ${
             count === 1
                 ? 'business'
                 : 'businesses'
-        }`;
+        }`
+    ;
 
+    directoryCounts.forEach(
+        (element) => {
+
+            element.textContent =
+                text;
+
+        }
+    );
 }
 
 
@@ -1721,6 +1786,14 @@ searchInput?.addEventListener(
  * FILTER CONTROLS
 */
 
+const locationFilterData = window.directoryLocationFilterData ?? [];
+
+const locationApplyButton =
+    document.querySelector(
+        '[data-directory-location-apply]'
+    )
+;
+
 const advancedCategoryInputs = [
     ...document.querySelectorAll(
         '[data-directory-advanced-category]'
@@ -1733,12 +1806,85 @@ const rewardsFilter =
     )
 ;
 
-const clearFiltersButton =
+const resetFiltersButton =
     document.querySelector(
-        '[data-directory-clear-filters]'
+        '[data-directory-reset-filters]'
     )
 ;
 
+const countryFilter =
+    document.querySelector(
+        '[data-directory-country]'
+    )
+;
+
+const areaFilter =
+    document.querySelector(
+        '[data-directory-area]'
+    )
+;
+
+const localityFilter =
+    document.querySelector(
+        '[data-directory-locality]'
+    )
+;
+
+const appliedLocationState = {
+    country:
+        countryFilter?.value ?? '',
+    area:
+        areaFilter?.value ?? '',
+    locality:
+        localityFilter?.value ?? '',
+};
+
+function updateLocationQuery({
+    country = null,
+    area = null,
+    locality = null,
+}) {
+
+    const url =
+        new URL(window.location.href);
+
+    if (country) {
+        url.searchParams.set(
+            'country',
+            country
+        );
+    } else {
+        url.searchParams.delete(
+            'country'
+        );
+    }
+
+    if (area) {
+        url.searchParams.set(
+            'area',
+            area
+        );
+    } else {
+        url.searchParams.delete(
+            'area'
+        );
+    }
+
+    if (locality) {
+        url.searchParams.set(
+            'locality',
+            locality
+        );
+    } else {
+        url.searchParams.delete(
+            'locality'
+        );
+    }
+
+    window.location.href =
+        url.toString();
+
+}
 
 function syncQuickCategoryButtons() {
 
@@ -1878,27 +2024,280 @@ rewardsFilter?.addEventListener(
     }
 );
 
-clearFiltersButton?.addEventListener(
+resetFiltersButton?.addEventListener(
     'click',
     () => {
-        selectedCategories.clear();
 
-        rewardsOnly = false;
+        const url =
+            new URL(window.location.href);
 
-        if (rewardsFilter) {
-            rewardsFilter.checked = false;
+        /*
+         * Remove geographic scope completely.
+         *
+         * The server will resolve the correct
+         * domain-default country on the next request.
+         */
+
+        url.searchParams.delete('country');
+        url.searchParams.delete('area');
+        url.searchParams.delete('locality');
+
+        window.location.href =
+            url.toString();
+
+    }
+);
+
+function populateAreaOptions() {
+
+    if (!countryFilter || !areaFilter) {
+        return;
+    }
+
+    const selectedCountrySlug =
+        countryFilter.value;
+
+    const selectedCountryOption =
+        [
+            ...countryFilter.options,
+        ].find(
+            (option) =>
+                option.value === selectedCountrySlug
+        );
+
+    if (!selectedCountryOption) {
+        return;
+    }
+
+    const selectedCountryType =
+        selectedCountryOption.dataset.type;
+
+    const selectedCountryId =
+        Number(
+            selectedCountryOption.dataset.id
+        );
+
+    areaFilter.innerHTML =
+        '<option value="">All areas</option>';
+
+    localityFilter.innerHTML =
+        '<option value="">All localities</option>';
+
+    const areas =
+        locationFilterData.filter(
+            (location) => {
+
+                if (
+                    location.filter_group
+                    !== 'area'
+                ) {
+                    return false;
+                }
+
+                if (
+                    selectedCountryType
+                    === 'country'
+                ) {
+                    return (
+                        location.country_id
+                        === selectedCountryId
+                    );
+                }
+
+                return isLocationDescendantOf(
+                    location.id,
+                    selectedCountryId
+                );
+            }
+        );
+
+    areas.forEach((area) => {
+
+        const option =
+            document.createElement('option');
+
+        option.value =
+            area.slug;
+
+        option.textContent =
+            area.name;
+
+        option.dataset.id =
+            area.id;
+
+        areaFilter.append(option);
+    });
+
+}
+
+function populateLocalityOptions() {
+
+    if (!localityFilter) {
+        return;
+    }
+
+    localityFilter.innerHTML =
+        '<option value="">All localities</option>';
+
+    if (!areaFilter?.value) {
+        return;
+    }
+
+    const areaOption =
+        areaFilter.options[
+            areaFilter.selectedIndex
+        ]
+    ;
+
+    const areaId = Number(areaOption.dataset.id);
+
+    const localities =
+        locationFilterData.filter(
+            (location) =>
+                location.filter_group ===
+                    'locality' &&
+                isLocationDescendantOf(
+                    location.id,
+                    areaId
+                )
+        )
+    ;
+
+    localities.forEach((locality) => {
+
+        const option =
+            document.createElement('option');
+
+        option.value =
+            locality.slug;
+
+        option.textContent =
+            locality.name;
+
+        option.dataset.id =
+            locality.id;
+
+        localityFilter.append(option);
+    });
+
+}
+
+function isLocationDescendantOf(
+    locationId,
+    ancestorId
+) {
+
+    let current =
+        locationFilterData.find(
+            (location) =>
+                location.id === locationId
+        );
+
+    while (current) {
+
+        if (current.id === ancestorId) {
+            return true;
         }
 
-        syncQuickCategoryButtons();
-        syncAdvancedCategoryInputs();
+        current =
+            locationFilterData.find(
+                (location) =>
+                    location.id ===
+                    current.parent_id
+            )
+        ;
+    }
 
-        applyDirectoryFilters();
+    return false;
+}
+
+function updateLocationApplyState() {
+
+    if (!locationApplyButton) {
+        return;
+    }
+
+    const hasChanges =
+        (
+            countryFilter?.value ?? ''
+        ) !== appliedLocationState.country ||
+        (
+            areaFilter?.value ?? ''
+        ) !== appliedLocationState.area ||
+        (
+            localityFilter?.value ?? ''
+        ) !== appliedLocationState.locality
+    ;
+
+    locationApplyButton.disabled =
+        !hasChanges;
+
+    locationApplyButton.classList.toggle(
+        'is-ready',
+        hasChanges
+    );
+
+}
+
+countryFilter?.addEventListener(
+    'change',
+    () => {
+
+        populateAreaOptions();
+        updateLocationApplyState();
+    }
+);
+
+areaFilter?.addEventListener(
+    'change',
+    () => {
+        populateLocalityOptions();
+        updateLocationApplyState();
+    }
+);
+
+localityFilter?.addEventListener(
+    'change',
+    () => {
+        updateLocationApplyState();
+    }
+);
+
+locationApplyButton?.addEventListener(
+    'click',
+    () => {
+        if (locationApplyButton.disabled) {
+            return;
+        }
+        
+        updateLocationQuery({
+            country:
+                countryFilter?.value ?? null,
+            area:
+                areaFilter?.value || null,
+            locality:
+                localityFilter?.value || null,
+        });
     }
 );
 
 // END OF FILTER CONTROLS
 
 // END OF DIRECTORY SEARCH + FILTERING
+
+const storedPanelView =
+    sessionStorage.getItem(
+        PANEL_VIEW_STORAGE_KEY
+    );
+
+if (
+    storedPanelView === 'advanced-filters' ||
+    storedPanelView === 'results'
+) {
+    setPanelView(
+        storedPanelView
+    );
+}
 
 // INITIAL STATE
 

@@ -424,6 +424,12 @@
     stroke-width: 1.8;
     stroke-linecap: round;
     stroke-linejoin: round;
+    transition: transform .2s ease;
+}
+
+.directoryPanel[data-panel-view="advanced-filters"]
+.directoryAdvancedFilterButton svg {
+    transform: rotate(180deg);
 }
 
 .directoryAdvancedFilterButton:hover {
@@ -487,7 +493,7 @@
     color: var(--text-light-contrast);
     gap: 12px;
 
-    margin-bottom: 22px;
+    margin-bottom: 5px;
 }
 
 .directoryAdvancedFilterHeader strong {
@@ -514,11 +520,33 @@
     border-color: var(--accent);
 }
 
+/* ADVANCED FILTER RESULT COUNT */
+
+.directoryAdvancedResultSummary {
+    min-height: 16px;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    margin-bottom: 0;
+}
+
+.directoryAdvancedResultCount {
+    display: block;
+
+    color: var(--text-light-contrast);
+
+    font-size: 11px;
+    font-weight: 500;
+    line-height: 16px;
+}
+
 
 /* FILTER SECTIONS */
 
 .directoryAdvancedFilterSection {
-    padding: 16px 0;
+    padding: 4px 0;
 
     border-bottom: 1px solid var(--nav-border);
 }
@@ -535,6 +563,98 @@
 
     text-transform: uppercase;
     letter-spacing: .05em;
+}
+
+/* LOCATION FILTERS */
+
+.directoryLocationFilters {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px;
+}
+
+.directoryLocationFilter,
+.directoryLocationAction {
+    min-width: 0;
+
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.directoryLocationFilter > span,
+.directoryLocationAction > span {
+    color: var(--text-light-contrast);
+
+    font-size: 11px;
+    font-weight: 500;
+}
+
+.directoryLocationFilter select,
+.directoryLocationApply {
+    width: 100%;
+    height: 38px;
+
+    box-sizing: border-box;
+
+    border: 1px solid var(--nav-border);
+    border-radius: 8px;
+
+    font: inherit;
+    font-size: 13px;
+}
+
+.directoryLocationFilter select {
+    padding: 0 34px 0 10px;
+
+    background: var(--surface);
+    color: var(--text);
+
+    cursor: pointer;
+
+    transition:
+        background .15s ease,
+        border-color .15s ease;
+}
+
+.directoryLocationFilter select:hover {
+    background: var(--surface-alt);
+    border-color: var(--accent);
+}
+
+.directoryLocationFilter select:focus {
+    outline: none;
+    border-color: var(--accent);
+}
+
+.directoryLocationApply {
+    padding: 0 12px;
+
+    background: var(--surface);
+    color: var(--text-muted);
+
+    cursor: default;
+
+    transition:
+        background .15s ease,
+        color .15s ease,
+        border-color .15s ease;
+}
+
+.directoryLocationApply.is-ready {
+    background: var(--nav-background);
+    color: var(--text);
+    border-color: var(--nav-background);
+
+    cursor: pointer;
+}
+
+.directoryLocationApply.is-ready:hover {
+    border-color: var(--accent);
+}
+
+.directoryLocationApply:disabled {
+    opacity: .65;
 }
 
 
@@ -624,26 +744,22 @@
 }
 
 
-/* CLEAR */
+/* FILTER ACTIONS */
 
-.directoryClearFilters {
-    margin-top: 20px;
-
-    padding: 8px 11px;
-
-    border: 1px solid var(--nav-border);
-    border-radius: 7px;
-
-    background: var(--surface);
-    color: var(--text-muted);
-
-    font: inherit;
-    font-size: 12px;
-
-    cursor: pointer;
+.directoryAdvancedFilterActions {
+    display: flex;
+    align-items: center;
+    gap: 8px;
 }
 
-.directoryClearFilters:hover {
+.directoryAdvancedFilterHeader
+.directoryResetFilters {
+    background: var(--surface);
+    color: var(--text-muted);
+}
+
+.directoryAdvancedFilterHeader
+.directoryResetFilters:hover {
     color: var(--text);
     border-color: var(--accent);
 }
@@ -1045,5 +1161,9 @@
         height: auto;
 
         border-radius: 0;
+    }
+
+    .directoryLocationFilters {
+        grid-template-columns: 1fr;
     }
 }
