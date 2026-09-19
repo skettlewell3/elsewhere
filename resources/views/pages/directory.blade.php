@@ -11,6 +11,7 @@
 <script>
     window.directoryBusinesses = @json($mapBusinesses);
     window.directoryMapScope = @json($mapScope);
+    window.directoryLocationFilterData=@json($locationFilterData);
 </script>
 
 @section('content')
@@ -27,6 +28,12 @@
     <x-directory.panel 
         :businesses="$businesses" 
         :categories="$categories"
+        :country-options="$countryOptions"
+        :area-options="$areaOptions"
+        :locality-options="$localityOptions"
+        :selected-country="$selectedCountry"
+        :selected-area="$selectedArea"
+        :selected-locality="$selectedLocality"
     />
 </div>
 

@@ -166,6 +166,21 @@ class DirectoryController extends Controller
             $locationScope
         );
 
+        $locationFilterData = Location::query()
+            ->orderBy('name')
+            ->get()
+            ->map(fn ($location) => [
+                'id' => $location->id,
+                'name' => $location->name,
+                'slug' => $location->slug,
+                'type' => $location->type->value,
+                'filter_group' => $location->type->filterGroup(),
+                'parent_id' => $location->parent_id,
+                'country_id' => $location->country_id,
+            ])
+            ->values()
+        ;
+
         return view(
             'pages.directory',
             compact(
@@ -173,6 +188,7 @@ class DirectoryController extends Controller
                 'categories',
                 'countryOptions',
                 'areaOptions',
+                'locationFilterData',
                 'localityOptions',
                 'selectedCountry',
                 'selectedArea',
