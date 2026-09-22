@@ -5,10 +5,12 @@
 <div>
     <h1>{{ $business->name }}</h1>
 
-    <p>{{ $business->description }}</p>
+    @if($business->description)
+        <p>{{ $business->description }}</p>
+    @endif
 
     <p>
-        {{ $business->canonicalLocation->name }}
+        {{ $businessLocation->canonicalLocation->name }}
     </p>
 
     @if($business->website_url)

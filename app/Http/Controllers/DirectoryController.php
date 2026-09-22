@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Enums\LocationType;
-use App\Models\Business;
+use App\Models\BusinessLocation;
 use App\Models\BusinessCategory;
 use App\Models\Country;
 use App\Models\Location;
@@ -52,17 +52,22 @@ class DirectoryController extends Controller
             'zoom' => $activeLocationScope->map_zoom,
         ];
 
-        $businessQuery = Business::query()
+        $businessLocationQuery = BusinessLocation::query()
             ->where('is_active', true)
+            ->whereHas('business', function ($query) {
+                $query->where('is_active', true);
+            })
             ->with([
                 'location',
-                'categories' => function ($query) {
+                'canonicalLocation',
+                'business.categories' => function ($query) {
                     $query
                         ->where('is_active', true)
                         ->orderBy('sort_order');
                 },
+                'business.page',
             ]);
-
+        
         /*
         |--------------------------------------------------------------------------
         | Location scope
@@ -75,20 +80,20 @@ class DirectoryController extends Controller
         | country/nation
         |
         */
-
+        
         if ($selectedLocality) {
             $locationIds = $locationScope
                 ->descendantIds($selectedLocality);
-
-            $businessQuery->whereIn(
+        
+            $businessLocationQuery->whereIn(
                 'location_id',
                 $locationIds
             );
         } elseif ($selectedArea) {
             $locationIds = $locationScope
                 ->descendantIds($selectedArea);
-
-            $businessQuery->whereIn(
+        
+            $businessLocationQuery->whereIn(
                 'location_id',
                 $locationIds
             );
@@ -98,8 +103,8 @@ class DirectoryController extends Controller
              */
             $locationIds = $locationScope
                 ->descendantIds($selectedCountry);
-
-            $businessQuery->whereIn(
+        
+            $businessLocationQuery->whereIn(
                 'location_id',
                 $locationIds
             );
@@ -107,7 +112,7 @@ class DirectoryController extends Controller
             /*
              * A true country such as United Kingdom.
              */
-            $businessQuery->whereHas(
+            $businessLocationQuery->whereHas(
                 'location',
                 function ($query) use ($selectedCountry) {
                     $query->where(
@@ -118,23 +123,45 @@ class DirectoryController extends Controller
             );
         }
 
-        $businesses = $businessQuery
-            ->orderBy('name')
+        $businesses = $businessLocationQuery
             ->get()
-            ->map(function ($business) use ($resolver) {
-                $resolved = $resolver->resolve($business);
-
+            ->sortBy(fn ($businessLocation) =>
+                $businessLocation->business->name
+            )
+            ->values()
+            ->map(function ($businessLocation) use ($resolver) {
+                $business = $businessLocation->business;
+            
+                $resolved = $resolver->resolve(
+                    $businessLocation
+                );
+            
                 return [
-                    'id' => $business->id,
+                    /*
+                     * The map entry now represents a branch/location,
+                     * not the abstract business.
+                     */
+                    'id' => $businessLocation->id,
+                    'business_id' => $business->id,
+                
                     'name' => $business->name,
                     'slug' => $business->slug,
+                    'branch_name' => $businessLocation->name,
+                
                     'description' => $business->description,
                     'website_url' => $business->website_url,
+                
                     'latitude' => $resolved['latitude'],
                     'longitude' => $resolved['longitude'],
                     'coordinate_source' => $resolved['source'],
                     'location' => $resolved['location'],
-
+                
+                    'canonical_location' => [
+                        'id' => $businessLocation->canonicalLocation->id,
+                        'name' => $businessLocation->canonicalLocation->name,
+                        'slug' => $businessLocation->canonicalLocation->slug,
+                    ],
+                
                     'categories' => $business->categories
                         ->map(fn ($category) => [
                             'id' => $category->id,
@@ -143,9 +170,15 @@ class DirectoryController extends Controller
                             'colour_key' => $category->colour_key,
                         ])
                         ->values(),
-
+                        
                     'offers_ep_redemption' =>
                         $business->offers_ep_redemption,
+                        
+                    'is_primary' =>
+                        $businessLocation->is_primary,
+                        
+                    'is_mobile' =>
+                        $businessLocation->is_mobile,
                 ];
             });
 

@@ -5,7 +5,8 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
-use App\Services\CanonicalLocationResolver;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 
 class Business extends Model
 {
@@ -42,6 +43,17 @@ class Business extends Model
         );
     }
 
+    public function locations(): HasMany
+    {
+        return $this->hasMany(BusinessLocation::class);
+    }
+
+    public function primaryLocation(): HasOne
+    {
+        return $this->hasOne(BusinessLocation::class)
+            ->where('is_primary', true);
+    }
+
     public function categories(): BelongsToMany
     {
         return $this->belongsToMany(
@@ -50,26 +62,8 @@ class Business extends Model
         );
     }
 
-    protected static function booted(): void
+    public function page(): HasOne
     {
-        static::saving(function (Business $business) {
-            if (!$business->location_id) {
-                return;
-            }
-        
-            if (
-                !$business->exists ||
-                $business->isDirty('location_id') ||
-                !$business->canonical_location_id
-            ) {
-                $resolver = app(CanonicalLocationResolver::class);
-            
-                $canonicalLocation = $resolver->resolve(
-                    (int) $business->location_id
-                );
-            
-                $business->canonical_location_id = $canonicalLocation->id;
-            }
-        });
+        return $this->hasOne(BusinessPage::class);
     }
 }
