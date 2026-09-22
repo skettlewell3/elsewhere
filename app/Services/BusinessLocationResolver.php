@@ -2,27 +2,31 @@
 
 namespace App\Services;
 
-use App\Models\Business;
-use App\Models\Location;
+use App\Models\BusinessLocation;
 
 class BusinessLocationResolver
 {
-    public function resolve(Business $business): array
+    public function resolve(BusinessLocation $businessLocation): array
     {
-        if ($business->latitude !== null && $business->longitude !== null) {
+        if (
+            $businessLocation->latitude !== null
+            && $businessLocation->longitude !== null
+        ) {
             return [
-                'latitude' => (float) $business->latitude,
-                'longitude' => (float) $business->longitude,
-                'source' => 'business',
-                'location' => null,
+                'latitude' => (float) $businessLocation->latitude,
+                'longitude' => (float) $businessLocation->longitude,
+                'source' => 'business_location',
+                'location' => $businessLocation->location,
             ];
         }
 
-        $location = $business->location;
+        $location = $businessLocation->location;
 
         while ($location) {
-
-            if ($location->latitude !== null && $location->longitude !== null) {
+            if (
+                $location->latitude !== null
+                && $location->longitude !== null
+            ) {
                 return [
                     'latitude' => (float) $location->latitude,
                     'longitude' => (float) $location->longitude,

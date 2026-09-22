@@ -1,11 +1,21 @@
 <?php
 
+use App\Http\Controllers\BusinessController;
 use App\Http\Controllers\DirectoryController;
 use Illuminate\Support\Facades\Route;
 
-Route::get('/', [DirectoryController::class, 'index'])
+Route::get('/', function () {
+    return redirect()->route('directory');
+});
+
+Route::get('/directory', [DirectoryController::class, 'index'])
     ->name('directory')
 ;
+
+Route::get(
+    '/directory/businesses/{location:slug}/{business}',
+    [BusinessController::class, 'show']
+)->name('directory.businesses.show');
 
 Route::view('/dashboard', 'pages.dashboard')
     ->name('dashboard')

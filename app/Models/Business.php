@@ -5,6 +5,8 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 
 class Business extends Model
 {
@@ -33,11 +35,35 @@ class Business extends Model
         return $this->belongsTo(Location::class);
     }
 
+    public function canonicalLocation(): BelongsTo
+    {
+        return $this->belongsTo(
+            Location::class,
+            'canonical_location_id'
+        );
+    }
+
+    public function locations(): HasMany
+    {
+        return $this->hasMany(BusinessLocation::class);
+    }
+
+    public function primaryLocation(): HasOne
+    {
+        return $this->hasOne(BusinessLocation::class)
+            ->where('is_primary', true);
+    }
+
     public function categories(): BelongsToMany
     {
         return $this->belongsToMany(
             BusinessCategory::class,
             'business_business_category'
         );
+    }
+
+    public function page(): HasOne
+    {
+        return $this->hasOne(BusinessPage::class);
     }
 }
