@@ -13,8 +13,13 @@ Route::get('/directory', [DirectoryController::class, 'index'])
 ;
 
 Route::get(
+    '/directory/businesses/{business}',
+    [BusinessController::class, 'showBusiness']
+)->name('directory.businesses.overview');
+
+Route::get(
     '/directory/businesses/{location:slug}/{business}',
-    [BusinessController::class, 'show']
+    [BusinessController::class, 'showBranch']
 )->name('directory.businesses.show');
 
 Route::view('/dashboard', 'pages.dashboard')

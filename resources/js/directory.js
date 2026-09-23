@@ -96,6 +96,28 @@ function createBusinessPopupHTML(business) {
             : '';
 
 
+    const businessUrl =
+        business.canonical_location?.slug &&
+        business.slug
+            ? `/directory/businesses/${
+                business.canonical_location.slug
+            }/${business.slug}`
+            : null;
+
+
+    const businessLink =
+        businessUrl
+            ? `
+                <a
+                    class="directoryPopupBusinessLink"
+                    href="${businessUrl}"
+                >
+                    View business
+                </a>
+            `
+            : '';
+
+
     return `
         <article class="directoryPopup">
 
@@ -113,6 +135,8 @@ function createBusinessPopupHTML(business) {
             ${description}
 
             ${location}
+
+            ${businessLink}
 
         </article>
     `;

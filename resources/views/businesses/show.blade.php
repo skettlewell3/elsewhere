@@ -2,26 +2,33 @@
 
 @section('content')
 
-<div>
-    <h1>{{ $business->name }}</h1>
+<div class="businessPage">
 
-    @if($business->description)
-        <p>{{ $business->description }}</p>
+    @include('businesses.components.header', [
+        'business' => $business,
+        'businessLocation' => $businessLocation,
+        'pageMode' => $pageMode,
+    ])
+
+    @include('businesses.components.about', [
+        'business' => $business,
+    ])
+
+    @if($businessLocation)
+        @include('businesses.components.location-details', [
+            'businessLocation' => $businessLocation,
+            'pageMode' => $pageMode,
+        ])
     @endif
 
-    <p>
-        {{ $businessLocation->canonicalLocation->name }}
-    </p>
-
-    @if($business->website_url)
-        <a
-            href="{{ $business->website_url }}"
-            target="_blank"
-            rel="noopener noreferrer"
-        >
-            Visit website
-        </a>
+    @if($businessLocations->count() > 1)
+        @include('businesses.components.locations', [
+            'business' => $business,
+            'businessLocations' => $businessLocations,
+            'businessLocation' => $businessLocation,
+        ])
     @endif
+
 </div>
 
 @endsection

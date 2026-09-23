@@ -3,7 +3,6 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
@@ -14,12 +13,9 @@ class Business extends Model
         'name',
         'slug',
         'description',
-        'latitude',
-        'longitude',
         'website_url',
         'is_active',
         'offers_ep_redemption',
-        'location_id',
     ];
 
     protected function casts(): array
@@ -28,19 +24,6 @@ class Business extends Model
             'is_active' => 'boolean',
             'offers_ep_redemption' => 'boolean',
         ];
-    }
-
-    public function location(): BelongsTo
-    {
-        return $this->belongsTo(Location::class);
-    }
-
-    public function canonicalLocation(): BelongsTo
-    {
-        return $this->belongsTo(
-            Location::class,
-            'canonical_location_id'
-        );
     }
 
     public function locations(): HasMany

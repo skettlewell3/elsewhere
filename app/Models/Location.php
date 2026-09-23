@@ -46,8 +46,8 @@ class Location extends Model
         return $this->hasMany(Location::class, 'parent_id');
     }
 
-    public function businesses(): HasMany
+    public function businessesLocations(): HasMany
     {
-        return $this->hasMany(Business::class);
+        return $this->hasMany(BusinessLocations::class);
     }
 }

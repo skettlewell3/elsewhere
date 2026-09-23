@@ -145,7 +145,7 @@ class DirectoryController extends Controller
                     'business_id' => $business->id,
                 
                     'name' => $business->name,
-                    'slug' => $business->slug,
+                    'slug' => $businessLocation->slug,
                     'branch_name' => $businessLocation->name,
                 
                     'description' => $business->description,
