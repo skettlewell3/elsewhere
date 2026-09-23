@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use App\Services\BusinessLocationSlugService;
 use App\Services\CanonicalLocationResolver;
 
 class BusinessLocation extends Model
@@ -13,6 +14,7 @@ class BusinessLocation extends Model
         'location_id',
         'canonical_location_id',
         'name',
+        'slug',
         'address_line_1',
         'address_line_2',
         'postcode',
@@ -57,19 +59,51 @@ class BusinessLocation extends Model
             if (!$businessLocation->location_id) {
                 return;
             }
-        
+
+            /*
+            |--------------------------------------------------------------------------
+            | Resolve canonical location
+            |--------------------------------------------------------------------------
+            */
+
             if (
                 !$businessLocation->exists ||
                 $businessLocation->isDirty('location_id') ||
                 !$businessLocation->canonical_location_id
             ) {
                 $resolver = app(CanonicalLocationResolver::class);
-            
+
                 $canonicalLocation = $resolver->resolve(
                     (int) $businessLocation->location_id
                 );
-            
-                $businessLocation->canonical_location_id = $canonicalLocation->id;
+
+                $businessLocation->canonical_location_id =
+                    $canonicalLocation->id;
+            }
+
+            /*
+            |--------------------------------------------------------------------------
+            | Generate branch slug when none has been supplied
+            |--------------------------------------------------------------------------
+            */
+
+            if (
+                !$businessLocation->slug &&
+                $businessLocation->business_id
+            ) {
+                $business = $businessLocation->business()->firstOrFail();
+
+                $location = $businessLocation->location()->firstOrFail();
+
+                $slugService = app(
+                    BusinessLocationSlugService::class
+                );
+
+                $businessLocation->slug = $slugService->generate(
+                    $business,
+                    $location,
+                    $businessLocation
+                );
             }
         });
     }

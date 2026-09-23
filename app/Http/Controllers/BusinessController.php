@@ -18,11 +18,10 @@ class BusinessController extends Controller
                 'business.page',
             ])
             ->where('canonical_location_id', $location->id)
+            ->where('slug', $business)
             ->where('is_active', true)
-            ->whereHas('business', function ($query) use ($business) {
-                $query
-                    ->where('slug', $business)
-                    ->where('is_active', true);
+            ->whereHas('business', function ($query) {
+                $query->where('is_active', true);
             })
             ->firstOrFail();
 

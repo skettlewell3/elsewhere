@@ -137,6 +137,34 @@
     opacity: .65;
 }
 
+.directoryPopupBusinessLink {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    margin-top: 0.75rem;
+    padding: 0.5rem 0.75rem;
+
+    border-radius: 0.4rem;
+
+    background: var(--blue);
+    color: white;
+
+    font-size: 0.8rem;
+    font-weight: 600;
+    line-height: 1;
+
+    text-decoration: none;
+
+    cursor: pointer;
+}
+
+.directoryPopupBusinessLink:hover,
+.directoryPopupBusinessLink:focus-visible {
+    filter: brightness(1.1);
+    text-decoration: none;
+}
+
 
 /* PANEL */
 
