@@ -2,10 +2,11 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use App\Enums\BusinessLocationRole;
 use App\Services\BusinessLocationSlugService;
 use App\Services\CanonicalLocationResolver;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class BusinessLocation extends Model
 {
@@ -14,6 +15,7 @@ class BusinessLocation extends Model
         'location_id',
         'canonical_location_id',
         'name',
+        'role',
         'slug',
         'address_line_1',
         'address_line_2',
@@ -28,6 +30,7 @@ class BusinessLocation extends Model
     ];
 
     protected $casts = [
+        'role' => BusinessLocationRole::class,
         'latitude' => 'decimal:7',
         'longitude' => 'decimal:7',
         'is_primary' => 'boolean',

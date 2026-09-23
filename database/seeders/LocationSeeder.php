@@ -143,5 +143,50 @@ class LocationSeeder extends Seeder
                 'longitude' => -1.3950,
             ]
         );
+
+        $greaterLondon = Location::updateOrCreate(
+            [
+                'parent_id' => $england->id,
+                'slug' => 'greater-london',
+            ],
+            [
+                'name' => 'Greater London',
+                'type' => 'county',
+                'country_id' => $uk->id,
+                'latitude' => 51.5074,
+                'longitude' => -0.1278,
+                'map_zoom' => 9,
+            ]
+        );
+
+        $london = Location::updateOrCreate(
+            [
+                'parent_id' => $greaterLondon->id,
+                'slug' => 'london',
+            ],
+            [
+                'name' => 'London',
+                'type' => 'city',
+                'country_id' => $uk->id,
+                'latitude' => 51.5074,
+                'longitude' => -0.1278,
+                'map_zoom' => 10.5,
+            ]
+        );
+
+        $islington = Location::updateOrCreate(
+            [
+                'parent_id' => $london->id,
+                'slug' => 'islington',
+            ],
+            [
+                'name' => 'Islington',
+                'type' => 'district',
+                'country_id' => $uk->id,
+                'latitude' => 51.5380,
+                'longitude' => -0.1027,
+                'map_zoom' => 13,
+            ]
+        );
     }
 }

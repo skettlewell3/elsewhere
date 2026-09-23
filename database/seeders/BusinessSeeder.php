@@ -26,6 +26,7 @@ class BusinessSeeder extends Seeder
                     [
                         'location_slug' => 'southampton-city-centre',
                         'name' => 'Southampton City Centre',
+                        'role' => 'branch',
                         'latitude' => 50.8985,
                         'longitude' => -1.4044,
                         'is_primary' => true,
@@ -46,6 +47,7 @@ class BusinessSeeder extends Seeder
                     [
                         'location_slug' => 'portswood',
                         'name' => 'Portswood',
+                        'role' => 'branch',
                         'latitude' => 50.9120,
                         'longitude' => -1.4000,
                         'is_primary' => true,
@@ -66,6 +68,7 @@ class BusinessSeeder extends Seeder
                     [
                         'location_slug' => 'southampton-city-centre',
                         'name' => 'Southampton',
+                        'role' => 'branch',
                         'latitude' => 50.9270,
                         'longitude' => -1.3730,
                         'is_primary' => true,
@@ -74,8 +77,18 @@ class BusinessSeeder extends Seeder
                     [
                         'location_slug' => 'leeds-city-centre',
                         'name' => 'Leeds',
+                        'role' => 'branch',
                         'latitude' => 53.8008,
                         'longitude' => -1.5491,
+                        'is_primary' => false,
+                        'is_mobile' => false,
+                    ],
+                    [
+                        'location_slug' => 'islington',
+                        'name' => 'London Head Office',
+                        'role' => 'head_office',
+                        'latitude' => 51.5380,
+                        'longitude' => -0.1027,
                         'is_primary' => false,
                         'is_mobile' => false,
                     ],
@@ -94,6 +107,7 @@ class BusinessSeeder extends Seeder
                     [
                         'location_slug' => 'southampton',
                         'name' => 'Southampton',
+                        'role' => 'service_area',
                         'latitude' => null,
                         'longitude' => null,
                         'is_primary' => true,
@@ -114,6 +128,7 @@ class BusinessSeeder extends Seeder
                     [
                         'location_slug' => 'portswood',
                         'name' => 'Portswood',
+                        'role' => 'branch',
                         'latitude' => 50.9055,
                         'longitude' => -1.3905,
                         'is_primary' => true,
@@ -134,6 +149,7 @@ class BusinessSeeder extends Seeder
                     [
                         'location_slug' => 'southampton-city-centre',
                         'name' => 'Southampton Central',
+                        'role' => 'branch',
                         'slug' => 'solent-coffee-roasters',
                         'latitude' => 50.9142,
                         'longitude' => -1.3971,
@@ -143,6 +159,7 @@ class BusinessSeeder extends Seeder
                     [
                         'location_slug' => 'portswood',
                         'name' => 'Portswood',
+                        'role' => 'branch',
                         'latitude' => 50.9262,
                         'longitude' => -1.3948,
                         'is_primary' => false,
@@ -163,6 +180,7 @@ class BusinessSeeder extends Seeder
                     [
                         'location_slug' => 'southampton-city-centre',
                         'name' => 'Southampton City Centre',
+                        'role' => 'branch',
                         'latitude' => 50.9028,
                         'longitude' => -1.3954,
                         'is_primary' => true,
@@ -183,6 +201,7 @@ class BusinessSeeder extends Seeder
                     [
                         'location_slug' => 'southampton-city-centre',
                         'name' => 'Southampton City Centre',
+                        'role' => 'branch',
                         'latitude' => 50.8989,
                         'longitude' => -1.4008,
                         'is_primary' => true,
@@ -203,6 +222,7 @@ class BusinessSeeder extends Seeder
                     [
                         'location_slug' => 'portswood',
                         'name' => 'Portswood',
+                        'role' => 'branch',
                         'latitude' => 50.9071,
                         'longitude' => -1.3862,
                         'is_primary' => true,
@@ -223,6 +243,7 @@ class BusinessSeeder extends Seeder
                     [
                         'location_slug' => 'southampton-city-centre',
                         'name' => 'Southampton City Centre',
+                        'role' => 'branch',
                         'latitude' => 50.8958,
                         'longitude' => -1.4091,
                         'is_primary' => true,
@@ -243,6 +264,7 @@ class BusinessSeeder extends Seeder
                     [
                         'location_slug' => 'portswood',
                         'name' => 'Portswood',
+                        'role' => 'branch',
                         'latitude' => 50.9036,
                         'longitude' => -1.4147,
                         'is_primary' => true,
@@ -263,6 +285,7 @@ class BusinessSeeder extends Seeder
                     [
                         'location_slug' => 'southampton-city-centre',
                         'name' => 'Southampton City Centre',
+                        'role' => 'branch',
                         'latitude' => 50.9184,
                         'longitude' => -1.3895,
                         'is_primary' => true,
@@ -283,6 +306,7 @@ class BusinessSeeder extends Seeder
                     [
                         'location_slug' => 'portswood',
                         'name' => 'Portswood',
+                        'role' => 'branch',
                         'latitude' => 50.9113,
                         'longitude' => -1.4102,
                         'is_primary' => true,
@@ -303,6 +327,7 @@ class BusinessSeeder extends Seeder
                     [
                         'location_slug' => 'southampton-city-centre',
                         'name' => 'Southampton City Centre',
+                        'role' => 'branch',
                         'latitude' => 50.8927,
                         'longitude' => -1.3976,
                         'is_primary' => true,
@@ -323,6 +348,7 @@ class BusinessSeeder extends Seeder
                     [
                         'location_slug' => 'portswood',
                         'name' => 'Portswood',
+                        'role' => 'branch',
                         'latitude' => 50.9211,
                         'longitude' => -1.4028,
                         'is_primary' => true,
@@ -343,6 +369,7 @@ class BusinessSeeder extends Seeder
                     [
                         'location_slug' => 'southampton',
                         'name' => 'Southampton',
+                        'role' => 'service_area',
                         'latitude' => null,
                         'longitude' => null,
                         'is_primary' => true,
@@ -380,6 +407,7 @@ class BusinessSeeder extends Seeder
                 $businessLocation->fill([
                     'location_id' => $location->id,
                     'name' => $locationData['name'],
+                    'role' => $locationData['role'],
 
                     'address_line_1' => null,
                     'address_line_2' => null,
