@@ -14,6 +14,16 @@ class BusinessSeeder extends Seeder
     public function run(): void
     {
         $businesses = [
+
+            /*
+            |--------------------------------------------------------------------------
+            | Harbour Coffee Co.
+            |--------------------------------------------------------------------------
+            |
+            | Standard single-location physical business.
+            |
+            */
+
             [
                 'name' => 'Harbour Coffee Co.',
                 'slug' => 'harbour-coffee-co',
@@ -27,13 +37,32 @@ class BusinessSeeder extends Seeder
                         'location_slug' => 'southampton-city-centre',
                         'name' => 'Southampton City Centre',
                         'role' => 'branch',
+
+                        'address_line_1' => '101 Test Street',
+                        'address_line_2' => 'Southampton',
+                        'postcode' => 'TE5 7ER',
+
+                        'phone' => '023 8000 0001',
+                        'email' => 'hello@example.com',
+
                         'latitude' => 50.8985,
                         'longitude' => -1.4044,
+
                         'is_primary' => true,
                         'is_mobile' => false,
                     ],
                 ],
             ],
+
+
+            /*
+            |--------------------------------------------------------------------------
+            | South Coast Cycles
+            |--------------------------------------------------------------------------
+            |
+            | Missing email test case.
+            |
+            */
 
             [
                 'name' => 'South Coast Cycles',
@@ -48,13 +77,36 @@ class BusinessSeeder extends Seeder
                         'location_slug' => 'portswood',
                         'name' => 'Portswood',
                         'role' => 'branch',
+
+                        'address_line_1' => '102 Test Street',
+                        'address_line_2' => 'Southampton',
+                        'postcode' => 'TE5 7ER',
+
+                        'phone' => '023 8000 0002',
+                        'email' => null,
+
                         'latitude' => 50.9120,
                         'longitude' => -1.4000,
+
                         'is_primary' => true,
                         'is_mobile' => false,
                     ],
                 ],
             ],
+
+
+            /*
+            |--------------------------------------------------------------------------
+            | Oak & Stone Interiors
+            |--------------------------------------------------------------------------
+            |
+            | Complete multi-location test business.
+            |
+            | All locations intentionally contain complete address and contact
+            | data so this business remains suitable for claimed/custom page
+            | development.
+            |
+            */
 
             [
                 'name' => 'Oak & Stone Interiors',
@@ -69,8 +121,17 @@ class BusinessSeeder extends Seeder
                         'location_slug' => 'southampton-city-centre',
                         'name' => 'Southampton',
                         'role' => 'branch',
+
+                        'address_line_1' => '201 Test Street',
+                        'address_line_2' => 'Southampton',
+                        'postcode' => 'TE5 7ER',
+
+                        'phone' => '023 8000 0101',
+                        'email' => 'southampton@example.com',
+
                         'latitude' => 50.9270,
                         'longitude' => -1.3730,
+
                         'is_primary' => true,
                         'is_mobile' => false,
                     ],
@@ -78,8 +139,17 @@ class BusinessSeeder extends Seeder
                         'location_slug' => 'leeds-city-centre',
                         'name' => 'Leeds',
                         'role' => 'branch',
+
+                        'address_line_1' => '202 Test Street',
+                        'address_line_2' => 'Leeds',
+                        'postcode' => 'TE5 7ER',
+
+                        'phone' => '0113 000 0102',
+                        'email' => 'leeds@example.com',
+
                         'latitude' => 53.8008,
                         'longitude' => -1.5491,
+
                         'is_primary' => false,
                         'is_mobile' => false,
                     ],
@@ -87,13 +157,34 @@ class BusinessSeeder extends Seeder
                         'location_slug' => 'islington',
                         'name' => 'London Head Office',
                         'role' => 'head_office',
+
+                        'address_line_1' => '203 Test Street',
+                        'address_line_2' => 'London',
+                        'postcode' => 'TE5 7ER',
+
+                        'phone' => '020 0000 0103',
+                        'email' => 'office@example.com',
+
                         'latitude' => 51.5380,
                         'longitude' => -0.1027,
+
                         'is_primary' => false,
                         'is_mobile' => false,
                     ],
                 ],
             ],
+
+
+            /*
+            |--------------------------------------------------------------------------
+            | Solent Mobile Repairs
+            |--------------------------------------------------------------------------
+            |
+            | Mobile/service-area test case.
+            |
+            | No physical customer-facing address.
+            |
+            */
 
             [
                 'name' => 'Solent Mobile Repairs',
@@ -108,13 +199,32 @@ class BusinessSeeder extends Seeder
                         'location_slug' => 'southampton',
                         'name' => 'Southampton',
                         'role' => 'service_area',
+
+                        'address_line_1' => null,
+                        'address_line_2' => null,
+                        'postcode' => null,
+
+                        'phone' => '023 8000 0004',
+                        'email' => 'repairs@example.com',
+
                         'latitude' => null,
                         'longitude' => null,
+
                         'is_primary' => true,
                         'is_mobile' => true,
                     ],
                 ],
             ],
+
+
+            /*
+            |--------------------------------------------------------------------------
+            | The Green Grocer
+            |--------------------------------------------------------------------------
+            |
+            | Missing phone test case.
+            |
+            */
 
             [
                 'name' => 'The Green Grocer',
@@ -129,13 +239,35 @@ class BusinessSeeder extends Seeder
                         'location_slug' => 'portswood',
                         'name' => 'Portswood',
                         'role' => 'branch',
+
+                        'address_line_1' => '105 Test Street',
+                        'address_line_2' => 'Southampton',
+                        'postcode' => 'TE5 7ER',
+
+                        'phone' => null,
+                        'email' => 'grocer@example.com',
+
                         'latitude' => 50.9055,
                         'longitude' => -1.3905,
+
                         'is_primary' => true,
                         'is_mobile' => false,
                     ],
                 ],
             ],
+
+
+            /*
+            |--------------------------------------------------------------------------
+            | Solent Coffee Roasters
+            |--------------------------------------------------------------------------
+            |
+            | Complete multi-branch test business.
+            |
+            | Both branches intentionally contain complete data so this business
+            | remains suitable for claimed/custom page development.
+            |
+            */
 
             [
                 'name' => 'Solent Coffee Roasters',
@@ -151,8 +283,17 @@ class BusinessSeeder extends Seeder
                         'name' => 'Southampton Central',
                         'role' => 'branch',
                         'slug' => 'solent-coffee-roasters',
+
+                        'address_line_1' => '301 Test Street',
+                        'address_line_2' => 'Southampton',
+                        'postcode' => 'TE5 7ER',
+
+                        'phone' => '023 8000 0201',
+                        'email' => 'central@example.com',
+
                         'latitude' => 50.9142,
                         'longitude' => -1.3971,
+
                         'is_primary' => true,
                         'is_mobile' => false,
                     ],
@@ -160,13 +301,29 @@ class BusinessSeeder extends Seeder
                         'location_slug' => 'portswood',
                         'name' => 'Portswood',
                         'role' => 'branch',
+
+                        'address_line_1' => '302 Test Street',
+                        'address_line_2' => 'Southampton',
+                        'postcode' => 'TE5 7ER',
+
+                        'phone' => '023 8000 0202',
+                        'email' => 'portswood@example.com',
+
                         'latitude' => 50.9262,
                         'longitude' => -1.3948,
+
                         'is_primary' => false,
                         'is_mobile' => false,
                     ],
                 ],
             ],
+
+
+            /*
+            |--------------------------------------------------------------------------
+            | Southampton Print Studio
+            |--------------------------------------------------------------------------
+            */
 
             [
                 'name' => 'Southampton Print Studio',
@@ -181,13 +338,32 @@ class BusinessSeeder extends Seeder
                         'location_slug' => 'southampton-city-centre',
                         'name' => 'Southampton City Centre',
                         'role' => 'branch',
+
+                        'address_line_1' => '107 Test Street',
+                        'address_line_2' => 'Southampton',
+                        'postcode' => 'TE5 7ER',
+
+                        'phone' => '023 8000 0007',
+                        'email' => 'print@example.com',
+
                         'latitude' => 50.9028,
                         'longitude' => -1.3954,
+
                         'is_primary' => true,
                         'is_mobile' => false,
                     ],
                 ],
             ],
+
+
+            /*
+            |--------------------------------------------------------------------------
+            | Harbour Books
+            |--------------------------------------------------------------------------
+            |
+            | Missing email test case.
+            |
+            */
 
             [
                 'name' => 'Harbour Books',
@@ -202,13 +378,29 @@ class BusinessSeeder extends Seeder
                         'location_slug' => 'southampton-city-centre',
                         'name' => 'Southampton City Centre',
                         'role' => 'branch',
+
+                        'address_line_1' => '108 Test Street',
+                        'address_line_2' => 'Southampton',
+                        'postcode' => 'TE5 7ER',
+
+                        'phone' => '023 8000 0008',
+                        'email' => null,
+
                         'latitude' => 50.8989,
                         'longitude' => -1.4008,
+
                         'is_primary' => true,
                         'is_mobile' => false,
                     ],
                 ],
             ],
+
+
+            /*
+            |--------------------------------------------------------------------------
+            | Solent Fitness
+            |--------------------------------------------------------------------------
+            */
 
             [
                 'name' => 'Solent Fitness',
@@ -223,13 +415,32 @@ class BusinessSeeder extends Seeder
                         'location_slug' => 'portswood',
                         'name' => 'Portswood',
                         'role' => 'branch',
+
+                        'address_line_1' => '109 Test Street',
+                        'address_line_2' => 'Southampton',
+                        'postcode' => 'TE5 7ER',
+
+                        'phone' => '023 8000 0009',
+                        'email' => 'fitness@example.com',
+
                         'latitude' => 50.9071,
                         'longitude' => -1.3862,
+
                         'is_primary' => true,
                         'is_mobile' => false,
                     ],
                 ],
             ],
+
+
+            /*
+            |--------------------------------------------------------------------------
+            | Southampton Tech Repairs
+            |--------------------------------------------------------------------------
+            |
+            | Missing phone test case.
+            |
+            */
 
             [
                 'name' => 'Southampton Tech Repairs',
@@ -244,13 +455,29 @@ class BusinessSeeder extends Seeder
                         'location_slug' => 'southampton-city-centre',
                         'name' => 'Southampton City Centre',
                         'role' => 'branch',
+
+                        'address_line_1' => '110 Test Street',
+                        'address_line_2' => 'Southampton',
+                        'postcode' => 'TE5 7ER',
+
+                        'phone' => null,
+                        'email' => 'tech@example.com',
+
                         'latitude' => 50.8958,
                         'longitude' => -1.4091,
+
                         'is_primary' => true,
                         'is_mobile' => false,
                     ],
                 ],
             ],
+
+
+            /*
+            |--------------------------------------------------------------------------
+            | The Kitchen Garden
+            |--------------------------------------------------------------------------
+            */
 
             [
                 'name' => 'The Kitchen Garden',
@@ -265,13 +492,29 @@ class BusinessSeeder extends Seeder
                         'location_slug' => 'portswood',
                         'name' => 'Portswood',
                         'role' => 'branch',
+
+                        'address_line_1' => '111 Test Street',
+                        'address_line_2' => 'Southampton',
+                        'postcode' => 'TE5 7ER',
+
+                        'phone' => '023 8000 0011',
+                        'email' => 'kitchen@example.com',
+
                         'latitude' => 50.9036,
                         'longitude' => -1.4147,
+
                         'is_primary' => true,
                         'is_mobile' => false,
                     ],
                 ],
             ],
+
+
+            /*
+            |--------------------------------------------------------------------------
+            | Solent Design Works
+            |--------------------------------------------------------------------------
+            */
 
             [
                 'name' => 'Solent Design Works',
@@ -286,13 +529,32 @@ class BusinessSeeder extends Seeder
                         'location_slug' => 'southampton-city-centre',
                         'name' => 'Southampton City Centre',
                         'role' => 'branch',
+
+                        'address_line_1' => '112 Test Street',
+                        'address_line_2' => 'Southampton',
+                        'postcode' => 'TE5 7ER',
+
+                        'phone' => '023 8000 0012',
+                        'email' => 'design@example.com',
+
                         'latitude' => 50.9184,
                         'longitude' => -1.3895,
+
                         'is_primary' => true,
                         'is_mobile' => false,
                     ],
                 ],
             ],
+
+
+            /*
+            |--------------------------------------------------------------------------
+            | South Coast Florists
+            |--------------------------------------------------------------------------
+            |
+            | Missing email test case.
+            |
+            */
 
             [
                 'name' => 'South Coast Florists',
@@ -307,13 +569,29 @@ class BusinessSeeder extends Seeder
                         'location_slug' => 'portswood',
                         'name' => 'Portswood',
                         'role' => 'branch',
+
+                        'address_line_1' => '113 Test Street',
+                        'address_line_2' => 'Southampton',
+                        'postcode' => 'TE5 7ER',
+
+                        'phone' => '023 8000 0013',
+                        'email' => null,
+
                         'latitude' => 50.9113,
                         'longitude' => -1.4102,
+
                         'is_primary' => true,
                         'is_mobile' => false,
                     ],
                 ],
             ],
+
+
+            /*
+            |--------------------------------------------------------------------------
+            | Dockside Deli
+            |--------------------------------------------------------------------------
+            */
 
             [
                 'name' => 'Dockside Deli',
@@ -328,13 +606,32 @@ class BusinessSeeder extends Seeder
                         'location_slug' => 'southampton-city-centre',
                         'name' => 'Southampton City Centre',
                         'role' => 'branch',
+
+                        'address_line_1' => '114 Test Street',
+                        'address_line_2' => 'Southampton',
+                        'postcode' => 'TE5 7ER',
+
+                        'phone' => '023 8000 0014',
+                        'email' => 'deli@example.com',
+
                         'latitude' => 50.8927,
                         'longitude' => -1.3976,
+
                         'is_primary' => true,
                         'is_mobile' => false,
                     ],
                 ],
             ],
+
+
+            /*
+            |--------------------------------------------------------------------------
+            | Southampton Web Studio
+            |--------------------------------------------------------------------------
+            |
+            | Missing phone test case.
+            |
+            */
 
             [
                 'name' => 'Southampton Web Studio',
@@ -349,13 +646,34 @@ class BusinessSeeder extends Seeder
                         'location_slug' => 'portswood',
                         'name' => 'Portswood',
                         'role' => 'branch',
+
+                        'address_line_1' => '115 Test Street',
+                        'address_line_2' => 'Southampton',
+                        'postcode' => 'TE5 7ER',
+
+                        'phone' => null,
+                        'email' => 'web@example.com',
+
                         'latitude' => 50.9211,
                         'longitude' => -1.4028,
+
                         'is_primary' => true,
                         'is_mobile' => false,
                     ],
                 ],
             ],
+
+
+            /*
+            |--------------------------------------------------------------------------
+            | Solent Garden Services
+            |--------------------------------------------------------------------------
+            |
+            | Mobile/service-area test case.
+            |
+            | No physical customer-facing address.
+            |
+            */
 
             [
                 'name' => 'Solent Garden Services',
@@ -370,14 +688,30 @@ class BusinessSeeder extends Seeder
                         'location_slug' => 'southampton',
                         'name' => 'Southampton',
                         'role' => 'service_area',
+
+                        'address_line_1' => null,
+                        'address_line_2' => null,
+                        'postcode' => null,
+
+                        'phone' => '023 8000 0016',
+                        'email' => 'gardens@example.com',
+
                         'latitude' => null,
                         'longitude' => null,
+
                         'is_primary' => true,
                         'is_mobile' => true,
                     ],
                 ],
             ],
         ];
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | Create / update businesses
+        |--------------------------------------------------------------------------
+        */
 
         foreach ($businesses as $data) {
             $business = Business::updateOrCreate(
@@ -389,9 +723,17 @@ class BusinessSeeder extends Seeder
                     'description' => $data['description'],
                     'website_url' => $data['website_url'],
                     'is_active' => $data['is_active'],
-                    'offers_ep_redemption' => $data['offers_ep_redemption'],
+                    'offers_ep_redemption' =>
+                        $data['offers_ep_redemption'],
                 ]
             );
+
+
+            /*
+            |--------------------------------------------------------------------------
+            | Create / update business locations
+            |--------------------------------------------------------------------------
+            */
 
             foreach ($data['locations'] as $locationData) {
                 $location = Location::where(
@@ -399,30 +741,47 @@ class BusinessSeeder extends Seeder
                     $locationData['location_slug']
                 )->firstOrFail();
 
-                $businessLocation = $business->locations()->firstOrNew([
-                    'location_id' => $location->id,
-                    'name' => $locationData['name'],
-                ]);
+                $businessLocation =
+                    $business->locations()->firstOrNew([
+                        'location_id' => $location->id,
+                        'name' => $locationData['name'],
+                    ]);
 
                 $businessLocation->fill([
                     'location_id' => $location->id,
                     'name' => $locationData['name'],
                     'role' => $locationData['role'],
 
-                    'address_line_1' => null,
-                    'address_line_2' => null,
-                    'postcode' => null,
+                    'address_line_1' =>
+                        $locationData['address_line_1'] ?? null,
 
-                    'latitude' => $locationData['latitude'],
-                    'longitude' => $locationData['longitude'],
+                    'address_line_2' =>
+                        $locationData['address_line_2'] ?? null,
 
-                    'phone' => null,
-                    'email' => null,
+                    'postcode' =>
+                        $locationData['postcode'] ?? null,
 
-                    'is_primary' => $locationData['is_primary'],
-                    'is_mobile' => $locationData['is_mobile'],
+                    'latitude' =>
+                        $locationData['latitude'],
+
+                    'longitude' =>
+                        $locationData['longitude'],
+
+                    'phone' =>
+                        $locationData['phone'] ?? null,
+
+                    'email' =>
+                        $locationData['email'] ?? null,
+
+                    'is_primary' =>
+                        $locationData['is_primary'],
+
+                    'is_mobile' =>
+                        $locationData['is_mobile'],
+
                     'is_active' => true,
                 ]);
+
 
                 /*
                 |--------------------------------------------------------------------------
@@ -439,7 +798,8 @@ class BusinessSeeder extends Seeder
                 */
 
                 if (array_key_exists('slug', $locationData)) {
-                    $businessLocation->slug = $locationData['slug'];
+                    $businessLocation->slug =
+                        $locationData['slug'];
                 }
 
                 $businessLocation->save();

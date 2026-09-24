@@ -130,20 +130,10 @@ class BusinessCategorySeeder extends Seeder
             $services
         );
 
-
-        /*
-         * TEST REWARD BUSINESSES
-         */
-
-        Business::whereIn('slug', [
-            'harbour-coffee-co',
-            'south-coast-cycles',
-            'the-green-grocer',
-            'solent-fitness',
-            'dockside-deli',
-        ])->update([
-            'offers_ep_redemption' => true,
-        ]);
+        $this->syncCategory(
+            'solent-garden-services',
+            $services
+        );
     }
 
 
