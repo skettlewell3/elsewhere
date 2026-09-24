@@ -10,6 +10,7 @@ export default defineConfig({
                 'resources/css/app.css', 
                 'resources/js/app.js',
                 'resources/js/directory.js',
+                'resources/js/business.js',
             ],
             refresh: true,
             fonts: [

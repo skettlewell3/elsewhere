@@ -98,10 +98,18 @@ class BusinessController extends Controller
 
         $pageMode = $headOffice
             ? 'hybrid'
-            : 'business';
+            : 'business'
+        ;
+
+        $businessPage =
+            $business->page?->is_published
+                ? $business->page
+                : null
+        ;
 
         return view('businesses.show', [
             'business' => $business,
+            'businessPage' => $businessPage,
             'businessLocation' => $headOffice,
             'businessLocations' => $businessLocations,
             'pageMode' => $pageMode,
@@ -181,8 +189,15 @@ class BusinessController extends Controller
             },
         ]);
 
+        $businessPage =
+            $business->page?->is_published
+                ? $business->page
+                : null
+        ;
+
         return view('businesses.show', [
             'business' => $business,
+            'businessPage' => $businessPage,
             'businessLocation' => $businessLocation,
             'businessLocations' => $business->locations->values(),
             'pageMode' => 'branch',

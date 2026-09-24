@@ -1,20 +1,33 @@
 <section class="businessAbout">
 
-    @if($business->description)
+    @if($businessPage)
+
+        @if($businessPage->short_description)
+            <p class="businessAboutSummary">
+                {{ $businessPage->short_description }}
+            </p>
+        @endif
+
+        @if($businessPage->about)
+            <div class="businessAboutContent">
+
+                <h2>
+                    About
+                </h2>
+
+                <p>
+                    {!! nl2br(e($businessPage->about)) !!}
+                </p>
+
+            </div>
+        @endif
+
+    @elseif($business->description)
+
         <p class="businessAboutDescription">
             {{ $business->description }}
         </p>
-    @endif
 
-    @if($business->website_url)
-        <a
-            class="businessWebsiteLink"
-            href="{{ $business->website_url }}"
-            target="_blank"
-            rel="noopener noreferrer"
-        >
-            Visit website
-        </a>
     @endif
 
 </section>

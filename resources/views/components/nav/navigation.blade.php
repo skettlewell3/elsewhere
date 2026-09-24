@@ -4,10 +4,28 @@
 
 @php
     $isActive = function ($link) {
-
         if (request()->routeIs($link['route'])) {
             return true;
         }
+
+        /*
+         * Directory child pages
+         *
+         * Business pages, event pages and other resources that belong
+         * underneath Directory should keep Directory selected in the
+         * main navigation.
+         */
+
+        if (
+            $link['route'] === 'directory'
+            && request()->routeIs('directory.*')
+        ) {
+            return true;
+        }
+
+        /*
+         * Dashboard child pages
+         */
 
         if (
             $link['route'] === 'dashboard'

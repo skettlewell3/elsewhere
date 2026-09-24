@@ -1,0 +1,574 @@
+/* BUSINESS PAGE */
+
+.businessPage {
+    width: min(1180px, calc(100% - 40px));
+    margin: 0 auto;
+    padding: 32px 0 48px;
+}
+
+/* BUSINESS TOP */
+
+.businessTop {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+
+    gap: 24px;
+
+    align-items: stretch;
+}
+
+.businessTopDetails {
+    min-width: 0;
+}
+
+
+/* BUSINESS HEADER */
+
+.businessHeader {
+    margin-bottom: 20px;
+}
+
+.businessHeaderName {
+    margin: 0;
+
+    color: var(--text);
+
+    font-size: clamp(28px, 4vw, 44px);
+    line-height: 1.1;
+}
+
+.businessHeaderContext {
+    margin: 8px 0 0;
+
+    color: var(--text-muted);
+
+    font-size: 15px;
+    font-weight: 600;
+}
+
+.businessHeaderHeadline {
+    max-width: 760px;
+
+    margin: 14px 0 0;
+
+    color: var(--text);
+
+    font-size: 20px;
+    line-height: 1.4;
+}
+
+/* BUSINESS HEADER ACTIONS */
+
+.businessHeaderActions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 10px;
+
+    margin-top: 18px;
+}
+
+.businessHeaderActions .businessWebsiteLink {
+    margin-top: 0;
+}
+
+.businessOrganisationLink {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    padding: 10px 14px;
+
+    border: 1px solid var(--nav-border);
+    border-radius: 8px;
+
+    background: var(--surface);
+    color: var(--text);
+
+    font-size: 14px;
+    font-weight: 600;
+
+    text-decoration: none;
+
+    transition:
+        background .15s ease,
+        border-color .15s ease;
+}
+
+.businessOrganisationLink:hover,
+.businessOrganisationLink:focus-visible {
+    background: var(--surface-alt);
+    border-color: var(--accent);
+
+    text-decoration: none;
+}
+
+
+/* ABOUT */
+
+.businessAbout {
+    margin-bottom: 24px;
+}
+
+.businessAboutDescription,
+.businessAboutSummary {
+    max-width: 760px;
+
+    margin: 0;
+
+    color: var(--text);
+
+    font-size: 16px;
+    line-height: 1.65;
+}
+
+.businessAboutContent {
+    max-width: 820px;
+
+    margin-top: 24px;
+}
+
+.businessAboutContent h2 {
+    margin: 0 0 10px;
+
+    color: var(--text);
+
+    font-size: 20px;
+}
+
+.businessAboutContent p {
+    margin: 0;
+
+    color: var(--text);
+
+    font-size: 15px;
+    line-height: 1.7;
+}
+
+.businessWebsiteLink {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    margin-top: 18px;
+    padding: 10px 14px;
+
+    border: 1px solid var(--nav-border);
+    border-radius: 8px;
+
+    background: var(--surface);
+    color: var(--text);
+
+    font-size: 14px;
+    font-weight: 600;
+
+    text-decoration: none;
+
+    transition:
+        background .15s ease,
+        border-color .15s ease;
+}
+
+.businessWebsiteLink:hover,
+.businessWebsiteLink:focus-visible {
+    background: var(--surface-alt);
+    border-color: var(--accent);
+
+    text-decoration: none;
+}
+
+
+/* LOCATION DETAILS */
+
+.businessLocationDetails {
+    margin-bottom: 0;
+    padding: 20px;
+
+    border: 1px solid var(--nav-border);
+    border-radius: 12px;
+
+    background: var(--surface);
+}
+
+.businessLocationDetails h2 {
+    margin: 0 0 14px;
+
+    color: var(--text);
+
+    font-size: 18px;
+}
+
+.businessLocationName {
+    color: var(--text);
+
+    font-size: 18px;
+    font-weight: 600;
+}
+
+.businessLocationArea,
+.businessLocationCanonical {
+    margin-top: 4px;
+
+    color: var(--text-muted);
+
+    font-size: 13px;
+}
+
+.businessLocationAddress {
+    margin-top: 16px;
+
+    color: var(--text);
+
+    font-size: 14px;
+    font-style: normal;
+    line-height: 1.5;
+}
+
+.businessLocationPhone,
+.businessLocationEmail {
+    margin-top: 10px;
+}
+
+.businessLocationPhone a,
+.businessLocationEmail a {
+    color: var(--text);
+
+    text-decoration: none;
+}
+
+.businessLocationPhone a:hover,
+.businessLocationEmail a:hover {
+    text-decoration: underline;
+}
+
+/* LOCATION DETAILS HEADER */
+
+.businessLocationDetailsHeader {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 16px;
+}
+
+.businessLocationDetailsHeader h2 {
+    margin-bottom: 0px;
+}
+
+
+/* LOCATION TOGGLE */
+
+.businessLocationToggle {
+    flex: 0 0 auto;
+
+    padding: 8px 11px;
+
+    border: 1px solid var(--nav-border);
+    border-radius: 7px;
+
+    background: var(--surface-alt);
+    color: var(--text);
+
+    font: inherit;
+    font-size: 12px;
+    font-weight: 600;
+
+    cursor: pointer;
+
+    transition:
+        background .15s ease,
+        border-color .15s ease;
+}
+
+.businessLocationToggle:hover,
+.businessLocationToggle:focus-visible {
+    background: var(--surface);
+    border-color: var(--accent);
+}
+
+
+/* LOCATION VIEWPORT */
+
+.businessLocationViews {
+    min-height: 140px;
+
+    margin-top: 16px;
+}
+
+.businessLocationView[hidden] {
+    display: none;
+}
+
+
+/* CONTACT */
+
+.businessLocationContact {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.businessLocationPhone,
+.businessLocationEmail {
+    margin: 0;
+}
+
+.businessLocationPhone span,
+.businessLocationEmail span {
+    display: block;
+
+    margin-bottom: 3px;
+
+    color: var(--text-muted);
+
+    font-size: 11px;
+    font-weight: 600;
+
+    text-transform: uppercase;
+    letter-spacing: .04em;
+}
+
+.businessLocationPhone a,
+.businessLocationEmail a {
+    color: var(--text);
+
+    font-size: 14px;
+    text-decoration: none;
+}
+
+.businessLocationPhone a:hover,
+.businessLocationEmail a:hover {
+    text-decoration: underline;
+}
+
+
+/* LOCATION FALLBACK */
+
+.businessLocationFallbackLabel {
+    margin-bottom: 6px;
+
+    color: var(--text-muted);
+
+    font-size: 11px;
+    font-weight: 600;
+
+    text-transform: uppercase;
+    letter-spacing: .04em;
+}
+
+
+/* LOCATION WEBSITE */
+
+.businessLocationWebsite {
+    display: inline-flex;
+
+    margin-top: 16px;
+
+    color: var(--text);
+
+    font-size: 13px;
+    font-weight: 600;
+
+    text-decoration: none;
+}
+
+.businessLocationWebsite:hover,
+.businessLocationWebsite:focus-visible {
+    color: var(--accent);
+}
+
+/* BUSINESS MAP */
+
+.businessMap {
+    min-width: 0;
+    min-height: 360px;
+
+    border: 1px solid var(--nav-border);
+    border-radius: 12px;
+
+    overflow: hidden;
+
+    background: var(--surface-alt);
+}
+
+.businessMapCanvas {
+    width: 100%;
+    height: 100%;
+    min-height: 360px;
+}
+
+.businessMapPlaceholder {
+    width: 100%;
+    height: 100%;
+    min-height: 360px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    color: var(--text-muted);
+
+    font-size: 13px;
+}
+
+
+/* LOCATIONS */
+
+.businessLocations {
+    margin-top: 40px;
+}
+
+.businessLocations > h2 {
+    margin: 0 0 16px;
+
+    color: var(--text);
+
+    font-size: 22px;
+}
+
+.businessLocationsList {
+    display: grid;
+    grid-template-columns: repeat(
+        auto-fit,
+        minmax(220px, 1fr)
+    );
+    gap: 14px;
+}
+
+.businessLocationCard {
+    padding: 16px;
+
+    border: 1px solid var(--nav-border);
+    border-radius: 10px;
+
+    background: var(--surface);
+
+    transition:
+        border-color .15s ease,
+        background .15s ease;
+}
+
+.businessLocationCard.active {
+    border-color: var(--accent);
+    background: var(--surface-alt);
+}
+
+.businessLocationCardName {
+    margin: 0;
+
+    color: var(--text);
+
+    font-size: 16px;
+    line-height: 1.3;
+}
+
+.businessLocationCardRole {
+    margin-top: 6px;
+
+    color: var(--text-muted);
+
+    font-size: 11px;
+    font-weight: 600;
+
+    text-transform: uppercase;
+    letter-spacing: .04em;
+}
+
+.businessLocationCardArea {
+    margin-top: 8px;
+
+    color: var(--text-muted);
+
+    font-size: 13px;
+}
+
+.businessLocationCardCurrent {
+    display: inline-block;
+
+    margin-top: 14px;
+
+    color: var(--text-muted);
+
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.businessLocationCardLink {
+    display: inline-flex;
+
+    margin-top: 14px;
+
+    color: var(--text);
+
+    font-size: 13px;
+    font-weight: 600;
+
+    text-decoration: none;
+}
+
+.businessLocationCardLink:hover,
+.businessLocationCardLink:focus-visible {
+    color: var(--accent);
+
+    text-decoration: none;
+}
+
+
+/* TABLET */
+
+@media (max-width: 768px) {
+    .businessPage {
+        width: min(100% - 28px, 1180px);
+        padding-top: 24px;
+    }
+
+    .businessHeader {
+        margin-bottom: 20px;
+    }
+
+    .businessLocationDetails {
+        padding: 16px;
+    }
+
+        .businessTop {
+        grid-template-columns: 1fr;
+    }
+
+    .businessMap {
+        min-height: 320px;
+    }
+
+    .businessMapCanvas,
+    .businessMapPlaceholder {
+        min-height: 320px;
+    }
+}
+
+
+/* MOBILE */
+
+@media (max-width: 480px) {
+    .businessPage {
+        width: calc(100% - 24px);
+        padding: 20px 0 36px;
+    }
+
+    .businessHeaderName {
+        font-size: 30px;
+    }
+
+    .businessHeaderHeadline {
+        font-size: 17px;
+    }
+
+    .businessAboutDescription,
+    .businessAboutSummary,
+    .businessAboutContent p {
+        font-size: 14px;
+    }
+
+    .businessLocationsList {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* -- END OF BUSINESS PAGE */
