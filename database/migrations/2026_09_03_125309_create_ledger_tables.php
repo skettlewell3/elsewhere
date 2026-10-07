@@ -12,8 +12,7 @@ return new class extends Migration
         Schema::create('ledger_transactions', function (Blueprint $table) {
             $table->uuid('transaction_id')
                 ->primary()
-                ->default(DB::raw('gen_random_uuid()'))
-            ;
+                ->default(DB::raw('gen_random_uuid()'));
 
             $table->string('transaction_type', 32);
             $table->string('transaction_status', 32)->default('pending');
@@ -86,7 +85,7 @@ return new class extends Migration
             )
         ");
 
-        DB::statement("
+        DB::statement('
             alter table ledger_transactions
             add constraint ledger_transactions_external_event_check
             check (
@@ -100,7 +99,7 @@ return new class extends Migration
                     and external_event_id is not null
                 )
             )
-        ");
+        ');
 
         DB::statement("
             alter table ledger_transactions
@@ -121,8 +120,7 @@ return new class extends Migration
         Schema::create('ledger_entries', function (Blueprint $table) {
             $table->uuid('entry_id')
                 ->primary()
-                ->default(DB::raw('gen_random_uuid()'))
-            ;
+                ->default(DB::raw('gen_random_uuid()'));
 
             $table->uuid('transaction_id');
             $table->uuid('wallet_id');
@@ -168,13 +166,13 @@ return new class extends Migration
             )
         ");
 
-        DB::statement("
+        DB::statement('
             alter table ledger_entries
             add constraint ledger_entries_amount_check
             check (
                 amount > 0
             )
-        ");
+        ');
 
         DB::statement("
             create or replace function prevent_completed_ledger_transaction_mutation()
@@ -195,13 +193,13 @@ return new class extends Migration
             \$\$
         ");
 
-        DB::statement("
+        DB::statement('
             create trigger trg_prevent_completed_ledger_transaction_mutation
             before update or delete
             on ledger_transactions
             for each row
             execute function prevent_completed_ledger_transaction_mutation()
-        ");
+        ');
 
         DB::statement("
             create or replace function prevent_completed_ledger_entry_mutation()
@@ -265,34 +263,34 @@ return new class extends Migration
             \$\$
         ");
 
-        DB::statement("
+        DB::statement('
             create trigger trg_prevent_completed_ledger_entry_mutation
             before insert or update or delete
             on ledger_entries
             for each row
             execute function prevent_completed_ledger_entry_mutation()
-        ");
+        ');
     }
 
     public function down(): void
     {
-        DB::statement("
+        DB::statement('
             drop trigger if exists trg_prevent_completed_ledger_entry_mutation
             on ledger_entries
-        ");
+        ');
 
-        DB::statement("
+        DB::statement('
             drop function if exists prevent_completed_ledger_entry_mutation()
-        ");
+        ');
 
-        DB::statement("
+        DB::statement('
             drop trigger if exists trg_prevent_completed_ledger_transaction_mutation
             on ledger_transactions
-        ");
+        ');
 
-        DB::statement("
+        DB::statement('
             drop function if exists prevent_completed_ledger_transaction_mutation()
-        ");
+        ');
 
         Schema::dropIfExists('ledger_entries');
         Schema::dropIfExists('ledger_transactions');

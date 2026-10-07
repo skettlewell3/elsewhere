@@ -3,8 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Enums\LocationType;
-use App\Models\BusinessLocation;
 use App\Models\BusinessCategory;
+use App\Models\BusinessLocation;
 use App\Models\Country;
 use App\Models\Location;
 use App\Services\BusinessLocationResolver;
@@ -43,7 +43,7 @@ class DirectoryController extends Controller
             $selectedLocality
             ?? $selectedArea
             ?? $selectedCountry;
-            
+
         $mapScope = [
             'name' => $activeLocationScope->name,
             'slug' => $activeLocationScope->slug,
@@ -67,7 +67,7 @@ class DirectoryController extends Controller
                 },
                 'business.page',
             ]);
-        
+
         /*
         |--------------------------------------------------------------------------
         | Location scope
@@ -80,11 +80,11 @@ class DirectoryController extends Controller
         | country/nation
         |
         */
-        
+
         if ($selectedLocality) {
             $locationIds = $locationScope
                 ->descendantIds($selectedLocality);
-        
+
             $businessLocationQuery->whereIn(
                 'location_id',
                 $locationIds
@@ -92,7 +92,7 @@ class DirectoryController extends Controller
         } elseif ($selectedArea) {
             $locationIds = $locationScope
                 ->descendantIds($selectedArea);
-        
+
             $businessLocationQuery->whereIn(
                 'location_id',
                 $locationIds
@@ -103,7 +103,7 @@ class DirectoryController extends Controller
              */
             $locationIds = $locationScope
                 ->descendantIds($selectedCountry);
-        
+
             $businessLocationQuery->whereIn(
                 'location_id',
                 $locationIds
@@ -125,17 +125,16 @@ class DirectoryController extends Controller
 
         $businesses = $businessLocationQuery
             ->get()
-            ->sortBy(fn ($businessLocation) =>
-                $businessLocation->business->name
+            ->sortBy(fn ($businessLocation) => $businessLocation->business->name
             )
             ->values()
             ->map(function ($businessLocation) use ($resolver) {
                 $business = $businessLocation->business;
-            
+
                 $resolved = $resolver->resolve(
                     $businessLocation
                 );
-            
+
                 return [
                     /*
                      * The map entry now represents a branch/location,
@@ -143,25 +142,25 @@ class DirectoryController extends Controller
                      */
                     'id' => $businessLocation->id,
                     'business_id' => $business->id,
-                
+
                     'name' => $business->name,
                     'slug' => $businessLocation->slug,
                     'branch_name' => $businessLocation->name,
-                
+
                     'description' => $business->description,
                     'website_url' => $business->website_url,
-                
+
                     'latitude' => $resolved['latitude'],
                     'longitude' => $resolved['longitude'],
                     'coordinate_source' => $resolved['source'],
                     'location' => $resolved['location'],
-                
+
                     'canonical_location' => [
                         'id' => $businessLocation->canonicalLocation->id,
                         'name' => $businessLocation->canonicalLocation->name,
                         'slug' => $businessLocation->canonicalLocation->slug,
                     ],
-                
+
                     'categories' => $business->categories
                         ->map(fn ($category) => [
                             'id' => $category->id,
@@ -170,15 +169,12 @@ class DirectoryController extends Controller
                             'colour_key' => $category->colour_key,
                         ])
                         ->values(),
-                        
-                    'offers_ep_redemption' =>
-                        $business->offers_ep_redemption,
-                        
-                    'is_primary' =>
-                        $businessLocation->is_primary,
-                        
-                    'is_mobile' =>
-                        $businessLocation->is_mobile,
+
+                    'offers_ep_redemption' => $business->offers_ep_redemption,
+
+                    'is_primary' => $businessLocation->is_primary,
+
+                    'is_mobile' => $businessLocation->is_mobile,
                 ];
             });
 
@@ -211,8 +207,7 @@ class DirectoryController extends Controller
                 'parent_id' => $location->parent_id,
                 'country_id' => $location->country_id,
             ])
-            ->values()
-        ;
+            ->values();
 
         return view(
             'pages.directory',
@@ -269,7 +264,7 @@ class DirectoryController extends Controller
     ): Country|Location {
         $selected = $request->query('country');
 
-        if (!$selected) {
+        if (! $selected) {
             return $defaultCountry;
         }
 
@@ -306,22 +301,22 @@ class DirectoryController extends Controller
         Country|Location $parentScope,
         LocationScopeService $locationScope
     ): ?Location {
-        if (!$slug) {
+        if (! $slug) {
             return null;
         }
-    
+
         $location = Location::query()
             ->where('slug', $slug)
             ->first();
-    
-        if (!$location) {
+
+        if (! $location) {
             return null;
         }
-    
+
         if ($location->type->filterGroup() !== $filterGroup) {
             return null;
         }
-    
+
         /*
          * If the parent scope is a full country,
          * the location simply needs to belong to it.
@@ -331,13 +326,13 @@ class DirectoryController extends Controller
                 ? $location
                 : null;
         }
-    
+
         /*
          * If the parent scope is another location,
          * this location must exist somewhere beneath it.
          */
         $scopeIds = $locationScope->descendantIds($parentScope);
-    
+
         return $scopeIds->contains($location->id)
             ? $location
             : null;
@@ -398,8 +393,7 @@ class DirectoryController extends Controller
         return $query
             ->get()
             ->filter(
-                fn ($location) =>
-                    $location->type->filterGroup()
+                fn ($location) => $location->type->filterGroup()
                     === 'area'
             )
             ->filter(function ($location) use (
@@ -435,8 +429,7 @@ class DirectoryController extends Controller
                 ->orderBy('name')
                 ->get()
                 ->filter(
-                    fn ($location) =>
-                        $location->type->filterGroup()
+                    fn ($location) => $location->type->filterGroup()
                         === 'locality'
                 )
                 ->values();
@@ -458,8 +451,7 @@ class DirectoryController extends Controller
             ->orderBy('name')
             ->get()
             ->filter(
-                fn ($location) =>
-                    $location->type->filterGroup()
+                fn ($location) => $location->type->filterGroup()
                     === 'locality'
             );
 
@@ -469,11 +461,10 @@ class DirectoryController extends Controller
 
         return $locations
             ->filter(
-                fn ($location) =>
-                    $this->isDescendantOf(
-                        $location,
-                        $countryScope
-                    )
+                fn ($location) => $this->isDescendantOf(
+                    $location,
+                    $countryScope
+                )
             )
             ->values();
     }

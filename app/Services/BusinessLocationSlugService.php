@@ -51,7 +51,7 @@ class BusinessLocationSlugService
         |
         */
 
-        $locationSlug = $baseSlug . '-' . $location->slug;
+        $locationSlug = $baseSlug.'-'.$location->slug;
 
         if (
             $this->isAvailable(
@@ -76,11 +76,11 @@ class BusinessLocationSlugService
         $number = 2;
 
         do {
-            $candidate = $locationSlug . '-' . $number;
+            $candidate = $locationSlug.'-'.$number;
 
             $number++;
         } while (
-            !$this->isAvailable(
+            ! $this->isAvailable(
                 $canonicalLocation->id,
                 $candidate,
                 $ignore
@@ -106,6 +106,6 @@ class BusinessLocationSlugService
             $query->whereKeyNot($ignore->id);
         }
 
-        return !$query->exists();
+        return ! $query->exists();
     }
 }

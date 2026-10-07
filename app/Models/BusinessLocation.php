@@ -59,7 +59,7 @@ class BusinessLocation extends Model
     protected static function booted(): void
     {
         static::saving(function (BusinessLocation $businessLocation) {
-            if (!$businessLocation->location_id) {
+            if (! $businessLocation->location_id) {
                 return;
             }
 
@@ -70,9 +70,9 @@ class BusinessLocation extends Model
             */
 
             if (
-                !$businessLocation->exists ||
+                ! $businessLocation->exists ||
                 $businessLocation->isDirty('location_id') ||
-                !$businessLocation->canonical_location_id
+                ! $businessLocation->canonical_location_id
             ) {
                 $resolver = app(CanonicalLocationResolver::class);
 
@@ -91,7 +91,7 @@ class BusinessLocation extends Model
             */
 
             if (
-                !$businessLocation->slug &&
+                ! $businessLocation->slug &&
                 $businessLocation->business_id
             ) {
                 $business = $businessLocation->business()->firstOrFail();

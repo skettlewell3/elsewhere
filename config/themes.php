@@ -7,8 +7,7 @@ return [
         'category' => 'default',
         'mode' => 'light',
         'background' => null,
-        'background_style' => 
-            'linear-gradient(135deg, #eef2f3, #d9e4f5)',
+        'background_style' => 'linear-gradient(135deg, #eef2f3, #d9e4f5)',
     ],
 
     'grass-01' => [

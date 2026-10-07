@@ -54,7 +54,6 @@ class BusinessSeeder extends Seeder
                 ],
             ],
 
-
             /*
             |--------------------------------------------------------------------------
             | South Coast Cycles
@@ -93,7 +92,6 @@ class BusinessSeeder extends Seeder
                     ],
                 ],
             ],
-
 
             /*
             |--------------------------------------------------------------------------
@@ -174,7 +172,6 @@ class BusinessSeeder extends Seeder
                 ],
             ],
 
-
             /*
             |--------------------------------------------------------------------------
             | Solent Mobile Repairs
@@ -216,7 +213,6 @@ class BusinessSeeder extends Seeder
                 ],
             ],
 
-
             /*
             |--------------------------------------------------------------------------
             | The Green Grocer
@@ -255,7 +251,6 @@ class BusinessSeeder extends Seeder
                     ],
                 ],
             ],
-
 
             /*
             |--------------------------------------------------------------------------
@@ -318,7 +313,6 @@ class BusinessSeeder extends Seeder
                 ],
             ],
 
-
             /*
             |--------------------------------------------------------------------------
             | Southampton Print Studio
@@ -354,7 +348,6 @@ class BusinessSeeder extends Seeder
                     ],
                 ],
             ],
-
 
             /*
             |--------------------------------------------------------------------------
@@ -395,7 +388,6 @@ class BusinessSeeder extends Seeder
                 ],
             ],
 
-
             /*
             |--------------------------------------------------------------------------
             | Solent Fitness
@@ -431,7 +423,6 @@ class BusinessSeeder extends Seeder
                     ],
                 ],
             ],
-
 
             /*
             |--------------------------------------------------------------------------
@@ -472,7 +463,6 @@ class BusinessSeeder extends Seeder
                 ],
             ],
 
-
             /*
             |--------------------------------------------------------------------------
             | The Kitchen Garden
@@ -509,7 +499,6 @@ class BusinessSeeder extends Seeder
                 ],
             ],
 
-
             /*
             |--------------------------------------------------------------------------
             | Solent Design Works
@@ -545,7 +534,6 @@ class BusinessSeeder extends Seeder
                     ],
                 ],
             ],
-
 
             /*
             |--------------------------------------------------------------------------
@@ -586,7 +574,6 @@ class BusinessSeeder extends Seeder
                 ],
             ],
 
-
             /*
             |--------------------------------------------------------------------------
             | Dockside Deli
@@ -622,7 +609,6 @@ class BusinessSeeder extends Seeder
                     ],
                 ],
             ],
-
 
             /*
             |--------------------------------------------------------------------------
@@ -662,7 +648,6 @@ class BusinessSeeder extends Seeder
                     ],
                 ],
             ],
-
 
             /*
             |--------------------------------------------------------------------------
@@ -706,7 +691,6 @@ class BusinessSeeder extends Seeder
             ],
         ];
 
-
         /*
         |--------------------------------------------------------------------------
         | Create / update businesses
@@ -723,11 +707,9 @@ class BusinessSeeder extends Seeder
                     'description' => $data['description'],
                     'website_url' => $data['website_url'],
                     'is_active' => $data['is_active'],
-                    'offers_ep_redemption' =>
-                        $data['offers_ep_redemption'],
+                    'offers_ep_redemption' => $data['offers_ep_redemption'],
                 ]
             );
-
 
             /*
             |--------------------------------------------------------------------------
@@ -752,36 +734,26 @@ class BusinessSeeder extends Seeder
                     'name' => $locationData['name'],
                     'role' => $locationData['role'],
 
-                    'address_line_1' =>
-                        $locationData['address_line_1'] ?? null,
+                    'address_line_1' => $locationData['address_line_1'] ?? null,
 
-                    'address_line_2' =>
-                        $locationData['address_line_2'] ?? null,
+                    'address_line_2' => $locationData['address_line_2'] ?? null,
 
-                    'postcode' =>
-                        $locationData['postcode'] ?? null,
+                    'postcode' => $locationData['postcode'] ?? null,
 
-                    'latitude' =>
-                        $locationData['latitude'],
+                    'latitude' => $locationData['latitude'],
 
-                    'longitude' =>
-                        $locationData['longitude'],
+                    'longitude' => $locationData['longitude'],
 
-                    'phone' =>
-                        $locationData['phone'] ?? null,
+                    'phone' => $locationData['phone'] ?? null,
 
-                    'email' =>
-                        $locationData['email'] ?? null,
+                    'email' => $locationData['email'] ?? null,
 
-                    'is_primary' =>
-                        $locationData['is_primary'],
+                    'is_primary' => $locationData['is_primary'],
 
-                    'is_mobile' =>
-                        $locationData['is_mobile'],
+                    'is_mobile' => $locationData['is_mobile'],
 
                     'is_active' => true,
                 ]);
-
 
                 /*
                 |--------------------------------------------------------------------------

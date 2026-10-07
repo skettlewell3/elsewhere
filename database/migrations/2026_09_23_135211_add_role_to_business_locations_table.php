@@ -23,17 +23,17 @@ return new class extends Migration
                 ->after('slug');
         });
 
-        DB::statement("
+        DB::statement('
             alter table business_locations
             alter column role drop default
-        ");
+        ');
 
-        DB::statement("
+        DB::statement('
             alter table business_locations
             alter column role
             type business_location_role
             using role::business_location_role
-        ");
+        ');
 
         DB::statement("
             alter table business_locations

@@ -37,8 +37,7 @@ class LedgerService
                 'transaction_id' => $transactionId,
                 'transaction_type' => 'transfer',
                 'transaction_status' => 'pending',
-                'initiated_by_entity_id' =>
-                    $sourceWallet->economic_entity_id,
+                'initiated_by_entity_id' => $sourceWallet->economic_entity_id,
                 'idempotency_key' => $idempotencyKey,
                 'created_at' => now(),
                 'updated_at' => now(),
@@ -113,8 +112,8 @@ class LedgerService
             ->firstWhere('entry_type', 'credit');
 
         if (
-            !$debit ||
-            !$credit ||
+            ! $debit ||
+            ! $credit ||
             $debit->wallet_id !== $sourceWallet->wallet_id ||
             $credit->wallet_id !== $destinationWallet->wallet_id ||
             $debit->amount !== $amount ||

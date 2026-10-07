@@ -12,8 +12,7 @@ return new class extends Migration
         Schema::create('economic_entities', function (Blueprint $table) {
             $table->uuid('economic_entity_id')
                 ->primary()
-                ->default(DB::raw('gen_random_uuid()'))
-            ;
+                ->default(DB::raw('gen_random_uuid()'));
 
             $table->string('entity_type', 32);
 
@@ -53,7 +52,7 @@ return new class extends Migration
             )
         ");
 
-        DB::statement("
+        DB::statement('
             alter table economic_entities
             add constraint economic_entities_identity_check
             check (
@@ -69,13 +68,12 @@ return new class extends Migration
                     and external_entity_id is not null
                 )
             )
-        ");
+        ');
 
         Schema::create('wallets', function (Blueprint $table) {
             $table->uuid('wallet_id')
                 ->primary()
-                ->default(DB::raw('gen_random_uuid()'))
-            ;
+                ->default(DB::raw('gen_random_uuid()'));
 
             $table->uuid('economic_entity_id');
 
@@ -169,25 +167,25 @@ return new class extends Migration
             \$\$
         ");
 
-        DB::statement("
+        DB::statement('
             create trigger trg_enforce_wallet_entity_rules
             before insert or update of economic_entity_id, asset_type
             on wallets
             for each row
             execute function enforce_wallet_entity_rules()
-        ");
+        ');
     }
 
     public function down(): void
     {
-        DB::statement("
+        DB::statement('
             drop trigger if exists trg_enforce_wallet_entity_rules
             on wallets
-        ");
+        ');
 
-        DB::statement("
+        DB::statement('
             drop function if exists enforce_wallet_entity_rules()
-        ");
+        ');
 
         Schema::dropIfExists('wallets');
         Schema::dropIfExists('economic_entities');

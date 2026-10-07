@@ -17,7 +17,7 @@ class TransferPermissionService
         $sourceEntity = $sourceWallet->economicEntity;
         $destinationEntity = $destinationWallet->economicEntity;
 
-        if (!$sourceEntity || !$destinationEntity) {
+        if (! $sourceEntity || ! $destinationEntity) {
             throw new RuntimeException(
                 'Both wallets must belong to valid economic entities.'
             );
