@@ -11,8 +11,7 @@ return new class extends Migration
         Schema::table('ledger_transactions', function (Blueprint $table) {
             $table->uuid('idempotency_key')
                 ->nullable()
-                ->unique()
-            ;
+                ->unique();
         });
     }
 

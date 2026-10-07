@@ -62,11 +62,9 @@ class BusinessController extends Controller
                 return redirect()->route(
                     'directory.businesses.show',
                     [
-                        'location' =>
-                            $onlyLocation->canonicalLocation->slug,
+                        'location' => $onlyLocation->canonicalLocation->slug,
 
-                        'business' =>
-                            $onlyLocation->slug,
+                        'business' => $onlyLocation->slug,
                     ]
                 );
             }
@@ -79,8 +77,7 @@ class BusinessController extends Controller
         */
 
         $headOffice = $businessLocations->first(
-            fn (BusinessLocation $location) =>
-                $location->role ===
+            fn (BusinessLocation $location) => $location->role ===
                 BusinessLocationRole::HeadOffice
         );
 
@@ -98,14 +95,12 @@ class BusinessController extends Controller
 
         $pageMode = $headOffice
             ? 'hybrid'
-            : 'business'
-        ;
+            : 'business';
 
         $businessPage =
             $business->page?->is_published
                 ? $business->page
-                : null
-        ;
+                : null;
 
         return view('businesses.show', [
             'business' => $business,
@@ -192,8 +187,7 @@ class BusinessController extends Controller
         $businessPage =
             $business->page?->is_published
                 ? $business->page
-                : null
-        ;
+                : null;
 
         return view('businesses.show', [
             'business' => $business,

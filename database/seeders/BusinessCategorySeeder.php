@@ -40,7 +40,6 @@ class BusinessCategorySeeder extends Seeder
             ]
         );
 
-
         /*
          * FOOD & DRINK
          */
@@ -70,7 +69,6 @@ class BusinessCategorySeeder extends Seeder
             $foodDrink
         );
 
-
         /*
          * SHOPPING
          */
@@ -94,7 +92,6 @@ class BusinessCategorySeeder extends Seeder
             'south-coast-florists',
             $shopping
         );
-
 
         /*
          * SERVICES
@@ -135,7 +132,6 @@ class BusinessCategorySeeder extends Seeder
             $services
         );
     }
-
 
     private function syncCategory(
         string $businessSlug,

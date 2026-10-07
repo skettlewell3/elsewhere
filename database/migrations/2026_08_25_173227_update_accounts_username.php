@@ -25,10 +25,10 @@ return new class extends Migration
 
     public function down(): void
     {
-        DB::statement("
+        DB::statement('
             ALTER TABLE accounts
             DROP CONSTRAINT IF EXISTS accounts_username_format
-        ");
+        ');
 
         Schema::table('accounts', function (Blueprint $table) {
             $table->dropUnique(['username']);

@@ -9,8 +9,7 @@ Route::get('/', function () {
 });
 
 Route::get('/directory', [DirectoryController::class, 'index'])
-    ->name('directory')
-;
+    ->name('directory');
 
 Route::get(
     '/directory/businesses/{business}',
@@ -23,17 +22,15 @@ Route::get(
 )->name('directory.businesses.show');
 
 Route::view('/dashboard', 'pages.dashboard')
-    ->name('dashboard')
-;
+    ->name('dashboard');
 
 Route::view('/discover', 'pages.discover')
-    ->name('discover')
-;
+    ->name('discover');
 
 Route::post('/theme', function () {
 
     session([
-        'theme' => request('theme')
+        'theme' => request('theme'),
     ]);
 
     return back();
@@ -43,7 +40,7 @@ Route::post('/theme', function () {
 Route::post('/mode', function () {
 
     session([
-        'mode' => request('mode')
+        'mode' => request('mode'),
     ]);
 
     return back();
