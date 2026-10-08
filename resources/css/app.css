@@ -331,7 +331,7 @@
     top: calc(100% + .75rem);
     left: 0;
 
-    width: min(11rem, calc(100vw - 2rem));
+    width: min(20rem, calc(100vw - 2rem));
 
     display: flex;
     flex-direction: column;
@@ -351,6 +351,88 @@
 
 .navbar-menu-section .mode-toggle {
     justify-content: center;
+}
+
+.navbar-login {
+    position: relative;
+}
+
+.navbar-login summary {
+    list-style: none;
+}
+
+.navbar-login summary::-webkit-details-marker {
+    display: none;
+}
+
+.navbar-login-panel {
+    position: absolute;
+
+    top: calc(100% + .75rem);
+    right: 0;
+
+    width: 20rem;
+
+    padding: 1rem;
+
+    background: var(--nav-background);
+
+    border: 1px solid var(--nav-border);
+    border-radius: 1rem;
+
+    box-shadow: 0 .75rem 2rem rgba(0, 0, 0, .3);
+
+    z-index: 1000;
+}
+
+.navbar-login-form {
+    display: flex;
+    flex-direction: column;
+    gap: .75rem;
+}
+
+.navbar-login-field {
+    display: flex;
+    flex-direction: column;
+    gap: .25rem;
+}
+
+.navbar-login-field label {
+    color: var(--nav-text);
+    font-size: .8rem;
+}
+
+.navbar-login-field input {
+    width: 100%;
+    padding: .65rem .75rem;
+
+    background: var(--nav-links-background);
+    color: var(--nav-text);
+
+    border: 1px solid var(--nav-border);
+    border-radius: .75rem;
+}
+
+.navbar-login-submit {
+    width: 100%;
+    padding: .65rem .75rem;
+
+    background: var(--accent);
+    color: var(--nav-active-text);
+
+    border: 0;
+    border-radius: .75rem;
+
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.navbar-login-links {
+    display: flex;
+    justify-content: space-between;
+    gap: .5rem;
+
+    font-size: .75rem;
 }
 
 @media (min-width: 769px) {

@@ -1,8 +1,12 @@
 <?php
 
+use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\BusinessController;
 use App\Http\Controllers\DirectoryController;
 use Illuminate\Support\Facades\Route;
+
+Route::post('/login', [AuthController::class, 'login'])
+    ->name('login');
 
 Route::get('/', function () {
     return redirect()->route('directory');

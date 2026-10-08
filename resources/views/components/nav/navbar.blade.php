@@ -27,9 +27,15 @@
         <div class="navbar-actions">
             <x-theme.menu />
 
-            <button class="navbar-action">
-                Sign in
-            </button>
+            <details class="navbar-login">
+                <summary class="navbar-action">
+                    Sign in
+                </summary>
+            
+                <div class="navbar-login-panel">
+                    <x-auth.login-form />
+                </div>
+            </details>
         </div>
 
         <details class="navbar-menu">
@@ -43,9 +49,9 @@
             <div class="navbar-menu-content">
 
                 <div class="navbar-menu-section">
-                    <button class="navbar-menu-signin">
-                        Sign in
-                    </button>
+                    <div class="navbar-menu-section navbar-menu-auth">
+                        <x-auth.login-form />
+                    </div>
                 </div>
 
                 <div class="navbar-menu-section">
