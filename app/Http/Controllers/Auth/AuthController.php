@@ -7,6 +7,7 @@ use App\Http\Requests\Auth\LoginRequest;
 use App\Models\AccountUser;
 use App\Services\Auth\SupabaseAuthService;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
 
 class AuthController extends Controller
 {
@@ -36,5 +37,25 @@ class AuthController extends Controller
         ]);
 
         return redirect()->intended('/');
+    }
+
+    public function logout(
+        Request $request,
+        SupabaseAuthService $authService
+    ): RedirectResponse {
+        $accessToken = $request->session()->get('supabase_access_token');
+
+        if ($accessToken) {
+            try {
+                $authService->signOut($accessToken);
+            } catch (\Throwable $exception) {
+                report($exception);
+            }
+        }
+
+        $request->session()->invalidate();
+        $request->session()->regenerateToken();
+
+        return redirect('/');
     }
 }

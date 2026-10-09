@@ -18,6 +18,9 @@ class AccountUser extends Model
     protected $fillable = [
         'auth_id',
         'account_id',
+        'username',
+        'first_name',
+        'last_name',
         'is_founding_member',
     ];
 
