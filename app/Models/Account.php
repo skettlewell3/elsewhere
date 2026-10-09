@@ -17,11 +17,14 @@ class Account extends Model
 
     protected $fillable = [
         'account_type',
-        'username',
     ];
 
     public function userLink(): HasOne
     {
-        return $this->hasOne(AccountUser::class, 'account_id', 'account_id');
+        return $this->hasOne(
+            AccountUser::class,
+            'account_id',
+            'account_id'
+        );
     }
 }
