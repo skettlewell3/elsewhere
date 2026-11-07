@@ -6,6 +6,7 @@ use App\Exceptions\SupabaseLoginException;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Auth\LoginRequest;
 use App\Models\AccountUser;
+use App\Services\Auth\LoginRateLimiter;
 use App\Services\Auth\SupabaseAuthService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -16,14 +17,32 @@ class AuthController extends Controller
 {
     public function login(
         LoginRequest $request,
-        SupabaseAuthService $authService
+        SupabaseAuthService $authService,
+        LoginRateLimiter $limiter
     ): RedirectResponse {
+        if ($limiter->isLimited($request)) {
+            $seconds = $limiter->retryAfter($request);
+
+            return back()
+                ->withErrors([
+                    'email' => 'Too many login attempts. Please try again in '
+                        .max(1, $seconds).' seconds.',
+                ], 'login')
+                ->withInput($request->only('email'));
+        }
+
+        $limiter->recordRequest($request);
+
         try {
             $result = $authService->signIn(
                 $request->string('email')->toString(),
                 $request->string('password')->toString(),
             );
         } catch (SupabaseLoginException $exception) {
+            if ($exception->reason === 'invalid_credentials') {
+                $limiter->recordFailure($request);
+            }
+
             if (in_array($exception->reason, [
                 'unavailable',
                 'unexpected',
@@ -80,6 +99,8 @@ class AuthController extends Controller
                 ], 'login')
                 ->withInput($request->only('email'));
         }
+
+        $limiter->clearFailures($request);
 
         Auth::guard('web')->login($accountUser);
 
