@@ -104,19 +104,25 @@
                     </div>
                 </details>
             @else
-                <details class="navbar-login">
+                <details
+                    class="navbar-login"
+                    @if ($errors->login->any() && ! request()->routeIs('login')) open @endif
+                >
                     <summary class="navbar-action">
                         Sign in
                     </summary>
 
                     <div class="navbar-login-panel">
-                        <x-auth.login-form />
+                        <x-auth.login-form id-prefix="navbar-login" />
                     </div>
                 </details>
             @endif
         </div>
 
-        <details class="navbar-menu">
+        <details
+            class="navbar-menu"
+            @if ($errors->login->any() && ! request()->routeIs('login')) open @endif
+        >
             <summary
                 class="navbar-menu-trigger"
                 aria-label="Open menu"
@@ -183,7 +189,7 @@
 
                         </div>
                     @else
-                        <x-auth.login-form />
+                        <x-auth.login-form id-prefix="mobile-login" />
                     @endif
 
                 </div>

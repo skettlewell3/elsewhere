@@ -526,6 +526,23 @@
 }
 
 
+.navbar-login-error {
+    padding: .75rem .875rem;
+
+    background: rgba(229, 189, 117, .1);
+
+    border: 1px solid rgba(229, 189, 117, .3);
+    border-left: 3px solid #e5bd75;
+    border-radius: .375rem;
+
+    color: #f1d398;
+
+    font-size: .875rem;
+    line-height: 1.5;
+}
+
+
+
 /* Hamburger Menu */
 
 .navbar-menu {
@@ -787,7 +804,72 @@
 
 /* -- END of Navbar */
 
-/* -- END of STRUCTURE Content */
+/* AUTH */
+/* Authentication pages */
+
+.auth-page {
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+
+    min-height: 70vh;
+    padding: 5rem 1.5rem;
+}
+
+.auth-page-container {
+    width: 100%;
+    max-width: 26rem;
+
+    padding: 2rem;
+
+    background: var(--nav-background);
+
+    border: 1px solid var(--nav-border);
+    border-radius: 1rem;
+
+    box-shadow: 0 .75rem 2rem rgba(0, 0, 0, .2);
+}
+
+.auth-page-header {
+    margin-bottom: 2rem;
+    text-align: center;
+}
+
+.auth-page-header h1 {
+    margin: 0 0 .75rem;
+
+    color: var(--nav-text);
+    font-size: 1.75rem;
+}
+
+.auth-page-header p {
+    margin: 0;
+
+    color: var(--nav-text);
+    font-size: .9rem;
+    line-height: 1.5;
+
+    opacity: .8;
+}
+
+.auth-page-form {
+    width: 100%;
+}
+
+@media (max-width: 480px) {
+    .auth-page {
+        padding: 2.5rem 1rem;
+    }
+
+    .auth-page-container {
+        padding: 1.5rem;
+    }
+}
+
+/* -- End of Authentication Pages */
+/* -- END OF AUTH */
+
+/* -- END of STRUCTURE CONTENT */
 
 /* MAIN CONTENT */
 

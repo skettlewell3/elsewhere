@@ -3,10 +3,19 @@
 use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\BusinessController;
 use App\Http\Controllers\DirectoryController;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 
+Route::get('/login', function () {
+    if (Auth::guard('web')->check()) {
+        return redirect()->route('directory');
+    }
+
+    return view('pages.auth.login');
+})->name('login');
+
 Route::post('/login', [AuthController::class, 'login'])
-    ->name('login');
+    ->name('login.submit');
 
 Route::post('/logout', [AuthController::class, 'logout'])
     ->name('logout');

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Auth;
 
+use App\Exceptions\SupabaseLoginException;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Auth\LoginRequest;
 use App\Models\AccountUser;
@@ -9,6 +10,7 @@ use App\Services\Auth\SupabaseAuthService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 
 class AuthController extends Controller
 {
@@ -16,16 +18,68 @@ class AuthController extends Controller
         LoginRequest $request,
         SupabaseAuthService $authService
     ): RedirectResponse {
-        $result = $authService->signIn(
-            $request->string('email')->toString(),
-            $request->string('password')->toString(),
-        );
+        try {
+            $result = $authService->signIn(
+                $request->string('email')->toString(),
+                $request->string('password')->toString(),
+            );
+        } catch (SupabaseLoginException $exception) {
+            if (in_array($exception->reason, [
+                'unavailable',
+                'unexpected',
+            ], true)) {
+                Log::warning('Supabase login failed', [
+                    'reason' => $exception->reason,
+                ]);
+            }
+
+            $message = match ($exception->reason) {
+                'invalid_credentials' =>
+                    'The email or password is incorrect.',
+
+                'email_not_confirmed' =>
+                    'Please verify your email address before signing in.',
+
+                'rate_limited' =>
+                    'Too many login attempts. Please try again later.',
+
+                'unavailable' =>
+                    'The login service is temporarily unavailable. Please try again later.',
+
+                default =>
+                    'Unable to sign in right now. Please try again later.',
+            };
+
+            return back()
+                ->withErrors(['email' => $message], 'login')
+                ->withInput($request->only('email'));
+        }
 
         $authId = $result['user']['id'];
 
         $accountUser = AccountUser::query()
             ->where('auth_id', $authId)
-            ->firstOrFail();
+            ->first();
+
+        if (! $accountUser) {
+            Log::warning(
+                'Authenticated Supabase user has no Elsewhere account'
+            );
+
+            try {
+                $authService->signOut(
+                    $result['access_token']
+                );
+            } catch (\Throwable $exception) {
+                report($exception);
+            }
+
+            return back()
+                ->withErrors([
+                    'email' => 'Unable to access your Elsewhere account. Please contact support.',
+                ], 'login')
+                ->withInput($request->only('email'));
+        }
 
         Auth::guard('web')->login($accountUser);
 
