@@ -8,6 +8,7 @@ use App\Models\AccountUser;
 use App\Services\Auth\SupabaseAuthService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class AuthController extends Controller
 {
@@ -26,11 +27,16 @@ class AuthController extends Controller
             ->where('auth_id', $authId)
             ->firstOrFail();
 
+        Auth::guard('web')->login($accountUser);
+
         $request->session()->regenerate();
 
+        $request->session()->forget([
+            'auth_user_id',
+            'account_id',
+        ]);
+
         $request->session()->put([
-            'auth_user_id' => $authId,
-            'account_id' => $accountUser->account_id,
             'supabase_access_token' => $result['access_token'],
             'supabase_refresh_token' => $result['refresh_token'],
             'supabase_expires_at' => $result['expires_at'],
@@ -43,7 +49,8 @@ class AuthController extends Controller
         Request $request,
         SupabaseAuthService $authService
     ): RedirectResponse {
-        $accessToken = $request->session()->get('supabase_access_token');
+        $accessToken = $request->session()
+            ->get('supabase_access_token');
 
         if ($accessToken) {
             try {
@@ -52,6 +59,8 @@ class AuthController extends Controller
                 report($exception);
             }
         }
+
+        Auth::guard('web')->logout();
 
         $request->session()->invalidate();
         $request->session()->regenerateToken();

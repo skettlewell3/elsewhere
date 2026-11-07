@@ -1,5 +1,5 @@
 @php
-    use App\Models\AccountUser;
+    use Illuminate\Support\Facades\Auth;
 
     $links = [
         [
@@ -16,19 +16,18 @@
         ],
     ];
 
-    $accountUser = null;
-
-    if (session()->has('auth_user_id')) {
-        $accountUser = AccountUser::query()
-            ->where('auth_id', session('auth_user_id'))
-            ->first();
-    }
+    $accountUser = Auth::guard('web')->user();
 
     $firstName = $accountUser?->first_name;
+
     $fullName = $accountUser
-        ? trim(($accountUser->first_name ?? '') . ' ' . ($accountUser->last_name ?? ''))
+        ? trim(
+            ($accountUser->first_name ?? '') . ' ' .
+            ($accountUser->last_name ?? '')
+        )
         : null;
 @endphp
+
 
 <nav class="navbar">
     <div class="navbar-container">

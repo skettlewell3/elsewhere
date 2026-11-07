@@ -4,6 +4,7 @@ namespace App\Services\Auth;
 
 use App\Models\Account;
 use App\Models\AccountUser;
+use Illuminate\Support\Facades\Auth;
 use RuntimeException;
 
 class CurrentAccountService
@@ -14,21 +15,16 @@ class CurrentAccountService
 
     public function authId(): ?string
     {
-        return session('auth_user_id');
+        return Auth::guard('web')->id();
     }
 
     public function accountUser(): ?AccountUser
     {
-        $authId = $this->authId();
+        $user = Auth::guard('web')->user();
 
-        if (! $authId) {
-            return null;
-        }
-
-        return AccountUser::query()
-            ->with('account')
-            ->where('auth_id', $authId)
-            ->first();
+        return $user instanceof AccountUser
+            ? $user
+            : null;
     }
 
     public function account(): ?Account
@@ -38,12 +34,13 @@ class CurrentAccountService
 
     public function check(): bool
     {
-        return $this->accountUser() !== null;
+        return Auth::guard('web')->check();
     }
 
     public function ensureFreshSession(): bool
     {
-        $authId = session('auth_user_id');
+        $authId = $this->authId();
+
         $refreshToken = session('supabase_refresh_token');
         $expiresAt = session('supabase_expires_at');
 
@@ -51,31 +48,29 @@ class CurrentAccountService
             return false;
         }
 
-        /*
-         * Keep using the current access token while it has more
-         * than five minutes remaining.
-         */
         if ((int) $expiresAt > now()->timestamp + 300) {
             return true;
         }
 
         try {
-            $result = $this->authService->refreshSession($refreshToken);
+            $result = $this->authService->refreshSession(
+                $refreshToken
+            );
         } catch (RuntimeException $exception) {
-            $this->clearSession();
-
             report($exception);
 
             return false;
         }
 
-        /*
-         * The refreshed session must still belong to the same
-         * authenticated user.
-         */
         if (($result['user']['id'] ?? null) !== $authId) {
-            $this->clearSession();
+            return false;
+        }
 
+        if (
+            empty($result['access_token']) ||
+            empty($result['refresh_token']) ||
+            empty($result['expires_at'])
+        ) {
             return false;
         }
 
@@ -86,16 +81,5 @@ class CurrentAccountService
         ]);
 
         return true;
-    }
-
-    private function clearSession(): void
-    {
-        session()->forget([
-            'auth_user_id',
-            'account_id',
-            'supabase_access_token',
-            'supabase_refresh_token',
-            'supabase_expires_at',
-        ]);
     }
 }
