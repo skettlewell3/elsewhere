@@ -866,6 +866,74 @@
     }
 }
 
+/* Registration page */
+
+.auth-register-container {
+    max-width: 34rem;
+}
+
+.auth-register-name-row {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: .75rem;
+}
+
+.auth-register-name-row .navbar-login-field {
+    min-width: 0;
+}
+
+@media (max-width: 480px) {
+    .auth-register-name-row {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* Authentication page notices */
+
+.auth-page-notice {
+    margin-top: 1.25rem;
+    padding: .875rem 1rem;
+
+    background: rgba(229, 189, 117, .1);
+    border: 1px solid rgba(229, 189, 117, .3);
+    border-radius: .75rem;
+
+    color: var(--nav-text);
+
+    font-size: .85rem;
+    line-height: 1.5;
+    text-align: center;
+}
+
+.auth-page-footer {
+    margin-top: 1.5rem;
+    text-align: center;
+}
+
+.auth-page-footer a {
+    color: var(--accent);
+    font-size: .875rem;
+    font-weight: 600;
+    text-decoration: none;
+}
+
+.auth-page-footer a:hover {
+    text-decoration: underline;
+}
+
+.auth-page-form .navbar-login-submit:disabled {
+    opacity: .5;
+    cursor: not-allowed;
+}
+
+
+.auth-page-form .navbar-login-field input:disabled {
+    opacity: .6;
+    cursor: not-allowed;
+}
+
+
+
 /* -- End of Authentication Pages */
 /* -- END OF AUTH */
 

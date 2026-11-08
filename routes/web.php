@@ -20,6 +20,15 @@ Route::post('/login', [AuthController::class, 'login'])
 Route::post('/logout', [AuthController::class, 'logout'])
     ->name('logout');
 
+Route::view('/forgot-password', 'pages.auth.forgot-password')
+    ->name('password.request');
+
+Route::view('/reset-password', 'pages.auth.reset-password')
+    ->name('password.reset');
+
+Route::view('/register', 'pages.auth.register')
+    ->name('register');
+
 Route::get('/', function () {
     return redirect()->route('directory');
 });
