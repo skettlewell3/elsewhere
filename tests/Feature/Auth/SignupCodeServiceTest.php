@@ -51,13 +51,64 @@ class SignupCodeServiceTest extends TestCase
                 ->constrained('signup_codes', 'signup_code_id')
                 ->restrictOnDelete();
 
+            $table->foreignId('reservation_id')
+                ->nullable()
+                ->unique()
+                ->constrained(
+                    'signup_code_reservations',
+                    'reservation_id'
+                )
+                ->restrictOnDelete();
+
             $table->uuid('auth_id')->unique();
             $table->timestampTz('redeemed_at')->useCurrent();
+        });
+
+        Schema::create('registration_attempts', function (Blueprint $table) {
+            $table->id('registration_attempt_id');
+
+            $table->foreignId('reservation_id')
+                ->unique()
+                ->constrained(
+                    'signup_code_reservations',
+                    'reservation_id'
+                )
+                ->restrictOnDelete();
+
+            $table->uuid('auth_id')
+                ->nullable()
+                ->unique();
+
+            $table->string('email', 255);
+
+            $table->string('status', 32)
+                ->default('reserved');
+
+            $table->timestampTz('auth_requested_at')->nullable();
+            $table->timestampTz('auth_created_at')->nullable();
+            $table->timestampTz('provisioned_at')->nullable();
+            $table->timestampTz('completed_at')->nullable();
+            $table->timestampTz('failed_at')->nullable();
+
+            $table->string('last_error_code', 100)->nullable();
+
+            $table->timestampsTz();
+
+            $table->index(
+                ['status', 'updated_at'],
+                'registration_attempts_status_idx'
+            );
+
+            $table->index(
+                ['email', 'status'],
+                'registration_attempts_email_idx'
+            );
         });
     }
 
     protected function tearDown(): void
     {
+        Schema::dropIfExists('registration_attempts');
         Schema::dropIfExists('signup_code_redemptions');
         Schema::dropIfExists('signup_code_reservations');
         Schema::dropIfExists('signup_codes');
@@ -80,6 +131,48 @@ class SignupCodeServiceTest extends TestCase
             'expires_at' => $expiresAt,
             'created_at' => now(),
         ]);
+    }
+
+    private function createAttempt(
+        string $token,
+        string $email,
+        string $status = 'reserved',
+        ?string $authId = null,
+        bool $authConfirmed = false
+    ): int {
+        $reservationId = DB::table('signup_code_reservations')
+            ->where('token_hash', hash('sha256', $token))
+            ->value('reservation_id');
+
+        $this->assertNotNull($reservationId);
+
+        return DB::table('registration_attempts')
+            ->insertGetId([
+                'reservation_id' => $reservationId,
+                'auth_id' => $authId,
+                'email' => strtolower(trim($email)),
+                'status' => $status,
+                'auth_requested_at' =>
+                    $status === 'reserved' ? null : now(),
+                'auth_created_at' =>
+                    $authConfirmed ? now() : null,
+                'created_at' => now(),
+                'updated_at' => now(),
+            ]);
+    }
+
+    private function createConfirmedAttempt(
+        string $token,
+        string $authId,
+        string $email
+    ): int {
+        return $this->createAttempt(
+            token: $token,
+            email: $email,
+            status: 'auth_created',
+            authId: $authId,
+            authConfirmed: true
+        );
     }
 
     public function test_valid_signup_code_is_accepted(): void
@@ -205,8 +298,7 @@ class SignupCodeServiceTest extends TestCase
 
         $this->assertSame(
             1,
-            DB::table('signup_code_reservations')
-                ->count()
+            DB::table('signup_code_reservations')->count()
         );
     }
 
@@ -271,8 +363,7 @@ class SignupCodeServiceTest extends TestCase
 
         $this->assertSame(
             2,
-            DB::table('signup_code_reservations')
-                ->count()
+            DB::table('signup_code_reservations')->count()
         );
 
         $this->assertDatabaseHas(
@@ -298,6 +389,12 @@ class SignupCodeServiceTest extends TestCase
         $this->assertNotNull($token);
 
         $authId = '11111111-1111-4111-8111-111111111111';
+
+        $this->createConfirmedAttempt(
+            $token,
+            $authId,
+            'user@example.com'
+        );
 
         $redeemed = $this->signupCodes->redeem(
             $token,
@@ -339,7 +436,7 @@ class SignupCodeServiceTest extends TestCase
         );
     }
 
-    public function test_same_reservation_cannot_be_redeemed_twice(): void
+    public function test_redeeming_same_reservation_twice_is_idempotent(): void
     {
         $this->createCode(
             maxUses: 2
@@ -350,7 +447,15 @@ class SignupCodeServiceTest extends TestCase
             'user@example.com'
         );
 
+        $this->assertNotNull($token);
+
         $authId = '22222222-2222-4222-8222-222222222222';
+
+        $this->createConfirmedAttempt(
+            $token,
+            $authId,
+            'user@example.com'
+        );
 
         $this->assertTrue(
             $this->signupCodes->redeem(
@@ -360,7 +465,7 @@ class SignupCodeServiceTest extends TestCase
             )
         );
 
-        $this->assertFalse(
+        $this->assertTrue(
             $this->signupCodes->redeem(
                 $token,
                 $authId,
@@ -370,15 +475,22 @@ class SignupCodeServiceTest extends TestCase
 
         $this->assertSame(
             1,
-            DB::table('signup_code_redemptions')
-                ->count()
+            DB::table('signup_code_redemptions')->count()
         );
 
         $this->assertSame(
             1,
-            DB::table('signup_codes')
-                ->value('use_count')
+            DB::table('signup_codes')->value('use_count')
         );
+
+        $reservationId = DB::table('signup_code_reservations')
+            ->where('token_hash', hash('sha256', $token))
+            ->value('reservation_id');
+
+        $this->assertDatabaseHas('signup_code_redemptions', [
+            'reservation_id' => $reservationId,
+            'auth_id' => $authId,
+        ]);
     }
 
     public function test_redemption_rejects_wrong_email_and_invalid_uuid(): void
@@ -412,14 +524,12 @@ class SignupCodeServiceTest extends TestCase
 
         $this->assertSame(
             0,
-            DB::table('signup_code_redemptions')
-                ->count()
+            DB::table('signup_code_redemptions')->count()
         );
 
         $this->assertSame(
             0,
-            DB::table('signup_codes')
-                ->value('use_count')
+            DB::table('signup_codes')->value('use_count')
         );
     }
 
@@ -446,8 +556,7 @@ class SignupCodeServiceTest extends TestCase
 
         $this->assertSame(
             0,
-            DB::table('signup_code_redemptions')
-                ->count()
+            DB::table('signup_code_redemptions')->count()
         );
     }
 
@@ -476,8 +585,302 @@ class SignupCodeServiceTest extends TestCase
 
         $this->assertSame(
             0,
-            DB::table('signup_code_redemptions')
-                ->count()
+            DB::table('signup_code_redemptions')->count()
+        );
+    }
+
+    public function test_expired_reservation_remains_occupied_during_auth_creation(): void
+    {
+        $this->createCode(
+            maxUses: 1
+        );
+
+        $token = $this->signupCodes->reserve(
+            'TEST-CODE',
+            'first@example.com'
+        );
+
+        $this->assertNotNull($token);
+
+        $this->createAttempt(
+            token: $token,
+            email: 'first@example.com',
+            status: 'creating_auth'
+        );
+
+        $this->travel(11)->minutes();
+
+        $anotherToken = $this->signupCodes->reserve(
+            'TEST-CODE',
+            'second@example.com'
+        );
+
+        $this->assertNull($anotherToken);
+
+        $this->assertSame(
+            1,
+            DB::table('signup_code_reservations')->count()
+        );
+
+        $this->assertSame(
+            0,
+            DB::table('signup_codes')->value('use_count')
+        );
+    }
+
+    public function test_reconciliation_attempt_continues_occupying_capacity(): void
+    {
+        $this->createCode(
+            maxUses: 1
+        );
+
+        $token = $this->signupCodes->reserve(
+            'TEST-CODE',
+            'first@example.com'
+        );
+
+        $this->assertNotNull($token);
+
+        $authId = '66666666-6666-4666-8666-666666666666';
+
+        $this->createAttempt(
+            token: $token,
+            email: 'first@example.com',
+            status: 'needs_reconciliation',
+            authId: $authId
+        );
+
+        $this->travel(11)->minutes();
+
+        $anotherToken = $this->signupCodes->reserve(
+            'TEST-CODE',
+            'second@example.com'
+        );
+
+        $this->assertNull($anotherToken);
+
+        $this->assertFalse(
+            $this->signupCodes->release($token)
+        );
+    }
+
+    public function test_reservation_cannot_be_released_during_auth_creation(): void
+    {
+        $this->createCode(
+            maxUses: 1
+        );
+
+        $token = $this->signupCodes->reserve(
+            'TEST-CODE',
+            'user@example.com'
+        );
+
+        $this->assertNotNull($token);
+
+        $this->createAttempt(
+            token: $token,
+            email: 'user@example.com',
+            status: 'creating_auth'
+        );
+
+        $this->assertFalse(
+            $this->signupCodes->release($token)
+        );
+
+        $this->assertDatabaseHas(
+            'signup_code_reservations',
+            [
+                'token_hash' => hash('sha256', $token),
+                'status' => 'reserved',
+                'released_at' => null,
+            ]
+        );
+    }
+
+    public function test_confirmed_auth_can_redeem_after_reservation_expiry(): void
+    {
+        $this->createCode(
+            maxUses: 1
+        );
+
+        $token = $this->signupCodes->reserve(
+            'TEST-CODE',
+            'user@example.com'
+        );
+
+        $this->assertNotNull($token);
+
+        $authId = '77777777-7777-4777-8777-777777777777';
+
+        $this->createConfirmedAttempt(
+            $token,
+            $authId,
+            'user@example.com'
+        );
+
+        $this->travel(11)->minutes();
+
+        $this->assertTrue(
+            $this->signupCodes->redeem(
+                $token,
+                $authId,
+                'user@example.com'
+            )
+        );
+
+        $this->assertDatabaseHas('signup_codes', [
+            'code' => 'TEST-CODE',
+            'use_count' => 1,
+        ]);
+
+        $this->assertDatabaseHas('signup_code_reservations', [
+            'token_hash' => hash('sha256', $token),
+            'status' => 'redeemed',
+        ]);
+
+        $this->assertDatabaseHas('signup_code_redemptions', [
+            'auth_id' => $authId,
+        ]);
+    }
+
+    public function test_unconfirmed_auth_cannot_redeem_reservation(): void
+    {
+        $this->createCode(
+            maxUses: 1
+        );
+
+        $token = $this->signupCodes->reserve(
+            'TEST-CODE',
+            'user@example.com'
+        );
+
+        $this->assertNotNull($token);
+
+        $authId = '88888888-8888-4888-8888-888888888888';
+
+        $this->createAttempt(
+            token: $token,
+            email: 'user@example.com',
+            status: 'creating_auth',
+            authId: $authId,
+            authConfirmed: false
+        );
+
+        $this->assertFalse(
+            $this->signupCodes->redeem(
+                $token,
+                $authId,
+                'user@example.com'
+            )
+        );
+
+        $this->assertSame(
+            0,
+            DB::table('signup_code_redemptions')->count()
+        );
+
+        $this->assertSame(
+            0,
+            DB::table('signup_codes')->value('use_count')
+        );
+    }
+
+    public function test_completed_redemption_can_be_retried_after_expiry(): void
+    {
+        $this->createCode(
+            maxUses: 1
+        );
+
+        $token = $this->signupCodes->reserve(
+            'TEST-CODE',
+            'user@example.com'
+        );
+
+        $this->assertNotNull($token);
+
+        $authId = '99999999-9999-4999-8999-999999999999';
+
+        $this->createConfirmedAttempt(
+            $token,
+            $authId,
+            'user@example.com'
+        );
+
+        $this->assertTrue(
+            $this->signupCodes->redeem(
+                $token,
+                $authId,
+                'user@example.com'
+            )
+        );
+
+        $this->travel(11)->minutes();
+
+        $this->assertTrue(
+            $this->signupCodes->redeem(
+                $token,
+                $authId,
+                'user@example.com'
+            )
+        );
+
+        $this->assertSame(
+            1,
+            DB::table('signup_code_redemptions')->count()
+        );
+
+        $this->assertSame(
+            1,
+            DB::table('signup_codes')->value('use_count')
+        );
+    }
+
+    public function test_reservation_cannot_be_redeemed_by_different_auth_identity(): void
+    {
+        $this->createCode(
+            maxUses: 2
+        );
+
+        $token = $this->signupCodes->reserve(
+            'TEST-CODE',
+            'user@example.com'
+        );
+
+        $this->assertNotNull($token);
+
+        $originalAuthId = 'aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa';
+        $differentAuthId = 'bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb';
+
+        $this->createConfirmedAttempt(
+            $token,
+            $originalAuthId,
+            'user@example.com'
+        );
+
+        $this->assertTrue(
+            $this->signupCodes->redeem(
+                $token,
+                $originalAuthId,
+                'user@example.com'
+            )
+        );
+
+        $this->assertFalse(
+            $this->signupCodes->redeem(
+                $token,
+                $differentAuthId,
+                'user@example.com'
+            )
+        );
+
+        $this->assertSame(
+            1,
+            DB::table('signup_code_redemptions')->count()
+        );
+
+        $this->assertSame(
+            1,
+            DB::table('signup_codes')->value('use_count')
         );
     }
 }

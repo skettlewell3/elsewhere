@@ -82,6 +82,138 @@ class SupabaseAuthService
         return $result;
     }
 
+    /**
+     * Submit a signup request exactly once.
+     *
+     * An accepted HTTP response is not independent proof
+     * that the identity exists in auth.users.
+     *
+     * Possible outcomes:
+     * - response_received
+     * - rejected
+     * - uncertain
+     *
+     * The caller must verify any proposed identity
+     * before finalising registration.
+     */
+    public function signUp(
+        string $email,
+        string $password,
+        string $firstName,
+        string $lastName,
+        string $reservationToken
+    ): array {
+        $url = rtrim(config('services.supabase.url'), '/');
+        $key = config('services.supabase.publishable_key');
+
+        try {
+            $response = Http::withHeaders([
+                'apikey' => $key,
+            ])
+                ->acceptJson()
+                ->timeout(15)
+                ->post(
+                    "{$url}/auth/v1/signup",
+                    [
+                        'email' => $email,
+                        'password' => $password,
+                        'data' => [
+                            'first_name' => $firstName,
+                            'last_name' => $lastName,
+                            'signup_reservation_token' =>
+                                $reservationToken,
+                        ],
+                    ]
+                );
+        } catch (ConnectionException $exception) {
+            return [
+                'outcome' => 'uncertain',
+                'auth_id' => null,
+                'error_code' => 'connection_failure',
+            ];
+        }
+
+        if ($response->failed()) {
+            $errorCode = $response->json('error_code')
+                ?? $response->json('code');
+
+            if (
+                $response->status() === 408 ||
+                $response->status() === 429 ||
+                $response->serverError()
+            ) {
+                return [
+                    'outcome' => 'uncertain',
+                    'auth_id' => null,
+                    'error_code' => 'supabase_unavailable',
+                ];
+            }
+
+            return [
+                'outcome' => 'rejected',
+                'auth_id' => null,
+                'error_code' => is_string($errorCode)
+                    ? $errorCode
+                    : 'signup_rejected',
+            ];
+        }
+
+        $result = $response->json();
+
+        if (! is_array($result)) {
+            return [
+                'outcome' => 'uncertain',
+                'auth_id' => null,
+                'error_code' => 'invalid_supabase_response',
+            ];
+        }
+
+        // The GoTrue REST endpoint normally returns the
+        // user fields directly. Support a nested user
+        // response as well for compatibility.
+        $user = $result['user'] ?? $result;
+
+        if (! is_array($user)) {
+            return [
+                'outcome' => 'uncertain',
+                'auth_id' => null,
+                'error_code' => 'invalid_user_response',
+            ];
+        }
+
+        $authId = $user['id'] ?? null;
+
+        if (! is_string($authId) || $authId === '') {
+            return [
+                'outcome' => 'uncertain',
+                'auth_id' => null,
+                'error_code' => 'missing_auth_id',
+            ];
+        }
+
+        // Supabase can return an obfuscated user object
+        // for an existing account. An explicitly empty
+        // identities collection must never be considered
+        // confirmation of a newly created identity.
+        if (
+            array_key_exists('identities', $user) &&
+            is_array($user['identities']) &&
+            count($user['identities']) === 0
+        ) {
+            return [
+                'outcome' => 'rejected',
+                'auth_id' => null,
+                'error_code' => 'signup_not_created',
+            ];
+        }
+
+        return [
+            'outcome' => 'response_received',
+            'auth_id' => strtolower($authId),
+            'error_code' => null,
+        ];
+    }
+
     public function signOut(string $accessToken): void
     {
         $url = rtrim(config('services.supabase.url'), '/');
