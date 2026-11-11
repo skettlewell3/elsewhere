@@ -17,6 +17,12 @@ class SignupCodeService
         'needs_reconciliation',
     ];
 
+    private const REDEEMABLE_STATUSES = [
+        'auth_created',
+        'provisioning',
+        'needs_reconciliation',
+    ];
+
     public function isValid(string $code): bool
     {
         $code = trim($code);
@@ -146,8 +152,6 @@ class SignupCodeService
                 return false;
             }
 
-            // Lock the parent code first.
-
             $signupCode = DB::table('signup_codes')
                 ->where(
                     'signup_code_id',
@@ -159,8 +163,6 @@ class SignupCodeService
             if (! $signupCode) {
                 return false;
             }
-
-            // Re-read the reservation after acquiring the lock.
 
             $reservation = DB::table(
                 'signup_code_reservations'
@@ -178,8 +180,6 @@ class SignupCodeService
             ) {
                 return false;
             }
-
-            // An unresolved registration must retain its capacity.
 
             $protectedAttempt = DB::table('registration_attempts')
                 ->where(
@@ -243,8 +243,6 @@ class SignupCodeService
                 return false;
             }
 
-            // Always lock the parent signup code first.
-
             $signupCode = DB::table('signup_codes')
                 ->where(
                     'signup_code_id',
@@ -256,8 +254,6 @@ class SignupCodeService
             if (! $signupCode) {
                 return false;
             }
-
-            // Re-read the reservation under the parent lock.
 
             $reservation = DB::table(
                 'signup_code_reservations'
@@ -276,37 +272,36 @@ class SignupCodeService
                 return false;
             }
 
-            // Exact retries must not increment use_count again.
+            return $this->finaliseRedemption(
+                $signupCode,
+                $reservation,
+                $authId,
+                $email
+            );
+        }, 3);
+    }
 
-            $existingRedemption = DB::table(
-                'signup_code_redemptions'
-            )
-                ->where(
-                    'reservation_id',
-                    $reservation->reservation_id
-                )
-                ->first();
+    /**
+     * Redeem a reservation through a confirmed
+     * registration attempt instead of its token.
+     *
+     * This is a trusted server-side operation.
+     *
+     * The calling service must first independently
+     * verify the Supabase Auth identity and its
+     * Elsewhere account.
+     */
+    public function redeemByAttempt(int $attemptId): bool
+    {
+        if ($attemptId <= 0) {
+            return false;
+        }
 
-            if ($existingRedemption) {
-                return (
-                    $reservation->status === 'redeemed' &&
-                    (int) $existingRedemption->signup_code_id ===
-                        (int) $signupCode->signup_code_id &&
-                    strtolower($existingRedemption->auth_id) === $authId
-                );
-            }
-
-            if ($reservation->status !== 'reserved') {
-                return false;
-            }
-
-            // A verified registration attempt is mandatory.
-            // A reservation token alone cannot be redeemed.
-
+        return DB::transaction(function () use ($attemptId) {
             $attempt = DB::table('registration_attempts')
                 ->where(
-                    'reservation_id',
-                    $reservation->reservation_id
+                    'registration_attempt_id',
+                    $attemptId
                 )
                 ->first();
 
@@ -314,96 +309,202 @@ class SignupCodeService
                 return false;
             }
 
-            if (
-                $attempt->email !== $email ||
-                strtolower((string) $attempt->auth_id) !== $authId
-            ) {
-                return false;
-            }
-
-            $authConfirmed = (
-                $attempt->auth_created_at !== null &&
-                in_array(
-                    $attempt->status,
-                    [
-                        'auth_created',
-                        'provisioning',
-                        'needs_reconciliation',
-                    ],
-                    true
-                )
-            );
-
-            if (! $authConfirmed) {
-                return false;
-            }
-
-            // An expired reservation can only be finalised
-            // when the matching Auth identity is confirmed.
-
-            $expired = ! Carbon::parse(
-                $reservation->expires_at
-            )->isFuture();
-
-            if ($expired && ! $authConfirmed) {
-                return false;
-            }
-
-            // A Supabase identity can redeem only one invitation.
-
-            $authAlreadyRedeemed = DB::table(
-                'signup_code_redemptions'
+            $reservation = DB::table(
+                'signup_code_reservations'
             )
-                ->where('auth_id', $authId)
-                ->exists();
+                ->where(
+                    'reservation_id',
+                    $attempt->reservation_id
+                )
+                ->first();
 
-            if ($authAlreadyRedeemed) {
+            if (! $reservation) {
                 return false;
             }
 
-            // Record the permanent redemption.
+            // Always lock the parent invitation first.
 
-            DB::table('signup_code_redemptions')
-                ->insert([
-                    'signup_code_id' =>
-                        $signupCode->signup_code_id,
-
-                    'reservation_id' =>
-                        $reservation->reservation_id,
-
-                    'auth_id' => $authId,
-
-                    'redeemed_at' => now(),
-                ]);
-
-            // Consume one invitation use.
-
-            DB::table('signup_codes')
+            $signupCode = DB::table('signup_codes')
                 ->where(
                     'signup_code_id',
-                    $signupCode->signup_code_id
+                    $reservation->signup_code_id
                 )
-                ->increment('use_count');
+                ->lockForUpdate()
+                ->first();
 
-            // Finalise the reservation in the same transaction.
+            if (! $signupCode) {
+                return false;
+            }
 
-            $updated = DB::table('signup_code_reservations')
+            // Re-read both records after acquiring the lock.
+
+            $reservation = DB::table(
+                'signup_code_reservations'
+            )
                 ->where(
                     'reservation_id',
                     $reservation->reservation_id
                 )
-                ->where('status', 'reserved')
-                ->update([
-                    'status' => 'redeemed',
-                ]);
+                ->where(
+                    'signup_code_id',
+                    $signupCode->signup_code_id
+                )
+                ->first();
 
-            if ($updated !== 1) {
-                throw new \RuntimeException(
-                    'Failed to finalise signup code reservation.'
-                );
+            $attempt = DB::table('registration_attempts')
+                ->where(
+                    'registration_attempt_id',
+                    $attemptId
+                )
+                ->where(
+                    'reservation_id',
+                    $reservation?->reservation_id
+                )
+                ->first();
+
+            if (! $reservation || ! $attempt) {
+                return false;
             }
 
-            return true;
+            $authId = strtolower(
+                trim((string) $attempt->auth_id)
+            );
+
+            if (
+                ! Str::isUuid($authId) ||
+                $attempt->email !== $reservation->email
+            ) {
+                return false;
+            }
+
+            return $this->finaliseRedemption(
+                $signupCode,
+                $reservation,
+                $authId,
+                $attempt->email,
+                $attempt
+            );
         }, 3);
+    }
+
+    /**
+     * All redemption paths use the same checks.
+     *
+     * Caller must hold the parent signup-code lock.
+     */
+    private function finaliseRedemption(
+        object $signupCode,
+        object $reservation,
+        string $authId,
+        string $email,
+        ?object $attempt = null
+    ): bool {
+        if ($reservation->email !== $email) {
+            return false;
+        }
+
+        // Exact retries must not consume another use.
+
+        $existingRedemption = DB::table(
+            'signup_code_redemptions'
+        )
+            ->where(
+                'reservation_id',
+                $reservation->reservation_id
+            )
+            ->first();
+
+        if ($existingRedemption) {
+            return (
+                $reservation->status === 'redeemed' &&
+                (int) $existingRedemption->signup_code_id ===
+                    (int) $signupCode->signup_code_id &&
+                strtolower($existingRedemption->auth_id) === $authId
+            );
+        }
+
+        if ($reservation->status !== 'reserved') {
+            return false;
+        }
+
+        if ($attempt === null) {
+            $attempt = DB::table('registration_attempts')
+                ->where(
+                    'reservation_id',
+                    $reservation->reservation_id
+                )
+                ->first();
+        }
+
+        // A confirmed, matching attempt is mandatory.
+
+        if (
+            ! $attempt ||
+            $attempt->email !== $email ||
+            strtolower((string) $attempt->auth_id) !== $authId ||
+            $attempt->auth_created_at === null ||
+            ! in_array(
+                $attempt->status,
+                self::REDEEMABLE_STATUSES,
+                true
+            )
+        ) {
+            return false;
+        }
+
+        /*
+         * A confirmed registration may finish after
+         * reservation expiry, because its capacity
+         * remains protected by the attempt state.
+         *
+         * Never permit a released reservation.
+         */
+        $authAlreadyRedeemed = DB::table(
+            'signup_code_redemptions'
+        )
+            ->where('auth_id', $authId)
+            ->exists();
+
+        if ($authAlreadyRedeemed) {
+            return false;
+        }
+
+        DB::table('signup_code_redemptions')
+            ->insert([
+                'signup_code_id' =>
+                    $signupCode->signup_code_id,
+
+                'reservation_id' =>
+                    $reservation->reservation_id,
+
+                'auth_id' => $authId,
+
+                'redeemed_at' => now(),
+            ]);
+
+        DB::table('signup_codes')
+            ->where(
+                'signup_code_id',
+                $signupCode->signup_code_id
+            )
+            ->increment('use_count');
+
+        $updated = DB::table('signup_code_reservations')
+            ->where(
+                'reservation_id',
+                $reservation->reservation_id
+            )
+            ->where('status', 'reserved')
+            ->update([
+                'status' => 'redeemed',
+            ]);
+
+        if ($updated !== 1) {
+            throw new \RuntimeException(
+                'Failed to finalise signup code reservation.'
+            );
+        }
+
+        return true;
     }
 }
