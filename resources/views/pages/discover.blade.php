@@ -1,11 +1,14 @@
+
 @extends('layouts.app')
 
 @section('title', 'Discover')
 
 @section('content')
     <div class="apps-grid">
-        @foreach(config('apps') as $app)
+        @forelse($apps as $app)
             <x-apps.appcard :app="$app" />
-        @endforeach
+        @empty
+            <p>No applications are currently available.</p>
+        @endforelse
     </div>
 @endsection
