@@ -1,5 +1,5 @@
 @php
-    use App\Models\AccountUser;
+    use Illuminate\Support\Facades\Auth;
 
     $links = [
         [
@@ -16,19 +16,18 @@
         ],
     ];
 
-    $accountUser = null;
-
-    if (session()->has('auth_user_id')) {
-        $accountUser = AccountUser::query()
-            ->where('auth_id', session('auth_user_id'))
-            ->first();
-    }
+    $accountUser = Auth::guard('web')->user();
 
     $firstName = $accountUser?->first_name;
+
     $fullName = $accountUser
-        ? trim(($accountUser->first_name ?? '') . ' ' . ($accountUser->last_name ?? ''))
+        ? trim(
+            ($accountUser->first_name ?? '') . ' ' .
+            ($accountUser->last_name ?? '')
+        )
         : null;
 @endphp
+
 
 <nav class="navbar">
     <div class="navbar-container">
@@ -105,19 +104,25 @@
                     </div>
                 </details>
             @else
-                <details class="navbar-login">
+                <details
+                    class="navbar-login"
+                    @if ($errors->login->any() && ! request()->routeIs('login')) open @endif
+                >
                     <summary class="navbar-action">
                         Sign in
                     </summary>
 
                     <div class="navbar-login-panel">
-                        <x-auth.login-form />
+                        <x-auth.login-form id-prefix="navbar-login" />
                     </div>
                 </details>
             @endif
         </div>
 
-        <details class="navbar-menu">
+        <details
+            class="navbar-menu"
+            @if ($errors->login->any() && ! request()->routeIs('login')) open @endif
+        >
             <summary
                 class="navbar-menu-trigger"
                 aria-label="Open menu"
@@ -184,7 +189,7 @@
 
                         </div>
                     @else
-                        <x-auth.login-form />
+                        <x-auth.login-form id-prefix="mobile-login" />
                     @endif
 
                 </div>

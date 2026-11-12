@@ -1,31 +1,47 @@
+
+@props([
+    'idPrefix' => 'login',
+])
+
 <form
     method="POST"
-    action="{{ route('login') }}"
+    action="{{ route('login.submit') }}"
     class="navbar-login-form"
 >
     @csrf
 
+    @if ($errors->login->has('email') || $errors->login->has('password'))
+        <div
+            class="navbar-login-error"
+            role="alert"
+        >
+            {{ $errors->login->first('email') ?: $errors->login->first('password') }}
+        </div>
+    @endif
+
     <div class="navbar-login-field">
-        <label for="login-email">Email</label>
+        <label for="{{ $idPrefix }}-email">Email</label>
 
         <input
-            id="login-email"
+            id="{{ $idPrefix }}-email"
             type="email"
             name="email"
             value="{{ old('email') }}"
             autocomplete="email"
+            aria-invalid="{{ $errors->login->has('email') ? 'true' : 'false' }}"
             required
         >
     </div>
 
     <div class="navbar-login-field">
-        <label for="login-password">Password</label>
+        <label for="{{ $idPrefix }}-password">Password</label>
 
         <input
-            id="login-password"
+            id="{{ $idPrefix }}-password"
             type="password"
             name="password"
             autocomplete="current-password"
+            aria-invalid="{{ $errors->login->has('password') ? 'true' : 'false' }}"
             required
         >
     </div>
@@ -38,7 +54,7 @@
     </button>
 
     <div class="navbar-login-links">
-        <a href="#">
+        <a href="{{ route('password.request') }}">
             Forgot password?
         </a>
 

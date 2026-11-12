@@ -66,7 +66,7 @@
                 type="button"
             >
                 <span>
-                    {{ $current['label'] ?? '' }}
+                    {{ $current['label'] ?? 'Menu' }}
                 </span>
     
                 <span class="nav-mobile-arrow">

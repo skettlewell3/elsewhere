@@ -2,10 +2,10 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
+use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
-class AccountUser extends Model
+class AccountUser extends Authenticatable
 {
     protected $table = 'accounts_users';
 
