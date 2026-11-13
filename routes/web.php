@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\AppLaunchController;
 use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\BusinessController;
 use App\Http\Controllers\DirectoryController;
@@ -52,6 +53,11 @@ Route::view('/dashboard', 'pages.dashboard')
 
 Route::get('/discover', [DiscoverController::class, 'index'])
     ->name('discover');
+
+Route::get('/apps/{app:slug}/launch', [
+    AppLaunchController::class,
+    'launch',
+])->name('apps.launch');
 
 Route::post('/theme', function () {
 

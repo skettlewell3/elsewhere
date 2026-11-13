@@ -3,7 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Models\App;
+use App\Models\AppMembership;
 use Illuminate\Contracts\View\View;
+use Illuminate\Support\Facades\Auth;
 
 class DiscoverController extends Controller
 {
@@ -19,8 +21,22 @@ class DiscoverController extends Controller
             ->orderBy('name')
             ->get();
 
+        $user = Auth::guard('web')->user();
+
+        $memberships = collect();
+
+        if ($user !== null) {
+            $memberships = AppMembership::query()
+                ->where('auth_id', $user->auth_id)
+                ->whereIn('app_id', $apps->pluck('app_id'))
+                ->get()
+                ->keyBy('app_id');
+        }
+
         return view('pages.discover', [
             'apps' => $apps,
+            'isLoggedIn' => $user !== null,
+            'memberships' => $memberships,
         ]);
     }
 }
