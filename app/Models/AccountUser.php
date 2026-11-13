@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class AccountUser extends Authenticatable
 {
@@ -37,6 +38,15 @@ class AccountUser extends Authenticatable
             Account::class,
             'account_id',
             'account_id'
+        );
+    }
+
+    public function appMemberships(): HasMany
+    {
+        return $this->hasMany(
+            AppMembership::class,
+            'auth_id',
+            'auth_id'
         );
     }
 }
