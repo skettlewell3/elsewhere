@@ -115,10 +115,13 @@ class AuthController extends Controller
         return redirect()->intended('/');
     }
 
+
     public function logout(
         Request $request,
         SupabaseAuthService $authService
     ): RedirectResponse {
+        $returnToPerfect10 = $request->input('return_app') === 'perfect10';
+
         $returnPath = $request->input('return_path', '/');
 
         if (
@@ -146,6 +149,29 @@ class AuthController extends Controller
 
         $request->session()->invalidate();
         $request->session()->regenerateToken();
+
+        if ($returnToPerfect10) {
+            $perfect10Url = config('elsewhere_oauth.perfect10_url');
+
+            abort_unless(
+                is_string($perfect10Url) &&
+                filter_var($perfect10Url, FILTER_VALIDATE_URL) &&
+                in_array(
+                    parse_url($perfect10Url, PHP_URL_SCHEME),
+                    ['http', 'https'],
+                    true
+                ),
+                500,
+                'Perfect10 return URL is not configured.'
+            );
+
+            $request->session()->put(
+                'url.intended',
+                rtrim($perfect10Url, '/').'/'
+            );
+
+            return redirect()->route('login');
+        }
 
         return redirect()->to($returnPath);
     }

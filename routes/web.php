@@ -22,6 +22,10 @@ Route::post('/login', [AuthController::class, 'login'])
 Route::post('/logout', [AuthController::class, 'logout'])
     ->name('logout');
 
+Route::get('/auth/logout/perfect10', function () {
+    return view('auth.logout-perfect10');
+})->name('auth.logout.perfect10');
+
 Route::view('/forgot-password', 'pages.auth.forgot-password')
     ->name('password.request');
 
