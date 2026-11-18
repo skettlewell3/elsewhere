@@ -53,20 +53,15 @@ class AuthController extends Controller
             }
 
             $message = match ($exception->reason) {
-                'invalid_credentials' =>
-                    'The email or password is incorrect.',
+                'invalid_credentials' => 'The email or password is incorrect.',
 
-                'email_not_confirmed' =>
-                    'Please verify your email address before signing in.',
+                'email_not_confirmed' => 'Please verify your email address before signing in.',
 
-                'rate_limited' =>
-                    'Too many login attempts. Please try again later.',
+                'rate_limited' => 'Too many login attempts. Please try again later.',
 
-                'unavailable' =>
-                    'The login service is temporarily unavailable. Please try again later.',
+                'unavailable' => 'The login service is temporarily unavailable. Please try again later.',
 
-                default =>
-                    'Unable to sign in right now. Please try again later.',
+                default => 'Unable to sign in right now. Please try again later.',
             };
 
             return back()
@@ -124,6 +119,18 @@ class AuthController extends Controller
         Request $request,
         SupabaseAuthService $authService
     ): RedirectResponse {
+        $returnPath = $request->input('return_path', '/');
+
+        if (
+            ! is_string($returnPath) ||
+            ! str_starts_with($returnPath, '/') ||
+            str_starts_with($returnPath, '//') ||
+            str_contains($returnPath, '\\') ||
+            preg_match('/[\x00-\x1F\x7F]/', $returnPath)
+        ) {
+            $returnPath = '/';
+        }
+
         $accessToken = $request->session()
             ->get('supabase_access_token');
 
@@ -140,6 +147,6 @@ class AuthController extends Controller
         $request->session()->invalidate();
         $request->session()->regenerateToken();
 
-        return redirect('/');
+        return redirect()->to($returnPath);
     }
 }

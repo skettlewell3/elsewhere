@@ -144,8 +144,7 @@ class RegistrationAttemptService
                     ->update([
                         'auth_id' => $authId,
                         'status' => 'auth_created',
-                        'auth_created_at' =>
-                            $attempt->auth_created_at ?? now(),
+                        'auth_created_at' => $attempt->auth_created_at ?? now(),
                         'last_error_code' => null,
                         'updated_at' => now(),
                     ]) === 1;
@@ -227,8 +226,7 @@ class RegistrationAttemptService
                     )
                     ->update([
                         'status' => 'completed',
-                        'provisioned_at' =>
-                            $attempt->provisioned_at ?? now(),
+                        'provisioned_at' => $attempt->provisioned_at ?? now(),
                         'completed_at' => now(),
                         'last_error_code' => null,
                         'updated_at' => now(),

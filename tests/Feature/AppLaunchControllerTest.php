@@ -2,6 +2,7 @@
 
 namespace Tests\Feature;
 
+use App\Http\Middleware\RefreshSupabaseSession;
 use App\Models\AccountUser;
 use App\Models\App;
 use App\Models\AppMembership;
@@ -18,19 +19,19 @@ class AppLaunchControllerTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-    
+
         if (DB::getDriverName() !== 'sqlite') {
             $this->markTestSkipped(
                 'These isolated tests require SQLite.'
             );
         }
-    
+
         $this->withoutMiddleware(
-            \App\Http\Middleware\RefreshSupabaseSession::class
+            RefreshSupabaseSession::class
         );
-    
+
         config()->set('session.driver', 'array');
-    
+
         $this->createTestTables();
     }
 
@@ -95,8 +96,7 @@ class AppLaunchControllerTest extends TestCase
             'category' => 'Sports',
             'description' => 'Football prediction game.',
             'status' => $status,
-            'launch_url' =>
-                'https://perfect10.elsewhere.uk.com',
+            'launch_url' => 'https://perfect10.elsewhere.uk.com',
             'sort_order' => 1,
         ]);
     }
@@ -105,8 +105,7 @@ class AppLaunchControllerTest extends TestCase
     {
         DB::table('accounts_users')->insert([
             'auth_id' => self::AUTH_ID,
-            'account_id' =>
-                'aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa',
+            'account_id' => 'aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa',
             'username' => 'test_player',
             'created_at' => now(),
             'updated_at' => now(),
@@ -129,8 +128,7 @@ class AppLaunchControllerTest extends TestCase
             'auth_id' => self::AUTH_ID,
             'app_id' => $app->app_id,
             'status' => $status,
-            'registered_at' =>
-                $status === 'active' ? now() : null,
+            'registered_at' => $status === 'active' ? now() : null,
         ]);
     }
 

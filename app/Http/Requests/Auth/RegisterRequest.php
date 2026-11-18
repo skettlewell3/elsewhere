@@ -71,11 +71,9 @@ class RegisterRequest extends FormRequest
     public function messages(): array
     {
         return [
-            'password.confirmed' =>
-                'The passwords do not match.',
+            'password.confirmed' => 'The passwords do not match.',
 
-            'invite_code.required' =>
-                'A sign-up code is required to create an Elsewhere account.',
+            'invite_code.required' => 'A sign-up code is required to create an Elsewhere account.',
         ];
     }
 }

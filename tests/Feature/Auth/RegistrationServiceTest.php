@@ -2,7 +2,6 @@
 
 namespace Tests\Feature\Auth;
 
-use App\Services\Auth\RegistrationAttemptService;
 use App\Services\Auth\RegistrationService;
 use App\Services\Auth\SignupCodeService;
 use App\Services\Auth\SupabaseAuthService;

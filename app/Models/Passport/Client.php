@@ -4,6 +4,7 @@ namespace App\Models\Passport;
 
 use Illuminate\Contracts\Auth\Authenticatable;
 use Laravel\Passport\Client as BaseClient;
+use Laravel\Passport\Scope;
 
 class Client extends BaseClient
 {
@@ -11,7 +12,7 @@ class Client extends BaseClient
      * Determine whether a trusted Elsewhere-owned application
      * can bypass the OAuth consent screen.
      *
-     * @param  \Laravel\Passport\Scope[]  $scopes
+     * @param  Scope[]  $scopes
      */
     public function skipsAuthorization(
         Authenticatable $user,

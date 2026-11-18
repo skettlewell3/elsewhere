@@ -95,8 +95,7 @@ class AuthenticatedIdentityControllerTest extends TestCase
     {
         DB::table('accounts_users')->insert([
             'auth_id' => self::AUTH_ID,
-            'account_id' =>
-                'aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa',
+            'account_id' => 'aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa',
             'username' => 'test_player',
             'created_at' => now(),
             'updated_at' => now(),
@@ -116,8 +115,7 @@ class AuthenticatedIdentityControllerTest extends TestCase
             'category' => 'Sports',
             'description' => 'Football prediction game.',
             'status' => $status,
-            'launch_url' =>
-                'https://perfect10.elsewhere.uk.com',
+            'launch_url' => 'https://perfect10.elsewhere.uk.com',
             'sort_order' => 1,
         ]);
     }
@@ -130,8 +128,7 @@ class AuthenticatedIdentityControllerTest extends TestCase
             'auth_id' => self::AUTH_ID,
             'app_id' => $app->app_id,
             'status' => $status,
-            'registered_at' =>
-                $status === 'active' ? now() : null,
+            'registered_at' => $status === 'active' ? now() : null,
         ]);
     }
 
@@ -140,7 +137,7 @@ class AuthenticatedIdentityControllerTest extends TestCase
         array $scopes = ['identity:read'],
         string $clientId = self::CLIENT_ID
     ): void {
-        $client = new Client();
+        $client = new Client;
 
         $client->setAttribute('id', $clientId);
 

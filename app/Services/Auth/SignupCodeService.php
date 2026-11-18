@@ -113,8 +113,7 @@ class SignupCodeService
 
             DB::table('signup_code_reservations')
                 ->insert([
-                    'signup_code_id' =>
-                        $signupCode->signup_code_id,
+                    'signup_code_id' => $signupCode->signup_code_id,
 
                     'token_hash' => hash('sha256', $token),
 
@@ -415,12 +414,11 @@ class SignupCodeService
             ->first();
 
         if ($existingRedemption) {
-            return (
+            return
                 $reservation->status === 'redeemed' &&
                 (int) $existingRedemption->signup_code_id ===
                     (int) $signupCode->signup_code_id &&
-                strtolower($existingRedemption->auth_id) === $authId
-            );
+                strtolower($existingRedemption->auth_id) === $authId;
         }
 
         if ($reservation->status !== 'reserved') {
@@ -471,11 +469,9 @@ class SignupCodeService
 
         DB::table('signup_code_redemptions')
             ->insert([
-                'signup_code_id' =>
-                    $signupCode->signup_code_id,
+                'signup_code_id' => $signupCode->signup_code_id,
 
-                'reservation_id' =>
-                    $reservation->reservation_id,
+                'reservation_id' => $reservation->reservation_id,
 
                 'auth_id' => $authId,
 

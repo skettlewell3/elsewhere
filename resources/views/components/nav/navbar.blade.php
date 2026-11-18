@@ -1,18 +1,18 @@
 @php
     use Illuminate\Support\Facades\Auth;
 
-    $links = [
+        $links = [
         [
             'label' => 'Directory',
             'route' => 'directory',
         ],
         [
-            'label' => 'Dashboard',
-            'route' => 'dashboard',
-        ],
-        [
             'label' => 'Discover',
             'route' => 'discover',
+        ],
+        [
+            'label' => 'Dashboard',
+            'route' => 'dashboard',
         ],
     ];
 
@@ -95,6 +95,12 @@
                             class="navbar-account-logout"
                         >
                             @csrf
+
+                            <input
+                                type="hidden"
+                                name="return_path"
+                                value="{{ request()->getPathInfo() }}"
+                            >
 
                             <button type="submit">
                                 Log out
@@ -181,6 +187,12 @@
                                 class="navbar-account-logout"
                             >
                                 @csrf
+
+                                <input
+                                    type="hidden"
+                                    name="return_path"
+                                    value="{{ request()->getPathInfo() }}"
+                                >
 
                                 <button type="submit">
                                     Log out

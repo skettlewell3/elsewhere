@@ -173,7 +173,7 @@ SQL);
             return;
         }
 
-        throw new \RuntimeException(
+        throw new RuntimeException(
             'This security migration requires an explicit '
             .'replacement migration to reverse.'
         );

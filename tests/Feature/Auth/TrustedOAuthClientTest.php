@@ -16,11 +16,11 @@ class TrustedOAuthClientTest extends TestCase
             'trusted-perfect10-client',
         ]);
 
-        $client = new Client();
+        $client = new Client;
         $client->setAttribute('id', 'trusted-perfect10-client');
 
         $this->assertTrue(
-            $client->skipsAuthorization(new User(), [])
+            $client->skipsAuthorization(new User, [])
         );
     }
 
@@ -31,11 +31,11 @@ class TrustedOAuthClientTest extends TestCase
             'trusted-perfect10-client',
         ]);
 
-        $client = new Client();
+        $client = new Client;
         $client->setAttribute('id', 'external-app-client');
 
         $this->assertFalse(
-            $client->skipsAuthorization(new User(), [])
+            $client->skipsAuthorization(new User, [])
         );
     }
 
@@ -44,11 +44,11 @@ class TrustedOAuthClientTest extends TestCase
     {
         config()->set('elsewhere_oauth.trusted_client_ids', []);
 
-        $client = new Client();
+        $client = new Client;
         $client->setAttribute('id', 'trusted-perfect10-client');
 
         $this->assertFalse(
-            $client->skipsAuthorization(new User(), [])
+            $client->skipsAuthorization(new User, [])
         );
     }
 }
