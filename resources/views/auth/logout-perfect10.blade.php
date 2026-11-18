@@ -24,14 +24,14 @@
                         value="perfect10"
                     >
 
-                    <button 
+                    <button
                         type="submit"
                         class="navbar-login-submit"
                     >
                         Sign out
                     </button>
                 </form>
-                                
+
                 <a
                     href="{{ config('elsewhere_oauth.perfect10_url') }}"
                     class="auth-logout-cancel"
