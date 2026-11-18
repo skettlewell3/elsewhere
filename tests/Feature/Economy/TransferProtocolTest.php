@@ -10,9 +10,11 @@ use App\Services\Economy\Protocols\TransferProtocol;
 use App\Services\Economy\Wallet\WalletBalanceService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Str;
+use PHPUnit\Framework\Attributes\Group;
 use RuntimeException;
 use Tests\TestCase;
 
+#[Group('economy')]
 class TransferProtocolTest extends TestCase
 {
     use RefreshDatabase;
