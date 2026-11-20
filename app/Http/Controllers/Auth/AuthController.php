@@ -53,20 +53,15 @@ class AuthController extends Controller
             }
 
             $message = match ($exception->reason) {
-                'invalid_credentials' =>
-                    'The email or password is incorrect.',
+                'invalid_credentials' => 'The email or password is incorrect.',
 
-                'email_not_confirmed' =>
-                    'Please verify your email address before signing in.',
+                'email_not_confirmed' => 'Please verify your email address before signing in.',
 
-                'rate_limited' =>
-                    'Too many login attempts. Please try again later.',
+                'rate_limited' => 'Too many login attempts. Please try again later.',
 
-                'unavailable' =>
-                    'The login service is temporarily unavailable. Please try again later.',
+                'unavailable' => 'The login service is temporarily unavailable. Please try again later.',
 
-                default =>
-                    'Unable to sign in right now. Please try again later.',
+                default => 'Unable to sign in right now. Please try again later.',
             };
 
             return back()
@@ -120,10 +115,25 @@ class AuthController extends Controller
         return redirect()->intended('/');
     }
 
+
     public function logout(
         Request $request,
         SupabaseAuthService $authService
     ): RedirectResponse {
+        $returnToPerfect10 = $request->input('return_app') === 'perfect10';
+
+        $returnPath = $request->input('return_path', '/');
+
+        if (
+            ! is_string($returnPath) ||
+            ! str_starts_with($returnPath, '/') ||
+            str_starts_with($returnPath, '//') ||
+            str_contains($returnPath, '\\') ||
+            preg_match('/[\x00-\x1F\x7F]/', $returnPath)
+        ) {
+            $returnPath = '/';
+        }
+
         $accessToken = $request->session()
             ->get('supabase_access_token');
 
@@ -140,6 +150,29 @@ class AuthController extends Controller
         $request->session()->invalidate();
         $request->session()->regenerateToken();
 
-        return redirect('/');
+        if ($returnToPerfect10) {
+            $perfect10Url = config('elsewhere_oauth.perfect10_url');
+
+            abort_unless(
+                is_string($perfect10Url) &&
+                filter_var($perfect10Url, FILTER_VALIDATE_URL) &&
+                in_array(
+                    parse_url($perfect10Url, PHP_URL_SCHEME),
+                    ['http', 'https'],
+                    true
+                ),
+                500,
+                'Perfect10 return URL is not configured.'
+            );
+
+            $request->session()->put(
+                'url.intended',
+                rtrim($perfect10Url, '/').'/'
+            );
+
+            return redirect()->route('login');
+        }
+
+        return redirect()->to($returnPath);
     }
 }

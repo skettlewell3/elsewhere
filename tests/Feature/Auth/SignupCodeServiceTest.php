@@ -151,10 +151,8 @@ class SignupCodeServiceTest extends TestCase
                 'auth_id' => $authId,
                 'email' => strtolower(trim($email)),
                 'status' => $status,
-                'auth_requested_at' =>
-                    $status === 'reserved' ? null : now(),
-                'auth_created_at' =>
-                    $authConfirmed ? now() : null,
+                'auth_requested_at' => $status === 'reserved' ? null : now(),
+                'auth_created_at' => $authConfirmed ? now() : null,
                 'created_at' => now(),
                 'updated_at' => now(),
             ]);

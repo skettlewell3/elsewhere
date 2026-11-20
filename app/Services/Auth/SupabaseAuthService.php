@@ -120,8 +120,7 @@ class SupabaseAuthService
                         'data' => [
                             'first_name' => $firstName,
                             'last_name' => $lastName,
-                            'signup_reservation_token' =>
-                                $reservationToken,
+                            'signup_reservation_token' => $reservationToken,
                         ],
                     ]
                 );

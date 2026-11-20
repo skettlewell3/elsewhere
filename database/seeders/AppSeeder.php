@@ -17,11 +17,9 @@ class AppSeeder extends Seeder
                 'name' => 'Perfect10',
                 'category' => 'Sports',
 
-                'description' =>
-                    'Football prediction game, play with and against friends, join clubs, compete together and win prizes!',
+                'description' => 'Football prediction game, play with and against friends, join clubs, compete together and win prizes!',
 
-                'image' =>
-                    'images/apps/p10/p10Transparent.png',
+                'image' => 'images/apps/p10/p10Transparent.png',
 
                 'alt' => 'Perfect10',
 
@@ -29,8 +27,7 @@ class AppSeeder extends Seeder
 
                 'info_url' => '/apps/perfect10',
 
-                'launch_url' =>
-                    'https://perfect10.elsewhere.uk.com',
+                'launch_url' => 'https://perfect10.elsewhere.uk.com',
 
                 'sort_order' => 1,
             ]

@@ -13,6 +13,11 @@ return [
             'driver' => 'session',
             'provider' => 'account_users',
         ],
+
+        'api' => [
+            'driver' => 'passport',
+            'provider' => 'account_users',
+        ],
     ],
 
     'providers' => [

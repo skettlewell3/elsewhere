@@ -8,7 +8,6 @@ use App\Services\Auth\LoginRateLimiter;
 use App\Services\Auth\SupabaseAuthService;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Facades\Schema;
 use Mockery;
@@ -352,5 +351,139 @@ class LoginTest extends TestCase
         $response->assertSessionMissing(
             'supabase_refresh_token'
         );
+    }
+
+    public function test_logout_preserves_the_current_page(): void
+    {
+        $this->withoutExceptionHandling();
+
+        $accountUser = $this->createAccountUser();
+
+        $mock = Mockery::mock(SupabaseAuthService::class);
+
+        $mock->shouldReceive('signOut')
+            ->once()
+            ->with('test-access-token');
+
+        $this->app->instance(SupabaseAuthService::class, $mock);
+
+        $response = $this
+            ->actingAs($accountUser, 'web')
+            ->withSession([
+                'supabase_access_token' => 'test-access-token',
+                'supabase_refresh_token' => 'test-refresh-token',
+                'supabase_expires_at' => now()->addHour()->timestamp,
+            ])
+            ->post('/logout', [
+                'return_path' => '/discover',
+            ]);
+
+        $response->assertRedirect('/discover');
+
+        $this->assertGuest('web');
+
+        $response->assertSessionMissing(
+            'supabase_access_token'
+        );
+    }
+
+    public function test_logout_rejects_external_return_paths(): void
+    {
+        $accountUser = $this->createAccountUser();
+
+        $mock = Mockery::mock(SupabaseAuthService::class);
+
+        $mock->shouldReceive('signOut')
+            ->once()
+            ->with('test-access-token');
+
+        $this->app->instance(SupabaseAuthService::class, $mock);
+
+        $response = $this
+            ->actingAs($accountUser, 'web')
+            ->withSession([
+                'supabase_access_token' => 'test-access-token',
+                'supabase_refresh_token' => 'test-refresh-token',
+                'supabase_expires_at' => now()->addHour()->timestamp,
+            ])
+            ->post('/logout', [
+                'return_path' => '//malicious.example',
+            ]);
+
+        $response->assertRedirect('/');
+
+        $this->assertGuest('web');
+    }
+
+    public function test_perfect10_logout_redirects_to_login_and_remembers_destination(): void
+    {
+        $accountUser = $this->createAccountUser();
+
+        config()->set(
+            'elsewhere_oauth.perfect10_url',
+            'http://localhost:8001'
+        );
+
+        $mock = Mockery::mock(SupabaseAuthService::class);
+
+        $mock->shouldReceive('signOut')
+            ->once()
+            ->with('test-access-token');
+
+        $this->app->instance(SupabaseAuthService::class, $mock);
+
+        $response = $this
+            ->actingAs($accountUser, 'web')
+            ->withSession([
+                'supabase_access_token' => 'test-access-token',
+                'supabase_refresh_token' => 'test-refresh-token',
+                'supabase_expires_at' => now()->addHour()->timestamp,
+            ])
+            ->post('/logout', [
+                'return_app' => 'perfect10',
+            ]);
+
+        $response->assertRedirect(route('login'));
+
+        $this->assertGuest('web');
+
+        $response->assertSessionMissing(
+            'supabase_access_token'
+        );
+
+        $response->assertSessionMissing(
+            'supabase_refresh_token'
+        );
+
+        $response->assertSessionHas(
+            'url.intended',
+            'http://localhost:8001/'
+        );
+    }
+
+    public function test_login_returns_to_perfect10_after_central_logout(): void
+    {
+        config()->set(
+            'elsewhere_oauth.perfect10_url',
+            'http://localhost:8001'
+        );
+
+        $this->createAccountUser();
+
+        $this->mockSuccessfulSignIn();
+
+        $response = $this
+            ->withSession([
+                'url.intended' => 'http://localhost:8001/',
+            ])
+            ->post('/login', $this->loginData());
+
+        $response->assertRedirect(
+            'http://localhost:8001/'
+        );
+
+        $this->assertAuthenticated('web');
+
+        $response->assertSessionMissing('url.intended');
     }
 }

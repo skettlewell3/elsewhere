@@ -2,6 +2,7 @@
 
 namespace Tests\Feature;
 
+use App\Http\Middleware\RefreshSupabaseSession;
 use App\Models\AccountUser;
 use App\Models\App;
 use App\Models\AppMembership;
@@ -18,19 +19,24 @@ class AppLaunchControllerTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-    
+
         if (DB::getDriverName() !== 'sqlite') {
             $this->markTestSkipped(
                 'These isolated tests require SQLite.'
             );
         }
-    
+
         $this->withoutMiddleware(
-            \App\Http\Middleware\RefreshSupabaseSession::class
+            RefreshSupabaseSession::class
         );
-    
+
         config()->set('session.driver', 'array');
-    
+
+        config()->set(
+            'elsewhere_oauth.perfect10_url',
+            'http://localhost:8001'
+        );
+
         $this->createTestTables();
     }
 
@@ -95,8 +101,7 @@ class AppLaunchControllerTest extends TestCase
             'category' => 'Sports',
             'description' => 'Football prediction game.',
             'status' => $status,
-            'launch_url' =>
-                'https://perfect10.elsewhere.uk.com',
+            'launch_url' => 'https://perfect10.elsewhere.uk.com',
             'sort_order' => 1,
         ]);
     }
@@ -105,8 +110,7 @@ class AppLaunchControllerTest extends TestCase
     {
         DB::table('accounts_users')->insert([
             'auth_id' => self::AUTH_ID,
-            'account_id' =>
-                'aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa',
+            'account_id' => 'aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa',
             'username' => 'test_player',
             'created_at' => now(),
             'updated_at' => now(),
@@ -129,8 +133,7 @@ class AppLaunchControllerTest extends TestCase
             'auth_id' => self::AUTH_ID,
             'app_id' => $app->app_id,
             'status' => $status,
-            'registered_at' =>
-                $status === 'active' ? now() : null,
+            'registered_at' => $status === 'active' ? now() : null,
         ]);
     }
 
@@ -164,7 +167,7 @@ class AppLaunchControllerTest extends TestCase
         );
     }
 
-    public function test_active_member_reaches_launch_gateway(): void
+    public function test_active_member_launches_perfect10(): void
     {
         $app = $this->createApp();
 
@@ -173,12 +176,32 @@ class AppLaunchControllerTest extends TestCase
 
         $response = $this->get($this->launchUrl());
 
-        $response->assertRedirect(route('discover'));
-
-        $response->assertSessionHas(
-            'app_launch_message',
-            'Perfect10 is ready in your Elsewhere account. The app login connection is not available yet.'
+        $response->assertRedirect(
+            'http://localhost:8001/'
         );
+
+        $this->assertDatabaseHas('app_memberships', [
+            'auth_id' => self::AUTH_ID,
+            'app_id' => $app->app_id,
+            'status' => 'active',
+        ]);
+    }
+
+    public function test_active_member_cannot_launch_without_configured_url(): void
+    {
+        $app = $this->createApp();
+
+        $this->signIn();
+        $this->createMembership($app);
+
+        config()->set(
+            'elsewhere_oauth.perfect10_url',
+            null
+        );
+
+        $response = $this->get($this->launchUrl());
+
+        $response->assertStatus(503);
 
         $this->assertDatabaseHas('app_memberships', [
             'auth_id' => self::AUTH_ID,

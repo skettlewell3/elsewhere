@@ -2,12 +2,16 @@
 
 namespace App\Models;
 
-use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Foundation\Auth\User as Authenticatable;
+use Laravel\Passport\Contracts\OAuthenticatable;
+use Laravel\Passport\HasApiTokens;
 
-class AccountUser extends Authenticatable
+class AccountUser extends Authenticatable implements OAuthenticatable
 {
+    use HasApiTokens;
+
     protected $table = 'accounts_users';
 
     protected $primaryKey = 'auth_id';
