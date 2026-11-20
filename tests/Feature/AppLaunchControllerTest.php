@@ -32,6 +32,11 @@ class AppLaunchControllerTest extends TestCase
 
         config()->set('session.driver', 'array');
 
+        config()->set(
+            'elsewhere_oauth.perfect10_url',
+            'http://localhost:8001'
+        );
+
         $this->createTestTables();
     }
 
@@ -162,7 +167,7 @@ class AppLaunchControllerTest extends TestCase
         );
     }
 
-    public function test_active_member_reaches_launch_gateway(): void
+    public function test_active_member_launches_perfect10(): void
     {
         $app = $this->createApp();
 
@@ -171,12 +176,32 @@ class AppLaunchControllerTest extends TestCase
 
         $response = $this->get($this->launchUrl());
 
-        $response->assertRedirect(route('discover'));
-
-        $response->assertSessionHas(
-            'app_launch_message',
-            'Perfect10 is ready in your Elsewhere account. The app login connection is not available yet.'
+        $response->assertRedirect(
+            'http://localhost:8001/'
         );
+
+        $this->assertDatabaseHas('app_memberships', [
+            'auth_id' => self::AUTH_ID,
+            'app_id' => $app->app_id,
+            'status' => 'active',
+        ]);
+    }
+
+    public function test_active_member_cannot_launch_without_configured_url(): void
+    {
+        $app = $this->createApp();
+
+        $this->signIn();
+        $this->createMembership($app);
+
+        config()->set(
+            'elsewhere_oauth.perfect10_url',
+            null
+        );
+
+        $response = $this->get($this->launchUrl());
+
+        $response->assertStatus(503);
 
         $this->assertDatabaseHas('app_memberships', [
             'auth_id' => self::AUTH_ID,

@@ -50,26 +50,53 @@ class AppLaunchController extends Controller
             ->first();
 
         /*
-         * An existing active member will eventually
-         * be sent through the SSO handoff.
-         *
-         * Do not redirect directly to the app until
-         * that process exists.
+         * Active members may launch supported applications.
          */
         if ($membership?->status === 'active') {
+            if ($app->slug === 'perfect10') {
+                $launchUrl = config(
+                    'elsewhere_oauth.perfect10_url'
+                );
+
+                abort_unless(
+                    is_string($launchUrl) &&
+                    filter_var($launchUrl, FILTER_VALIDATE_URL) &&
+                    in_array(
+                        parse_url($launchUrl, PHP_URL_SCHEME),
+                        ['http', 'https'],
+                        true
+                    ) &&
+                    ! parse_url(
+                        $launchUrl,
+                        PHP_URL_USER
+                    ) &&
+                    ! parse_url(
+                        $launchUrl,
+                        PHP_URL_PASS
+                    ),
+                    503,
+                    'Perfect10 launch URL is not configured.'
+                );
+
+                return redirect()->away(
+                    rtrim($launchUrl, '/').'/'
+                );
+            }
+
             return redirect()
                 ->route('discover')
                 ->with(
                     'app_launch_message',
-                    "{$app->name} is ready in your Elsewhere account. The app login connection is not available yet."
+                    "{$app->name} is not yet connected to Elsewhere sign-in."
                 );
         }
 
         /*
-         * A new member will eventually enter the
-         * application-specific onboarding process.
+         * New members will eventually enter
+         * application-specific onboarding.
          */
-        if ($membership === null ||
+        if (
+            $membership === null ||
             $membership->status === 'removed'
         ) {
             return redirect()
