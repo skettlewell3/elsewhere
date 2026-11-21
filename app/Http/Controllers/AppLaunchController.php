@@ -25,12 +25,7 @@ class AppLaunchController extends Controller
 
         /*
          * Guests must authenticate through Elsewhere.
-         *
-         * redirect()->guest() stores the launch URL
-         * as Laravel's intended destination.
-         *
-         * After login, AuthController's existing
-         * redirect()->intended('/') resumes here.
+         * The intended URL resumes after login.
          */
         if (! Auth::guard('web')->check()) {
             return redirect()->guest(
@@ -41,8 +36,8 @@ class AppLaunchController extends Controller
         $user = Auth::guard('web')->user();
 
         /*
-         * Membership belongs to the individual
-         * Elsewhere user, not their parent account.
+         * Membership belongs to the individual Elsewhere
+         * user, not their parent account.
          */
         $membership = AppMembership::query()
             ->where('auth_id', $user->auth_id)
@@ -92,36 +87,38 @@ class AppLaunchController extends Controller
         }
 
         /*
-         * New members will eventually enter
-         * application-specific onboarding.
+         * New users must confirm enrolment.
+         * Pending users can resume registration.
          */
         if (
             $membership === null ||
-            $membership->status === 'removed'
+            $membership->status === 'pending'
         ) {
-            return redirect()
-                ->route('discover')
-                ->with(
-                    'app_launch_message',
-                    "You can create a {$app->name} profile once application registration is connected."
-                );
+            return redirect()->route(
+                'apps.enrol',
+                $app
+            );
         }
 
-        if ($membership->status === 'pending') {
-            return redirect()
-                ->route('discover')
-                ->with(
-                    'app_launch_message',
-                    "Your {$app->name} registration is pending."
-                );
-        }
-
+        /*
+         * Suspended and removed memberships
+         * cannot automatically enrol again.
+         */
         if ($membership->status === 'suspended') {
             return redirect()
                 ->route('discover')
                 ->with(
                     'app_launch_message',
                     "Your {$app->name} access is currently suspended."
+                );
+        }
+
+        if ($membership->status === 'removed') {
+            return redirect()
+                ->route('discover')
+                ->with(
+                    'app_launch_message',
+                    "Your {$app->name} membership cannot be automatically reactivated."
                 );
         }
 

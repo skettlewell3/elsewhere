@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\AppEnrolmentController;
 use App\Http\Controllers\AppLaunchController;
 use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\BusinessController;
@@ -57,6 +58,11 @@ Route::view('/dashboard', 'pages.dashboard')
 
 Route::get('/discover', [DiscoverController::class, 'index'])
     ->name('discover');
+
+Route::get('/apps/{app:slug}/enrol', [
+    AppEnrolmentController::class,
+    'show',
+])->name('apps.enrol');
 
 Route::get('/apps/{app:slug}/launch', [
     AppLaunchController::class,

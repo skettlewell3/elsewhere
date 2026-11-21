@@ -210,7 +210,7 @@ class AppLaunchControllerTest extends TestCase
         ]);
     }
 
-    public function test_unregistered_user_is_sent_towards_onboarding(): void
+    public function test_unregistered_user_is_sent_to_enrolment(): void
     {
         $app = $this->createApp();
 
@@ -218,17 +218,14 @@ class AppLaunchControllerTest extends TestCase
 
         $response = $this->get($this->launchUrl());
 
-        $response->assertRedirect(route('discover'));
-
-        $response->assertSessionHas(
-            'app_launch_message',
-            'You can create a Perfect10 profile once application registration is connected.'
+        $response->assertRedirect(
+            route('apps.enrol', $app)
         );
 
         $this->assertDatabaseCount('app_memberships', 0);
     }
 
-    public function test_removed_membership_is_treated_as_unregistered(): void
+    public function test_removed_membership_cannot_reenrol_automatically(): void
     {
         $app = $this->createApp();
 
@@ -241,7 +238,7 @@ class AppLaunchControllerTest extends TestCase
 
         $response->assertSessionHas(
             'app_launch_message',
-            'You can create a Perfect10 profile once application registration is connected.'
+            'Your Perfect10 membership cannot be automatically reactivated.'
         );
 
         $this->assertDatabaseHas('app_memberships', [
@@ -250,7 +247,7 @@ class AppLaunchControllerTest extends TestCase
         ]);
     }
 
-    public function test_pending_membership_cannot_launch(): void
+    public function test_pending_membership_is_sent_to_enrolment(): void
     {
         $app = $this->createApp();
 
@@ -259,11 +256,8 @@ class AppLaunchControllerTest extends TestCase
 
         $response = $this->get($this->launchUrl());
 
-        $response->assertRedirect(route('discover'));
-
-        $response->assertSessionHas(
-            'app_launch_message',
-            'Your Perfect10 registration is pending.'
+        $response->assertRedirect(
+            route('apps.enrol', $app)
         );
 
         $this->assertDatabaseHas('app_memberships', [
@@ -360,10 +354,10 @@ class AppLaunchControllerTest extends TestCase
         $this->signIn();
 
         $this->get($this->launchUrl())
-            ->assertRedirect(route('discover'));
+            ->assertRedirect(route('apps.enrol', ['app' => 'perfect10']));
 
         $this->get($this->launchUrl())
-            ->assertRedirect(route('discover'));
+            ->assertRedirect(route('apps.enrol', ['app' => 'perfect10']));
 
         $this->assertDatabaseCount('app_memberships', 0);
     }
