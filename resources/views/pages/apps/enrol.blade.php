@@ -59,22 +59,38 @@
                         will manage your application profile.
                     </p>
                 @endif
+                
+                @if(session('app_enrolment_error'))
+                    <p class="app-enrolment__error" role="alert">
+                        {{ session('app_enrolment_error') }}
+                    </p>
+                @endif
 
                 <div class="app-enrolment__actions">
-                    {{-- Enabled when the POST enrolment route is ready. --}}
-                    <button
-                        type="button"
-                        disabled
-                    >
-                        {{ $membership?->status === 'pending'
-                            ? 'Continue registration'
-                            : 'Confirm registration' }}
-                    </button>
+                    @if($enrolmentEnabled)
+                        <form
+                            method="POST"
+                            action="{{ route('apps.enrol.store', $app) }}"
+                        >
+                            @csrf
 
+                            <button type="submit">
+                                {{ $membership?->status === 'pending'
+                                    ? 'Continue registration'
+                                    : 'Confirm registration' }}
+                            </button>
+                        </form>
+                    @else
+                        <button type="button" disabled>
+                            Registration coming soon
+                        </button>
+                    @endif
+                                
                     <a href="{{ route('discover') }}">
                         Cancel
                     </a>
                 </div>
+
             </div>
         </div>
     </section>

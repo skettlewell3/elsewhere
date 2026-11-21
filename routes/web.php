@@ -64,6 +64,11 @@ Route::get('/apps/{app:slug}/enrol', [
     'show',
 ])->name('apps.enrol');
 
+Route::post('/apps/{app:slug}/enrol', [
+    AppEnrolmentController::class,
+    'store',
+])->name('apps.enrol.store');
+
 Route::get('/apps/{app:slug}/launch', [
     AppLaunchController::class,
     'launch',

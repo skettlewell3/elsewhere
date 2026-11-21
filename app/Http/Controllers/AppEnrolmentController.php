@@ -4,9 +4,12 @@ namespace App\Http\Controllers;
 
 use App\Models\App;
 use App\Models\AppMembership;
+use App\Services\Apps\AppEnrolmentService;
+use DomainException;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Auth;
+use Throwable;
 
 class AppEnrolmentController extends Controller
 {
@@ -57,6 +60,57 @@ class AppEnrolmentController extends Controller
         return view('pages.apps.enrol', [
             'app' => $app,
             'membership' => $membership,
+            'enrolmentEnabled' => (bool) config(
+                'app_enrolment.enabled',
+                false
+            ),
         ]);
+    }
+
+    public function store(
+        App $app,
+        AppEnrolmentService $enrolment
+    ): RedirectResponse {
+        /*
+         * Registration stays disabled until both applications
+         * and their database migrations are ready.
+         */
+        abort_unless(
+            config('app_enrolment.enabled', false),
+            503,
+            'Application enrolment is not currently available.'
+        );
+
+        if (! Auth::guard('web')->check()) {
+            return redirect()->guest(route('login'));
+        }
+
+        $user = Auth::guard('web')->user();
+
+        try {
+            $enrolment->enrol($user, $app);
+        } catch (DomainException $exception) {
+            return redirect()
+                ->route('discover')
+                ->with(
+                    'app_launch_message',
+                    'This application registration cannot be completed.'
+                );
+        } catch (Throwable $exception) {
+            report($exception);
+
+            return redirect()
+                ->route('apps.enrol', $app)
+                ->with(
+                    'app_enrolment_error',
+                    'Registration could not be completed. Please try again later.'
+                );
+        }
+
+        /*
+         * Provisioning succeeded and Elsewhere activated
+         * the membership. Resume the normal app launch.
+         */
+        return redirect()->route('apps.launch', $app);
     }
 }
