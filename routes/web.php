@@ -3,6 +3,7 @@
 use App\Http\Controllers\AppEnrolmentController;
 use App\Http\Controllers\AppLaunchController;
 use App\Http\Controllers\Auth\AuthController;
+use App\Http\Controllers\Auth\RegistrationController;
 use App\Http\Controllers\BusinessController;
 use App\Http\Controllers\DirectoryController;
 use App\Http\Controllers\DiscoverController;
@@ -35,6 +36,13 @@ Route::view('/reset-password', 'pages.auth.reset-password')
 
 Route::view('/register', 'pages.auth.register')
     ->name('register');
+
+Route::post(
+    '/register',
+    [RegistrationController::class, 'store']
+)
+    ->middleware('throttle:5,1')
+    ->name('register.store');
 
 Route::get('/', function () {
     return redirect()->route('directory');
