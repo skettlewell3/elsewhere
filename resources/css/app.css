@@ -959,6 +959,209 @@
 /* -- End of Authentication Pages */
 /* -- END OF AUTH */
 
+
+/* APPLICATION ENROLMENT */
+
+.app-enrolment {
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+
+    min-height: 70vh;
+    padding: 5rem 1.5rem;
+}
+
+.app-enrolment__content {
+    width: 100%;
+    max-width: 34rem;
+
+    padding: 2rem;
+
+    background: var(--nav-background);
+    border: 1px solid var(--nav-border);
+    border-radius: 1rem;
+
+    box-shadow: 0 .75rem 2rem rgba(0, 0, 0, .2);
+}
+
+.app-enrolment__back {
+    display: inline-block;
+    margin-bottom: 2rem;
+
+    color: var(--accent);
+    font-size: .875rem;
+    font-weight: 600;
+    text-decoration: none;
+
+    transition: opacity .2s ease;
+}
+
+.app-enrolment__back:hover {
+    opacity: .75;
+    text-decoration: underline;
+}
+
+.app-enrolment__header {
+    margin-bottom: 2rem;
+    text-align: center;
+}
+
+.app-enrolment__category {
+    display: inline-block;
+    margin: 0 0 1rem;
+    padding: .35rem .85rem;
+
+    color: var(--accent);
+    background: var(--nav-background);
+    border: 1px solid var(--nav-border);
+    border-radius: 999px;
+
+    font-size: .75rem;
+    font-weight: 600;
+    letter-spacing: .04em;
+    text-transform: uppercase;
+}
+
+.app-enrolment__header h1 {
+    margin: 0 0 .75rem;
+
+    color: var(--nav-text);
+    font-size: 1.75rem;
+    line-height: 1.25;
+}
+
+.app-enrolment__description {
+    margin: 0;
+
+    color: var(--nav-text);
+    font-size: .9rem;
+    line-height: 1.6;
+
+    opacity: .8;
+}
+
+.app-enrolment__confirmation {
+    padding-top: 1.75rem;
+    border-top: 1px solid var(--nav-border);
+}
+
+.app-enrolment__confirmation h2 {
+    margin: 0 0 1rem;
+
+    color: var(--nav-text);
+    font-size: 1.15rem;
+    font-weight: 600;
+    text-align: center;
+}
+
+.app-enrolment__confirmation > p {
+    margin: 0 0 1rem;
+
+    color: var(--nav-text);
+    font-size: .9rem;
+    line-height: 1.6;
+    text-align: center;
+
+    opacity: .85;
+}
+
+.app-enrolment__error {
+    margin: 1.5rem 0;
+    padding: .875rem 1rem;
+
+    color: var(--nav-text);
+    background: rgba(229, 189, 117, .1);
+    border: 1px solid rgba(229, 189, 117, .3);
+    border-radius: .75rem;
+
+    font-size: .85rem;
+    line-height: 1.5;
+    text-align: center;
+}
+
+.app-enrolment__actions {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 1rem;
+
+    margin-top: 2rem;
+}
+
+.app-enrolment__actions form {
+    width: 100%;
+}
+
+.app-enrolment__submit {
+    display: block;
+    width: 100%;
+
+    padding: .9rem 1.25rem;
+
+    color: var(--nav-background);
+    background: var(--accent);
+    border: 1px solid var(--accent);
+    border-radius: .65rem;
+
+    font: inherit;
+    font-size: .9rem;
+    font-weight: 700;
+
+    cursor: pointer;
+    transition:
+        opacity .2s ease,
+        transform .2s ease;
+}
+
+.app-enrolment__submit:hover:not(:disabled) {
+    opacity: .9;
+    transform: translateY(-1px);
+}
+
+.app-enrolment__submit:disabled {
+    opacity: .5;
+    cursor: not-allowed;
+}
+
+.app-enrolment__cancel {
+    align-self: center;
+
+    color: var(--accent);
+    font-size: .875rem;
+    font-weight: 600;
+    text-decoration: none;
+}
+
+.app-enrolment__cancel:hover {
+    text-decoration: underline;
+}
+
+.app-enrolment__back:focus-visible,
+.app-enrolment__submit:focus-visible,
+.app-enrolment__cancel:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 4px;
+}
+
+/* Mobile */
+
+@media (max-width: 480px) {
+    .app-enrolment {
+        padding: 2.5rem 1rem;
+    }
+
+    .app-enrolment__content {
+        padding: 1.5rem;
+    }
+
+    .app-enrolment__header h1 {
+        font-size: 1.5rem;
+    }
+}
+
+/* END OF APPLICATION ENROLMENT */
+
+
 /* -- END of STRUCTURE CONTENT */
 
 /* MAIN CONTENT */

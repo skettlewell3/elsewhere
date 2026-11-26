@@ -115,7 +115,6 @@ class AuthController extends Controller
         return redirect()->intended('/');
     }
 
-
     public function logout(
         Request $request,
         SupabaseAuthService $authService

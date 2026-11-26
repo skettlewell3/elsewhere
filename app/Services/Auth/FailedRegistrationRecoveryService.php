@@ -2,6 +2,7 @@
 
 namespace App\Services\Auth;
 
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 
@@ -70,7 +71,7 @@ class FailedRegistrationRecoveryService
 
             if (
                 $attempt->updated_at === null ||
-                \Illuminate\Support\Carbon::parse($attempt->updated_at)
+                Carbon::parse($attempt->updated_at)
                     ->greaterThan(now()->subMinutes($graceMinutes))
             ) {
                 return 'too_recent';
