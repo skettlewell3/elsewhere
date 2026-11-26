@@ -1,7 +1,9 @@
 <?php
 
+use App\Http\Controllers\AppEnrolmentController;
 use App\Http\Controllers\AppLaunchController;
 use App\Http\Controllers\Auth\AuthController;
+use App\Http\Controllers\Auth\RegistrationController;
 use App\Http\Controllers\BusinessController;
 use App\Http\Controllers\DirectoryController;
 use App\Http\Controllers\DiscoverController;
@@ -35,6 +37,13 @@ Route::view('/reset-password', 'pages.auth.reset-password')
 Route::view('/register', 'pages.auth.register')
     ->name('register');
 
+Route::post(
+    '/register',
+    [RegistrationController::class, 'store']
+)
+    ->middleware('throttle:5,1')
+    ->name('register.store');
+
 Route::get('/', function () {
     return redirect()->route('directory');
 });
@@ -57,6 +66,16 @@ Route::view('/dashboard', 'pages.dashboard')
 
 Route::get('/discover', [DiscoverController::class, 'index'])
     ->name('discover');
+
+Route::get('/apps/{app:slug}/enrol', [
+    AppEnrolmentController::class,
+    'show',
+])->name('apps.enrol');
+
+Route::post('/apps/{app:slug}/enrol', [
+    AppEnrolmentController::class,
+    'store',
+])->name('apps.enrol.store');
 
 Route::get('/apps/{app:slug}/launch', [
     AppLaunchController::class,

@@ -32,6 +32,11 @@ class CurrentAccountService
         return $this->accountUser()?->account;
     }
 
+    public function displayName(): ?string
+    {
+        return $this->accountUser()?->display_name;
+    }
+
     public function check(): bool
     {
         return Auth::guard('web')->check();

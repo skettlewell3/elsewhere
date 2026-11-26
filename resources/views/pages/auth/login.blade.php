@@ -16,6 +16,12 @@
                 </p>
             </div>
 
+            @if(session('registration_success'))
+                <div class="auth-page-notice" role="status">
+                    {{ session('registration_success') }}
+                </div>
+            @endif
+
             <div class="auth-page-form">
                 <x-auth.login-form id-prefix="page-login" />
             </div>
