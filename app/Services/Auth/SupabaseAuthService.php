@@ -167,9 +167,6 @@ class SupabaseAuthService
             ];
         }
 
-        // The GoTrue REST endpoint normally returns the
-        // user fields directly. Support a nested user
-        // response as well for compatibility.
         $user = $result['user'] ?? $result;
 
         if (! is_array($user)) {
@@ -190,10 +187,6 @@ class SupabaseAuthService
             ];
         }
 
-        // Supabase can return an obfuscated user object
-        // for an existing account. An explicitly empty
-        // identities collection must never be considered
-        // confirmation of a newly created identity.
         if (
             array_key_exists('identities', $user) &&
             is_array($user['identities']) &&
@@ -249,5 +242,136 @@ class SupabaseAuthService
         }
 
         return $response->json();
+    }
+
+    /**
+     * Ask Supabase to email a recovery link.
+     *
+     * The redirect URL is explicitly supplied by Elsewhere,
+     * so local development does not depend on the deployed
+     * Elsewhere domain.
+     */
+    public function requestPasswordReset(
+        string $email,
+        string $redirectUrl
+    ): void {
+        $url = rtrim(config('services.supabase.url'), '/');
+        $key = config('services.supabase.publishable_key');
+
+        try {
+            $response = Http::withHeaders([
+                'apikey' => $key,
+            ])
+                ->acceptJson()
+                ->timeout(15)
+                ->post(
+                    "{$url}/auth/v1/recover?redirect_to="
+                        .rawurlencode($redirectUrl),
+                    [
+                        'email' => $email,
+                    ]
+                );
+        } catch (ConnectionException $exception) {
+            throw new RuntimeException(
+                'supabase_recovery_unavailable',
+                previous: $exception
+            );
+        }
+
+        if ($response->failed()) {
+            throw new RuntimeException(
+                $response->status() === 429
+                    ? 'supabase_recovery_rate_limited'
+                    : 'supabase_recovery_failed'
+            );
+        }
+    }
+
+    /**
+     * Exchange a one-time recovery token hash for a
+     * temporary Supabase access token.
+     *
+     * This does not create a Laravel login session.
+     */
+    public function verifyRecoveryToken(string $tokenHash): string
+    {
+        $url = rtrim(config('services.supabase.url'), '/');
+        $key = config('services.supabase.publishable_key');
+
+        try {
+            $response = Http::withHeaders([
+                'apikey' => $key,
+            ])
+                ->acceptJson()
+                ->timeout(10)
+                ->post(
+                    "{$url}/auth/v1/verify",
+                    [
+                        'token_hash' => $tokenHash,
+                        'type' => 'recovery',
+                    ]
+                );
+        } catch (ConnectionException $exception) {
+            throw new RuntimeException(
+                'supabase_recovery_verification_unavailable',
+                previous: $exception
+            );
+        }
+
+        if ($response->failed()) {
+            throw new RuntimeException(
+                'supabase_recovery_token_invalid'
+            );
+        }
+
+        $accessToken = $response->json('access_token');
+
+        if (! is_string($accessToken) || $accessToken === '') {
+            throw new RuntimeException(
+                'supabase_recovery_session_missing'
+            );
+        }
+
+        return $accessToken;
+    }
+
+    /**
+     * Update the password using the access token
+     * returned by successful recovery verification.
+     *
+     * Never use a service-role key to change a password.
+     */
+    public function updatePassword(
+        string $accessToken,
+        string $password
+    ): void {
+        $url = rtrim(config('services.supabase.url'), '/');
+        $key = config('services.supabase.publishable_key');
+
+        try {
+            $response = Http::withHeaders([
+                'apikey' => $key,
+                'Authorization' => 'Bearer '.$accessToken,
+            ])
+                ->acceptJson()
+                ->timeout(10)
+                ->put(
+                    "{$url}/auth/v1/user",
+                    [
+                        'password' => $password,
+                    ]
+                );
+        } catch (ConnectionException $exception) {
+            throw new RuntimeException(
+                'supabase_password_update_unavailable',
+                previous: $exception
+            );
+        }
+
+        if ($response->failed()) {
+            throw new RuntimeException(
+                'supabase_password_update_failed'
+            );
+        }
     }
 }

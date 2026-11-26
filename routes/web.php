@@ -3,6 +3,7 @@
 use App\Http\Controllers\AppEnrolmentController;
 use App\Http\Controllers\AppLaunchController;
 use App\Http\Controllers\Auth\AuthController;
+use App\Http\Controllers\Auth\PasswordRecoveryController;
 use App\Http\Controllers\Auth\RegistrationController;
 use App\Http\Controllers\BusinessController;
 use App\Http\Controllers\DirectoryController;
@@ -28,11 +29,29 @@ Route::get('/auth/logout/perfect10', function () {
     return view('auth.logout-perfect10');
 })->name('auth.logout.perfect10');
 
-Route::view('/forgot-password', 'pages.auth.forgot-password')
-    ->name('password.request');
+Route::get(
+    '/forgot-password',
+    [PasswordRecoveryController::class, 'requestForm']
+)->name('password.request');
 
-Route::view('/reset-password', 'pages.auth.reset-password')
-    ->name('password.reset');
+Route::post(
+    '/forgot-password',
+    [PasswordRecoveryController::class, 'requestReset']
+)
+    ->middleware('throttle:3,10')
+    ->name('password.email');
+
+Route::get(
+    '/reset-password',
+    [PasswordRecoveryController::class, 'resetForm']
+)->name('password.reset');
+
+Route::post(
+    '/reset-password',
+    [PasswordRecoveryController::class, 'resetPassword']
+)
+    ->middleware('throttle:5,1')
+    ->name('password.update');
 
 Route::view('/register', 'pages.auth.register')
     ->name('register');
@@ -83,23 +102,19 @@ Route::get('/apps/{app:slug}/launch', [
 ])->name('apps.launch');
 
 Route::post('/theme', function () {
-
     session([
         'theme' => request('theme'),
     ]);
 
     return back();
-
 });
 
 Route::post('/mode', function () {
-
     session([
         'mode' => request('mode'),
     ]);
 
     return back();
-
 });
 
 Route::get('/cards', function () {

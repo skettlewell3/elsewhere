@@ -1,4 +1,3 @@
-
 @extends('layouts.app')
 
 @section('title', 'Sign in | Elsewhere')
@@ -19,6 +18,12 @@
             @if(session('registration_success'))
                 <div class="auth-page-notice" role="status">
                     {{ session('registration_success') }}
+                </div>
+            @endif
+
+            @if(session('password_reset_success'))
+                <div class="auth-page-notice" role="status">
+                    {{ session('password_reset_success') }}
                 </div>
             @endif
 
