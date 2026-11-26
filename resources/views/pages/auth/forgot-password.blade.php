@@ -18,36 +18,52 @@
 
             <div class="auth-page-form">
 
-                <form class="navbar-login-form">
-                    <div class="navbar-login-field">
-                        <label for="recovery-email">
-                            Email address
-                        </label>
-
-                        <input
-                            id="recovery-email"
-                            type="email"
-                            name="email"
-                            value="{{ old('email') }}"
-                            autocomplete="email"
-                            placeholder="you@example.com"
-                            required
-                        >
+                @if(session('recovery_sent'))
+                    <div class="auth-page-notice" role="status">
+                        {{ session('recovery_sent') }}
                     </div>
+                @else
+                    @if($errors->has('recovery'))
+                        <div class="auth-page-notice" role="alert">
+                            {{ $errors->first('recovery') }}
+                        </div>
+                    @endif
 
-                    <button
-                        type="button"
-                        class="navbar-login-submit"
-                        disabled
+                    <form
+                        class="navbar-login-form"
+                        method="POST"
+                        action="{{ route('password.email') }}"
                     >
-                        Send reset link
-                    </button>
-                </form>
+                        @csrf
 
-                <div class="auth-page-notice" role="status">
-                    Password recovery is not available yet.
-                    This feature will be enabled soon.
-                </div>
+                        <div class="navbar-login-field">
+                            <label for="recovery-email">
+                                Email address
+                            </label>
+
+                            <input
+                                id="recovery-email"
+                                type="email"
+                                name="email"
+                                value="{{ old('email') }}"
+                                autocomplete="email"
+                                placeholder="you@example.com"
+                                required
+                            >
+
+                            @error('email')
+                                <p role="alert">{{ $message }}</p>
+                            @enderror
+                        </div>
+
+                        <button
+                            type="submit"
+                            class="navbar-login-submit"
+                        >
+                            Send reset link
+                        </button>
+                    </form>
+                @endif
 
                 <div class="auth-page-footer">
                     <a href="{{ route('login') }}">

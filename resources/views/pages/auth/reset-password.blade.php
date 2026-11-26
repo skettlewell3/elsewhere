@@ -18,63 +18,104 @@
 
             <div class="auth-page-form">
 
-                <form class="navbar-login-form">
-
-                    <div class="navbar-login-field">
-                        <label for="reset-password">
-                            New password
-                        </label>
-
-                        <input
-                            id="reset-password"
-                            type="password"
-                            name="password"
-                            autocomplete="new-password"
-                            minlength="8"
-                            placeholder="Enter new password"
-                            required
-                            disabled
-                        >
+                @if(!$validLink)
+                    <div class="auth-page-notice" role="alert">
+                        This password reset link is missing or invalid.
+                        Please request a new one.
                     </div>
 
-                    <div class="navbar-login-field">
-                        <label for="reset-password-confirmation">
-                            Confirm new password
-                        </label>
-
-                        <input
-                            id="reset-password-confirmation"
-                            type="password"
-                            name="password_confirmation"
-                            autocomplete="new-password"
-                            minlength="8"
-                            placeholder="Confirm new password"
-                            required
-                            disabled
-                        >
+                    <div class="auth-page-footer">
+                        <a href="{{ route('password.request') }}">
+                            Request another reset link
+                        </a>
                     </div>
+                @else
 
-                    <button
-                        type="button"
-                        class="navbar-login-submit"
-                        disabled
+                    @if($errors->any())
+                        <div class="auth-page-notice" role="alert">
+                            Please check the information below
+                            and try again.
+                        </div>
+                    @endif
+
+                    <form
+                        class="navbar-login-form"
+                        method="POST"
+                        action="{{ route('password.update') }}"
                     >
-                        Reset password
-                    </button>
+                        @csrf
 
-                </form>
+                        <input
+                            type="hidden"
+                            name="token_hash"
+                            value="{{ $tokenHash }}"
+                        >
 
-                <div class="auth-page-notice" role="status">
-                    Password reset is not available yet.
-                    This feature will be enabled when
-                    secure recovery-link verification is implemented.
-                </div>
+                        <input
+                            type="hidden"
+                            name="type"
+                            value="recovery"
+                        >
 
-                <div class="auth-page-footer">
-                    <a href="{{ route('login') }}">
-                        Back to sign in
-                    </a>
-                </div>
+                        <div class="navbar-login-field">
+                            <label for="reset-password">
+                                New password
+                            </label>
+
+                            <input
+                                id="reset-password"
+                                type="password"
+                                name="password"
+                                autocomplete="new-password"
+                                minlength="8"
+                                maxlength="128"
+                                aria-describedby="reset-password-help"
+                                placeholder="Enter new password"
+                                required
+                            >
+
+                            <p id="reset-password-help">
+                                Minimum 8 characters.
+                                Maximum 128 characters.
+                            </p>
+
+                            @error('password')
+                                <p role="alert">{{ $message }}</p>
+                            @enderror
+                        </div>
+
+                        <div class="navbar-login-field">
+                            <label for="reset-password-confirmation">
+                                Confirm new password
+                            </label>
+
+                            <input
+                                id="reset-password-confirmation"
+                                type="password"
+                                name="password_confirmation"
+                                autocomplete="new-password"
+                                minlength="8"
+                                maxlength="128"
+                                placeholder="Confirm new password"
+                                required
+                            >
+                        </div>
+
+                        <button
+                            type="submit"
+                            class="navbar-login-submit"
+                        >
+                            Reset password
+                        </button>
+                    </form>
+
+                    <div class="auth-page-footer">
+                        <a href="{{ route('login') }}">
+                            Back to sign in
+                        </a>
+                    </div>
+
+                @endif
 
             </div>
 
