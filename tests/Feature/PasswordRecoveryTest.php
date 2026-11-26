@@ -7,8 +7,7 @@ use Tests\TestCase;
 
 class PasswordRecoveryTest extends TestCase
 {
-    private const
-        TOKEN_HASH = 'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa';
+    private const TOKEN_HASH = 'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa';
 
     protected function setUp(): void
     {

@@ -19,9 +19,7 @@
                     </p>
                 @endif
 
-                <h1>
-                    Join {{ $app->name }}
-                </h1>
+                <h1>Join {{ $app->name }}</h1>
 
                 @if($app->description)
                     <p class="app-enrolment__description">
@@ -59,11 +57,14 @@
                         will manage your application profile.
                     </p>
                 @endif
-                
+
                 @if(session('app_enrolment_error'))
-                    <p class="app-enrolment__error" role="alert">
+                    <div
+                        class="app-enrolment__error"
+                        role="alert"
+                    >
                         {{ session('app_enrolment_error') }}
-                    </p>
+                    </div>
                 @endif
 
                 <div class="app-enrolment__actions">
@@ -74,23 +75,32 @@
                         >
                             @csrf
 
-                            <button type="submit">
+                            <button
+                                type="submit"
+                                class="app-enrolment__submit"
+                            >
                                 {{ $membership?->status === 'pending'
                                     ? 'Continue registration'
                                     : 'Confirm registration' }}
                             </button>
                         </form>
                     @else
-                        <button type="button" disabled>
+                        <button
+                            type="button"
+                            class="app-enrolment__submit"
+                            disabled
+                        >
                             Registration coming soon
                         </button>
                     @endif
-                                
-                    <a href="{{ route('discover') }}">
+
+                    <a
+                        href="{{ route('discover') }}"
+                        class="app-enrolment__cancel"
+                    >
                         Cancel
                     </a>
                 </div>
-
             </div>
         </div>
     </section>
